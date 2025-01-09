@@ -71,17 +71,17 @@ export default function TagInput({ value, onChange, placeholder, existingTags = 
 
   return (
     <div className="relative">
-      <div className="min-h-[38px] flex flex-wrap gap-2 p-1 border rounded-md focus-within:ring-2 focus-within:ring-indigo-500 focus-within:border-indigo-500">
+      <div className="min-h-[38px] flex flex-wrap gap-2 p-1 bg-[rgb(var(--color-bg-primary))] border border-[rgb(var(--color-border-primary))] rounded-md focus-within:ring-2 focus-within:ring-[rgb(var(--color-primary-400))] focus-within:border-[rgb(var(--color-primary-400))]">
         {value.map((tag) => (
           <span
             key={tag}
-            className="inline-flex items-center px-2 py-1 bg-indigo-100 text-indigo-800 text-sm rounded-md"
+            className="inline-flex items-center px-2 py-1 bg-[rgb(var(--color-primary-900))] text-[rgb(var(--color-primary-400))] text-sm rounded-md"
           >
             {tag}
             <button
               type="button"
               onClick={() => removeTag(tag)}
-              className="ml-1 text-indigo-600 hover:text-indigo-800"
+              className="ml-1 text-[rgb(var(--color-primary-400))] hover:text-[rgb(var(--color-primary-300))]"
             >
               <X className="h-3 w-3" />
             </button>
@@ -94,20 +94,20 @@ export default function TagInput({ value, onChange, placeholder, existingTags = 
           onChange={handleInputChange}
           onKeyDown={handleKeyDown}
           placeholder={value.length === 0 ? placeholder : ''}
-          className="flex-1 min-w-[120px] border-0 p-1 focus:ring-0 text-sm"
+          className="flex-1 min-w-[120px] border-0 p-1 bg-transparent text-[rgb(var(--color-text-primary))] placeholder-[rgb(var(--color-text-tertiary))] focus:ring-0 text-sm"
         />
       </div>
       {showSuggestions && suggestions.length > 0 && (
         <div
           ref={suggestionsRef}
-          className="absolute z-10 mt-1 w-full bg-white shadow-lg rounded-md border border-gray-200 max-h-48 overflow-auto"
+          className="absolute z-10 mt-1 w-full bg-[rgb(var(--color-bg-secondary))] shadow-lg rounded-md border border-[rgb(var(--color-border-primary))] max-h-48 overflow-auto"
         >
           {suggestions.map((suggestion) => (
             <button
               key={suggestion}
               type="button"
               onClick={() => addTag(suggestion)}
-              className="w-full text-left px-4 py-2 text-sm hover:bg-gray-100"
+              className="w-full text-left px-4 py-2 text-sm text-[rgb(var(--color-text-primary))] hover:bg-[rgb(var(--color-bg-tertiary))]"
             >
               {suggestion}
             </button>

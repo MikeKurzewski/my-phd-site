@@ -12,6 +12,7 @@ interface Publication {
   venue: string;
   publication_url: string;
   media_files: string[];
+  type: 'preprint' | 'publication';
   user_id: string;
 }
 
@@ -22,6 +23,7 @@ interface PublicationFormData {
   publication_date: string;
   venue: string;
   publication_url: string;
+  type: 'preprint' | 'publication';
 }
 
 export default function Publications() {
@@ -30,6 +32,7 @@ export default function Publications() {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editingPublication, setEditingPublication] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
+  const [selectedFiles, setSelectedFiles] = useState<FileList | null>(null);
   const [formData, setFormData] = useState<PublicationFormData>({
     title: '',
     abstract: '',
@@ -37,8 +40,8 @@ export default function Publications() {
     publication_date: new Date().toISOString().split('T')[0],
     venue: '',
     publication_url: '',
+    type: 'publication'
   });
-  const [selectedFiles, setSelectedFiles] = useState<FileList | null>(null);
 
   useEffect(() => {
     if (user?.id) {
@@ -83,7 +86,6 @@ export default function Publications() {
         media_files: [],
       };
 
-      // Handle file uploads if any
       if (selectedFiles) {
         const mediaUrls = [];
         for (let i = 0; i < selectedFiles.length; i++) {
@@ -123,6 +125,7 @@ export default function Publications() {
         publication_date: new Date().toISOString().split('T')[0],
         venue: '',
         publication_url: '',
+        type: 'publication'
       });
       setSelectedFiles(null);
       fetchPublications();
@@ -140,6 +143,7 @@ export default function Publications() {
       publication_date: publication.publication_date,
       venue: publication.venue,
       publication_url: publication.publication_url,
+      type: publication.type || 'publication'
     });
     setIsModalOpen(true);
   };
@@ -161,13 +165,17 @@ export default function Publications() {
   };
 
   if (loading) {
-    return <div>Loading...</div>;
+    return (
+      <div className="flex items-center justify-center min-h-screen">
+        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-[rgb(var(--color-primary-400))]"></div>
+      </div>
+    );
   }
 
   return (
     <div className="space-y-6">
       <div className="flex justify-between items-center">
-        <h2 className="text-2xl font-semibold text-gray-900">Publications</h2>
+        <h2 className="text-2xl font-semibold text-[rgb(var(--color-text-primary))]">Publications</h2>
         <button
           onClick={() => {
             setEditingPublication(null);
@@ -178,10 +186,11 @@ export default function Publications() {
               publication_date: new Date().toISOString().split('T')[0],
               venue: '',
               publication_url: '',
+              type: 'publication'
             });
             setIsModalOpen(true);
           }}
-          className="inline-flex items-center px-4 py-2 bg-indigo-600 text-white rounded-md hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2"
+          className="btn-primary"
         >
           <Plus className="h-5 w-5 mr-2" />
           Add Publication
@@ -189,36 +198,45 @@ export default function Publications() {
       </div>
 
       {publications.length === 0 ? (
-        <div className="bg-white shadow-sm rounded-lg p-6 text-center">
-          <p className="text-gray-500">
+        <div className="bg-[rgb(var(--color-bg-secondary))] shadow-sm rounded-lg p-6 text-center border border-[rgb(var(--color-border-primary))]">
+          <p className="text-[rgb(var(--color-text-secondary))]">
             No publications added yet. Click "Add Publication" to get started.
           </p>
         </div>
       ) : (
         <div className="space-y-4">
           {publications.map((publication) => (
-            <div key={publication.id} className="bg-white shadow-sm rounded-lg p-6">
+            <div key={publication.id} className="bg-[rgb(var(--color-bg-secondary))] shadow-sm rounded-lg p-6 border border-[rgb(var(--color-border-primary))]">
               <div className="flex justify-between items-start mb-4">
-                <h3 className="text-lg font-medium text-gray-900">{publication.title}</h3>
+                <div>
+                  <h3 className="text-lg font-medium text-[rgb(var(--color-text-primary))]">{publication.title}</h3>
+                  <span className={`inline-block px-2 py-1 text-xs font-medium rounded-full mt-1 ${
+                    publication.type === 'preprint' 
+                      ? 'bg-[rgb(var(--color-warning))] bg-opacity-20 text-[rgb(var(--color-warning))]' 
+                      : 'bg-[rgb(var(--color-success))] bg-opacity-20 text-[rgb(var(--color-success))]'
+                  }`}>
+                    {publication.type === 'preprint' ? 'Preprint' : 'Published'}
+                  </span>
+                </div>
                 <div className="flex space-x-2">
                   <button
                     onClick={() => handleEdit(publication)}
-                    className="p-1 text-gray-400 hover:text-gray-500"
+                    className="p-1 text-[rgb(var(--color-text-tertiary))] hover:text-[rgb(var(--color-text-secondary))]"
                     title="Edit publication"
                   >
                     <Edit2 className="h-5 w-5" />
                   </button>
                   <button
                     onClick={() => handleDelete(publication.id)}
-                    className="p-1 text-gray-400 hover:text-red-500"
+                    className="p-1 text-[rgb(var(--color-text-tertiary))] hover:text-[rgb(var(--color-error))]"
                     title="Delete publication"
                   >
                     <Trash2 className="h-5 w-5" />
                   </button>
                 </div>
               </div>
-              <p className="text-gray-600 mb-4">{publication.abstract}</p>
-              <div className="text-sm text-gray-500 mb-4">
+              <p className="text-[rgb(var(--color-text-secondary))] mb-4">{publication.abstract}</p>
+              <div className="text-sm text-[rgb(var(--color-text-tertiary))] mb-4">
                 {publication.authors.join(', ')} • {publication.venue} • {publication.publication_date}
               </div>
               <div className="flex space-x-4">
@@ -227,8 +245,7 @@ export default function Publications() {
                     href={publication.publication_url}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="inline-flex items-center text-indigo-600 hover:text-indigo-700"
-                    title="View publication"
+                    className="inline-flex items-center text-[rgb(var(--color-primary-400))] hover:text-[rgb(var(--color-primary-300))]"
                   >
                     <ExternalLink className="h-4 w-4 mr-1" />
                     View Publication
@@ -240,8 +257,7 @@ export default function Publications() {
                     href={`${supabase.storage.from('publication-files').getPublicUrl(file).data.publicUrl}`}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="inline-flex items-center text-indigo-600 hover:text-indigo-700"
-                    title="Download supplementary material"
+                    className="inline-flex items-center text-[rgb(var(--color-primary-400))] hover:text-[rgb(var(--color-primary-300))]"
                   >
                     <ExternalLink className="h-4 w-4 mr-1" />
                     Supplementary Material {index + 1}
@@ -254,114 +270,147 @@ export default function Publications() {
       )}
 
       {isModalOpen && (
-        <div className="fixed inset-0 bg-gray-500 bg-opacity-75 flex items-center justify-center p-4">
-          <div className="bg-white rounded-lg p-6 max-w-2xl w-full my-8">
-            <h3 className="text-lg font-medium text-gray-900 mb-4">
-              {editingPublication ? 'Edit Publication' : 'Add New Publication'}
-            </h3>
-            <div className="max-h-[calc(100vh-16rem)] overflow-y-auto">
-              <form onSubmit={handleSubmit} className="space-y-4">
-                <div>
-                  <label className="block text-sm font-medium text-gray-700">Title</label>
-                  <input
-                    type="text"
-                    value={formData.title}
-                    onChange={(e) => setFormData({ ...formData, title: e.target.value })}
-                    className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500"
-                    required
-                  />
-                </div>
-
-                <div>
-                  <label className="block text-sm font-medium text-gray-700">Abstract</label>
-                  <textarea
-                    value={formData.abstract}
-                    onChange={(e) => setFormData({ ...formData, abstract: e.target.value })}
-                    rows={4}
-                    className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500"
-                    required
-                  />
-                </div>
-
-                <div>
-                  <label className="block text-sm font-medium text-gray-700">Authors</label>
-                  <input
-                    type="text"
-                    value={formData.authors}
-                    onChange={(e) => setFormData({ ...formData, authors: e.target.value })}
-                    placeholder="Enter authors separated by commas"
-                    className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500"
-                    required
-                  />
-                </div>
-
-                <div>
-                  <label className="block text-sm font-medium text-gray-700">Venue</label>
-                  <input
-                    type="text"
-                    value={formData.venue}
-                    onChange={(e) => setFormData({ ...formData, venue: e.target.value })}
-                    placeholder="Journal or Conference name"
-                    className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500"
-                    required
-                  />
-                </div>
-
-                <div>
-                  <label className="block text-sm font-medium text-gray-700">Publication Date</label>
-                  <input
-                    type="date"
-                    value={formData.publication_date}
-                    onChange={(e) => setFormData({ ...formData, publication_date: e.target.value })}
-                    className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500"
-                    required
-                  />
-                </div>
-
-                <div>
-                  <label className="block text-sm font-medium text-gray-700">Publication URL</label>
-                  <input
-                    type="url"
-                    value={formData.publication_url}
-                    onChange={(e) => setFormData({ ...formData, publication_url: e.target.value })}
-                    placeholder="https://"
-                    className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500"
-                  />
-                </div>
-
-                <div>
-                  <label className="block text-sm font-medium text-gray-700">
-                    Supplementary Materials
-                  </label>
-                  <div className="mt-1 flex items-center">
+        <div className="modal-overlay">
+          <div className="modal">
+            <div className="modal-content p-6">
+              <h3 className="text-lg font-medium text-[rgb(var(--color-text-primary))] mb-4">
+                {editingPublication ? 'Edit Publication' : 'Add New Publication'}
+              </h3>
+              <div className="max-h-[calc(100vh-16rem)] overflow-y-auto">
+                <form onSubmit={handleSubmit} className="space-y-4">
+                  <div>
+                    <label className="block text-sm font-medium text-[rgb(var(--color-text-secondary))]">Title</label>
                     <input
-                      type="file"
-                      onChange={handleFileChange}
-                      multiple
-                      className="block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-md file:border-0 file:text-sm file:font-semibold file:bg-indigo-50 file:text-indigo-700 hover:file:bg-indigo-100"
+                      type="text"
+                      value={formData.title}
+                      onChange={(e) => setFormData({ ...formData, title: e.target.value })}
+                      className="form-input"
+                      required
                     />
                   </div>
-                </div>
 
-                <div className="flex justify-end space-x-3 pt-4">
-                  <button
-                    type="button"
-                    onClick={() => {
-                      setIsModalOpen(false);
-                      setEditingPublication(null);
-                    }}
-                    className="px-4 py-2 text-gray-700 hover:text-gray-900"
-                  >
-                    Cancel
-                  </button>
-                  <button
-                    type="submit"
-                    className="px-4 py-2 bg-indigo-600 text-white rounded-md hover:bg-indigo-700"
-                  >
-                    {editingPublication ? 'Save Changes' : 'Create Publication'}
-                  </button>
-                </div>
-              </form>
+                  <div>
+                    <label className="block text-sm font-medium text-[rgb(var(--color-text-secondary))]">Type</label>
+                    <div className="mt-1 flex gap-3">
+                      <button
+                        type="button"
+                        onClick={() => setFormData({ ...formData, type: 'publication' })}
+                        className={`flex-1 px-4 py-2 rounded-md text-sm font-medium transition-colors ${
+                          formData.type === 'publication'
+                            ? 'bg-[rgb(var(--color-success))] bg-opacity-20 text-[rgb(var(--color-success))] border-2 border-[rgb(var(--color-success))] border-opacity-20'
+                            : 'bg-[rgb(var(--color-bg-tertiary))] text-[rgb(var(--color-text-secondary))] hover:bg-[rgb(var(--color-bg-primary))]'
+                        }`}
+                      >
+                        Publication
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => setFormData({ ...formData, type: 'preprint' })}
+                        className={`flex-1 px-4 py-2 rounded-md text-sm font-medium transition-colors ${
+                          formData.type === 'preprint'
+                            ? 'bg-[rgb(var(--color-warning))] bg-opacity-20 text-[rgb(var(--color-warning))] border-2 border-[rgb(var(--color-warning))] border-opacity-20'
+                            : 'bg-[rgb(var(--color-bg-tertiary))] text-[rgb(var(--color-text-secondary))] hover:bg-[rgb(var(--color-bg-primary))]'
+                        }`}
+                      >
+                        Preprint
+                      </button>
+                    </div>
+                  </div>
+
+                  <div>
+                    <label className="block text-sm font-medium text-[rgb(var(--color-text-secondary))]">Abstract</label>
+                    <textarea
+                      value={formData.abstract}
+                      onChange={(e) => setFormData({ ...formData, abstract: e.target.value })}
+                      rows={4}
+                      className="form-input"
+                      required
+                    />
+                  </div>
+
+                  <div>
+                    <label className="block text-sm font-medium text-[rgb(var(--color-text-secondary))]">Authors</label>
+                    <input
+                      type="text"
+                      value={formData.authors}
+                      onChange={(e) => setFormData({ ...formData, authors: e.target.value })}
+                      placeholder="Enter authors separated by commas"
+                      className="form-input"
+                      required
+                    />
+                  </div>
+
+                  <div>
+                    <label className="block text-sm font-medium text-[rgb(var(--color-text-secondary))]">Venue</label>
+                    <input
+                      type="text"
+                      value={formData.venue}
+                      onChange={(e) => setFormData({ ...formData, venue: e.target.value })}
+                      placeholder="Journal or Conference name"
+                      className="form-input"
+                      required
+                    />
+                  </div>
+
+                  <div>
+                    <label className="block text-sm font-medium text-[rgb(var(--color-text-secondary))]">Publication Date</label>
+                    <input
+                      type="date"
+                      value={formData.publication_date}
+                      onChange={(e) => setFormData({ ...formData, publication_date: e.target.value })}
+                      className="form-input"
+                      required
+                    />
+                  </div>
+
+                  <div>
+                    <label className="block text-sm font-medium text-[rgb(var(--color-text-secondary))]">Publication URL</label>
+                    <input
+                      type="url"
+                      value={formData.publication_url}
+                      onChange={(e) => setFormData({ ...formData, publication_url: e.target.value })}
+                      placeholder="https://"
+                      className="form-input"
+                    />
+                  </div>
+
+                  <div>
+                    <label className="block text-sm font-medium text-[rgb(var(--color-text-secondary))]">
+                      Supplementary Materials
+                    </label>
+                    <div className="mt-1">
+                      <input
+                        type="file"
+                        onChange={handleFileChange}
+                        multiple
+                        className="block w-full text-sm text-[rgb(var(--color-text-tertiary))] file:mr-4 file:py-2 file:px-4 
+                          file:rounded-md file:border-0 file:text-sm file:font-semibold 
+                          file:bg-[rgb(var(--color-primary-900))] file:text-[rgb(var(--color-primary-400))] 
+                          hover:file:bg-[rgb(var(--color-primary-800))]"
+                      />
+                    </div>
+                  </div>
+
+                  <div className="flex justify-end space-x-3 pt-4">
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setIsModalOpen(false);
+                        setEditingPublication(null);
+                      }}
+                      className="btn-secondary"
+                    >
+                      Cancel
+                    </button>
+                    <button
+                      type="submit"
+                      className="btn-primary"
+                    >
+                      {editingPublication ? 'Save Changes' : 'Create Publication'}
+                    </button>
+                  </div>
+                </form>
+              </div>
             </div>
           </div>
         </div>

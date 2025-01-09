@@ -148,13 +148,17 @@ export default function Projects() {
   };
 
   if (loading) {
-    return <div>Loading...</div>;
+    return (
+      <div className="flex items-center justify-center min-h-screen">
+        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-[rgb(var(--color-primary-400))]"></div>
+      </div>
+    );
   }
 
   return (
     <div className="space-y-6">
       <div className="flex justify-between items-center">
-        <h2 className="text-2xl font-semibold text-gray-900">Projects</h2>
+        <h2 className="text-2xl font-semibold text-[rgb(var(--color-text-primary))]">Projects</h2>
         <button
           onClick={() => {
             setEditingProject(null);
@@ -166,7 +170,7 @@ export default function Projects() {
             });
             setIsModalOpen(true);
           }}
-          className="inline-flex items-center px-4 py-2 bg-indigo-600 text-white rounded-md hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2"
+          className="btn-primary"
         >
           <Plus className="h-5 w-5 mr-2" />
           Add Project
@@ -174,42 +178,44 @@ export default function Projects() {
       </div>
 
       {projects.length === 0 ? (
-        <div className="bg-white shadow-sm rounded-lg p-6 text-center">
-          <p className="text-gray-500">No projects added yet. Click "Add Project" to get started.</p>
+        <div className="bg-[rgb(var(--color-bg-secondary))] shadow-sm rounded-lg p-6 text-center border border-[rgb(var(--color-border-primary))]">
+          <p className="text-[rgb(var(--color-text-secondary))]">
+            No projects added yet. Click "Add Project" to get started.
+          </p>
         </div>
       ) : (
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           {projects.map((project) => (
-            <div key={project.id} className="bg-white shadow-sm rounded-lg p-6">
+            <div key={project.id} className="bg-[rgb(var(--color-bg-secondary))] shadow-sm rounded-lg p-6 border border-[rgb(var(--color-border-primary))]">
               <div className="flex justify-between items-start mb-4">
-                <h3 className="text-lg font-medium text-gray-900">{project.title}</h3>
+                <h3 className="text-lg font-medium text-[rgb(var(--color-text-primary))]">{project.title}</h3>
                 <div className="flex space-x-2">
                   <button 
                     onClick={() => handleEdit(project)}
-                    className="p-1 text-gray-400 hover:text-gray-500"
+                    className="p-1 text-[rgb(var(--color-text-tertiary))] hover:text-[rgb(var(--color-text-secondary))]"
                   >
                     <Edit2 className="h-5 w-5" />
                   </button>
                   <button 
                     onClick={() => handleDelete(project.id)}
-                    className="p-1 text-gray-400 hover:text-red-500"
+                    className="p-1 text-[rgb(var(--color-text-tertiary))] hover:text-[rgb(var(--color-error))]"
                   >
                     <Trash2 className="h-5 w-5" />
                   </button>
                 </div>
               </div>
-              <p className="text-gray-600 mb-4">{project.description}</p>
+              <p className="text-[rgb(var(--color-text-secondary))] mb-4">{project.description}</p>
               <div className="flex flex-wrap gap-2 mb-4">
                 {project.tags.map((tag) => (
                   <span
                     key={tag}
-                    className="px-2 py-1 bg-indigo-100 text-indigo-800 text-sm rounded-md"
+                    className="px-2 py-1 bg-[rgb(var(--color-primary-900))] text-[rgb(var(--color-primary-400))] text-sm rounded-md"
                   >
                     {tag}
                   </span>
                 ))}
               </div>
-              <div className="text-sm text-gray-500">
+              <div className="text-sm text-[rgb(var(--color-text-tertiary))]">
                 {project.start_date} - {project.end_date || 'Present'}
               </div>
             </div>
@@ -218,86 +224,88 @@ export default function Projects() {
       )}
 
       {isModalOpen && (
-        <div className="fixed inset-0 bg-gray-500 bg-opacity-75 flex items-center justify-center p-4 overflow-y-auto">
-          <div className="bg-white rounded-lg p-6 max-w-2xl w-full my-8">
-            <h3 className="text-lg font-medium text-gray-900 mb-4">
-              {editingProject ? 'Edit Project' : 'Add New Project'}
-            </h3>
-            <div className="max-h-[calc(100vh-16rem)] overflow-y-auto">
-              <form onSubmit={handleSubmit} className="space-y-4">
-                <div>
-                  <label className="block text-sm font-medium text-gray-700">Title</label>
-                  <input
-                    type="text"
-                    value={formData.title}
-                    onChange={(e) => setFormData({ ...formData, title: e.target.value })}
-                    className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500"
-                    required
-                  />
-                </div>
-
-                <div>
-                  <label className="block text-sm font-medium text-gray-700">Description</label>
-                  <textarea
-                    value={formData.description}
-                    onChange={(e) => setFormData({ ...formData, description: e.target.value })}
-                    rows={4}
-                    className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500"
-                    required
-                  />
-                </div>
-
-                <div>
-                  <label className="block text-sm font-medium text-gray-700">Tags</label>
-                  <TagInput
-                    value={formData.tags.split(',').filter(Boolean).map(t => t.trim())}
-                    onChange={(tags) => setFormData({ ...formData, tags: tags.join(', ') })}
-                    placeholder="Add tags..."
-                    existingTags={allTags}
-                  />
-                </div>
-
-                <div className="grid grid-cols-2 gap-4">
+        <div className="modal-overlay">
+          <div className="modal">
+            <div className="modal-content p-6">
+              <h3 className="text-lg font-medium text-[rgb(var(--color-text-primary))] mb-4">
+                {editingProject ? 'Edit Project' : 'Add New Project'}
+              </h3>
+              <div className="max-h-[calc(100vh-16rem)] overflow-y-auto">
+                <form onSubmit={handleSubmit} className="space-y-4">
                   <div>
-                    <label className="block text-sm font-medium text-gray-700">Start Date</label>
+                    <label className="block text-sm font-medium text-[rgb(var(--color-text-secondary))]">Title</label>
                     <input
-                      type="date"
-                      value={formData.start_date}
-                      onChange={(e) => setFormData({ ...formData, start_date: e.target.value })}
-                      className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500"
+                      type="text"
+                      value={formData.title}
+                      onChange={(e) => setFormData({ ...formData, title: e.target.value })}
+                      className="form-input"
                       required
                     />
                   </div>
+
                   <div>
-                    <label className="block text-sm font-medium text-gray-700">End Date</label>
-                    <input
-                      type="date"
-                      value={formData.end_date || ''}
-                      onChange={(e) => setFormData({ ...formData, end_date: e.target.value })}
-                      className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500"
+                    <label className="block text-sm font-medium text-[rgb(var(--color-text-secondary))]">Description</label>
+                    <textarea
+                      value={formData.description}
+                      onChange={(e) => setFormData({ ...formData, description: e.target.value })}
+                      rows={4}
+                      className="form-input"
+                      required
                     />
                   </div>
-                </div>
 
-                <div className="flex justify-end space-x-3 pt-4">
-                  <button
-                    type="button"
-                    onClick={() => {
-                      setIsModalOpen(false);
-                      setEditingProject(null);
-                    }}
-                    className="px-4 py-2 text-gray-700 hover:text-gray-900"
-                  >
-                    Cancel
-                  </button>
-                  <button
-                    type="submit"
-                    className="px-4 py-2 bg-indigo-600 text-white rounded-md hover:bg-indigo-700"
-                  >
-                    {editingProject ? 'Save Changes' : 'Create Project'}
-                  </button>
-                </div>
-              </form>
+                  <div>
+                    <label className="block text-sm font-medium text-[rgb(var(--color-text-secondary))]">Tags</label>
+                    <TagInput
+                      value={formData.tags.split(',').filter(Boolean).map(t => t.trim())}
+                      onChange={(tags) => setFormData({ ...formData, tags: tags.join(', ') })}
+                      placeholder="Add tags..."
+                      existingTags={allTags}
+                    />
+                  </div>
+
+                  <div className="grid grid-cols-2 gap-4">
+                    <div>
+                      <label className="block text-sm font-medium text-[rgb(var(--color-text-secondary))]">Start Date</label>
+                      <input
+                        type="date"
+                        value={formData.start_date}
+                        onChange={(e) => setFormData({ ...formData, start_date: e.target.value })}
+                        className="form-input"
+                        required
+                      />
+                    </div>
+                    <div>
+                      <label className="block text-sm font-medium text-[rgb(var(--color-text-secondary))]">End Date</label>
+                      <input
+                        type="date"
+                        value={formData.end_date || ''}
+                        onChange={(e) => setFormData({ ...formData, end_date: e.target.value })}
+                        className="form-input"
+                      />
+                    </div>
+                  </div>
+
+                  <div className="flex justify-end space-x-3 pt-4">
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setIsModalOpen(false);
+                        setEditingProject(null);
+                      }}
+                      className="btn-secondary"
+                    >
+                      Cancel
+                    </button>
+                    <button
+                      type="submit"
+                      className="btn-primary"
+                    >
+                      {editingProject ? 'Save Changes' : 'Create Project'}
+                    </button>
+                  </div>
+                </form>
+              </div>
             </div>
           </div>
         </div>

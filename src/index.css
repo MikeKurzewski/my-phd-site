@@ -1,3 +1,214 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+@layer base {
+  :root {
+    /* Primary colors (Teal) */
+    --color-primary-50: 240 253 250;   /* teal-50 */
+    --color-primary-100: 204 251 241;  /* teal-100 */
+    --color-primary-200: 153 246 228;  /* teal-200 */
+    --color-primary-300: 94 234 212;   /* teal-300 */
+    --color-primary-400: 45 212 191;   /* teal-400 */
+    --color-primary-500: 20 184 166;   /* teal-500 */
+    --color-primary-600: 13 148 136;   /* teal-600 */
+    --color-primary-700: 15 118 110;   /* teal-700 */
+    --color-primary-800: 17 94 89;     /* teal-800 */
+    --color-primary-900: 19 78 74;     /* teal-900 */
+    --color-primary-950: 4 47 46;      /* teal-950 */
+
+    /* Background colors */
+    --color-bg-primary: 17 24 39;       /* gray-900 */
+    --color-bg-secondary: 31 41 55;     /* gray-800 */
+    --color-bg-tertiary: 55 65 81;      /* gray-700 */
+
+    /* Text colors */
+    --color-text-primary: 243 244 246;  /* gray-100 */
+    --color-text-secondary: 209 213 219; /* gray-300 */
+    --color-text-tertiary: 156 163 175;  /* gray-400 */
+
+    /* Border colors */
+    --color-border-primary: 75 85 99;    /* gray-600 */
+    --color-border-secondary: 55 65 81;  /* gray-700 */
+
+    /* Status colors */
+    --color-success: 34 197 94;         /* green-500 */
+    --color-error: 239 68 68;           /* red-500 */
+    --color-warning: 234 179 8;         /* yellow-500 */
+    --color-info: 45 212 191;           /* teal-400 */
+  }
+}
+
+@layer components {
+  /* Button Variants */
+  .btn-primary {
+    @apply inline-flex items-center justify-center px-4 py-2 rounded-md
+           bg-[rgb(var(--color-primary-500))] hover:bg-[rgb(var(--color-primary-600))]
+           text-white font-medium transition-colors
+           focus:outline-none focus:ring-2 focus:ring-[rgb(var(--color-primary-400))] focus:ring-offset-2
+           focus:ring-offset-[rgb(var(--color-bg-primary))]
+           disabled:opacity-50 disabled:cursor-not-allowed;
+  }
+
+  .btn-secondary {
+    @apply inline-flex items-center justify-center px-4 py-2 rounded-md
+           bg-[rgb(var(--color-bg-tertiary))] hover:bg-[rgb(var(--color-bg-secondary))]
+           text-[rgb(var(--color-text-primary))] font-medium transition-colors
+           focus:outline-none focus:ring-2 focus:ring-[rgb(var(--color-primary-400))] focus:ring-offset-2
+           focus:ring-offset-[rgb(var(--color-bg-primary))]
+           disabled:opacity-50 disabled:cursor-not-allowed;
+  }
+
+  .btn-outline {
+    @apply inline-flex items-center justify-center px-4 py-2 rounded-md
+           border-2 border-[rgb(var(--color-primary-400))]
+           text-[rgb(var(--color-primary-400))] font-medium transition-colors
+           hover:bg-[rgb(var(--color-primary-400))] hover:text-white
+           focus:outline-none focus:ring-2 focus:ring-[rgb(var(--color-primary-400))] focus:ring-offset-2
+           focus:ring-offset-[rgb(var(--color-bg-primary))]
+           disabled:opacity-50 disabled:cursor-not-allowed;
+  }
+
+  /* Card Styles */
+  .card {
+    @apply bg-[rgb(var(--color-bg-secondary))] rounded-lg shadow-lg
+           border border-[rgb(var(--color-border-primary))];
+  }
+
+  .card-header {
+    @apply px-6 py-4 border-b border-[rgb(var(--color-border-primary))];
+  }
+
+  .card-body {
+    @apply px-6 py-4;
+  }
+
+  .card-footer {
+    @apply px-6 py-4 border-t border-[rgb(var(--color-border-primary))];
+  }
+
+  /* Form Controls */
+  .form-input {
+    @apply block w-full px-4 py-2.5 rounded-md
+           bg-[rgb(var(--color-bg-primary))] 
+           border-[rgb(var(--color-border-primary))]
+           text-[rgb(var(--color-text-primary))]
+           placeholder-[rgb(var(--color-text-tertiary))]
+           focus:ring-[rgb(var(--color-primary-400))]
+           focus:border-[rgb(var(--color-primary-400))]
+           disabled:opacity-50 disabled:cursor-not-allowed
+           transition-colors duration-200;
+  }
+
+  .form-select {
+    @apply block w-full px-4 py-2.5 rounded-md
+           bg-[rgb(var(--color-bg-primary))]
+           border-[rgb(var(--color-border-primary))]
+           text-[rgb(var(--color-text-primary))]
+           focus:ring-[rgb(var(--color-primary-400))]
+           focus:border-[rgb(var(--color-primary-400))]
+           disabled:opacity-50 disabled:cursor-not-allowed;
+  }
+
+  .form-checkbox {
+    @apply rounded
+           text-[rgb(var(--color-primary-400))]
+           border-[rgb(var(--color-border-primary))]
+           focus:ring-[rgb(var(--color-primary-400))]
+           disabled:opacity-50 disabled:cursor-not-allowed;
+  }
+
+  .form-radio {
+    @apply text-[rgb(var(--color-primary-400))]
+           border-[rgb(var(--color-border-primary))]
+           focus:ring-[rgb(var(--color-primary-400))]
+           disabled:opacity-50 disabled:cursor-not-allowed;
+  }
+
+  /* Badge Variants */
+  .badge {
+    @apply inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium;
+  }
+
+  .badge-primary {
+    @apply bg-[rgb(var(--color-primary-100))] text-[rgb(var(--color-primary-800))];
+  }
+
+  .badge-secondary {
+    @apply bg-[rgb(var(--color-bg-tertiary))] text-[rgb(var(--color-text-primary))];
+  }
+
+  /* Table Styles */
+  .table {
+    @apply min-w-full divide-y divide-[rgb(var(--color-border-primary))];
+  }
+
+  .table th {
+    @apply px-6 py-3 text-left text-xs font-medium text-[rgb(var(--color-text-secondary))] uppercase tracking-wider;
+  }
+
+  .table td {
+    @apply px-6 py-4 whitespace-nowrap text-sm text-[rgb(var(--color-text-primary))];
+  }
+
+  .table tr {
+    @apply hover:bg-[rgb(var(--color-bg-tertiary))];
+  }
+
+  /* Modal Styles */
+  .modal-overlay {
+    @apply fixed inset-0 bg-black bg-opacity-50 backdrop-blur-sm;
+  }
+
+  .modal {
+    @apply fixed inset-0 flex items-center justify-center p-4;
+  }
+
+  .modal-content {
+    @apply bg-[rgb(var(--color-bg-secondary))] rounded-lg shadow-xl
+           max-w-md w-full mx-auto
+           border border-[rgb(var(--color-border-primary))];
+  }
+
+  /* Navigation Styles */
+  .nav-link {
+    @apply flex items-center px-4 py-2 text-sm font-medium rounded-md
+           text-[rgb(var(--color-text-secondary))]
+           hover:bg-[rgb(var(--color-bg-tertiary))]
+           hover:text-[rgb(var(--color-text-primary))];
+  }
+
+  .nav-link-active {
+    @apply bg-[rgb(var(--color-primary-900))]
+           text-[rgb(var(--color-primary-400))];
+  }
+}
+
+/* Base styles */
+@layer base {
+  body {
+    @apply bg-[rgb(var(--color-bg-primary))] text-[rgb(var(--color-text-primary))];
+  }
+
+  h1, h2, h3, h4, h5, h6 {
+    @apply text-[rgb(var(--color-text-primary))];
+  }
+
+  p {
+    @apply text-[rgb(var(--color-text-secondary))];
+  }
+
+  a {
+    @apply text-[rgb(var(--color-primary-400))] hover:text-[rgb(var(--color-primary-300))];
+  }
+
+  /* Form element base styles */
+  input, textarea, select {
+    @apply bg-[rgb(var(--color-bg-primary))]
+           border-[rgb(var(--color-border-primary))]
+           text-[rgb(var(--color-text-primary))]
+           placeholder-[rgb(var(--color-text-tertiary))]
+           focus:ring-[rgb(var(--color-primary-400))]
+           focus:border-[rgb(var(--color-primary-400))];
+  }
+}
