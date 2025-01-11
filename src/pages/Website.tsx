@@ -38,11 +38,17 @@ export default function Website() {
 
   const fetchProfileData = async () => {
     try {
+      // Extract username from subdomain if needed
+      let searchUsername = username;
+      if (window.location.hostname.includes('.myphd.site')) {
+        searchUsername = window.location.hostname.split('.')[0];
+      }
+
       // Get profile
       const { data: profileData, error: profileError } = await supabase
         .from('profiles')
         .select('*')
-        .eq('username', username)
+        .eq('username', searchUsername)
         .single();
 
       if (profileError) throw profileError;
@@ -74,7 +80,7 @@ export default function Website() {
 
   if (loading) {
     return (
-      <div className="flex items-center justify-center min-h-screen bg-[rgb(var(--color-bg-primary))]">
+      <div className="flex items-center justify-center min-h-screen">
         <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-[rgb(var(--color-primary-400))]"></div>
       </div>
     );
@@ -82,8 +88,11 @@ export default function Website() {
 
   if (!profile) {
     return (
-      <div className="flex items-center justify-center min-h-screen bg-[rgb(var(--color-bg-primary))]">
-        <div className="text-[rgb(var(--color-text-primary))]">Profile not found</div>
+      <div className="flex items-center justify-center min-h-screen">
+        <div className="text-center">
+          <h1 className="text-2xl font-bold text-[rgb(var(--color-text-primary))]">Profile Not Found</h1>
+          <p className="mt-2 text-[rgb(var(--color-text-secondary))]">The requested profile could not be found.</p>
+        </div>
       </div>
     );
   }
@@ -119,7 +128,7 @@ export default function Website() {
                   ) : (
                     <div className="w-full h-full bg-[rgb(var(--color-bg-tertiary))] flex items-center justify-center">
                       <span className="text-4xl text-[rgb(var(--color-text-tertiary))]">
-                        {profile.name?.charAt(0) || '?'}
+                        {profile.name?.charAt(0)}
                       </span>
                     </div>
                   )}
@@ -225,27 +234,10 @@ export default function Website() {
           {/* About Section */}
           {activeTab === 'about' && (
             <div className="space-y-8">
-              {profile.bio && (
-                <div className="bg-[rgb(var(--color-bg-secondary))] rounded-lg p-6 border border-[rgb(var(--color-border-primary))]">
-                  <h2 className="text-xl font-semibold text-[rgb(var(--color-text-primary))] mb-4">About</h2>
-                  <p className="text-[rgb(var(--color-text-secondary))]">{profile.bio}</p>
-                </div>
-              )}
-
-              {profile.cv_url && (
-                <div className="bg-[rgb(var(--color-bg-secondary))] rounded-lg p-6 border border-[rgb(var(--color-border-primary))]">
-                  <h2 className="text-xl font-semibold text-[rgb(var(--color-text-primary))] mb-4">CV</h2>
-                  <a
-                    href={supabase.storage.from('profile-files').getPublicUrl(profile.cv_url).data.publicUrl}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="inline-flex items-center px-4 py-2 rounded-lg bg-[rgb(var(--color-primary-900))] text-[rgb(var(--color-primary-400))] hover:bg-[rgb(var(--color-primary-800))] transition-colors"
-                  >
-                    <ExternalLink className="h-4 w-4 mr-2" />
-                    View CV
-                  </a>
-                </div>
-              )}
+              <div className="bg-[rgb(var(--color-bg-secondary))] rounded-lg p-6 border border-[rgb(var(--color-border-primary))]">
+                <h2 className="text-xl font-semibold text-[rgb(var(--color-text-primary))] mb-4">About</h2>
+                <p className="text-[rgb(var(--color-text-secondary))]">{profile.bio}</p>
+              </div>
             </div>
           )}
 
@@ -299,18 +291,16 @@ export default function Website() {
                 >
                   <h3 className="text-lg font-medium text-[rgb(var(--color-text-primary))]">{project.title}</h3>
                   <p className="mt-2 text-[rgb(var(--color-text-secondary))]">{project.description}</p>
-                  {project.tags?.length > 0 && (
-                    <div className="mt-4 flex flex-wrap gap-2">
-                      {project.tags.map((tag: string) => (
-                        <span
-                          key={tag}
-                          className="px-2 py-1 rounded-full text-xs font-medium bg-[rgb(var(--color-primary-900))] text-[rgb(var(--color-primary-400))]"
-                        >
-                          {tag}
-                        </span>
-                      ))}
-                    </div>
-                  )}
+                  <div className="mt-4 flex flex-wrap gap-2">
+                    {project.tags.map((tag: string) => (
+                      <span
+                        key={tag}
+                        className="px-2 py-1 rounded-full text-xs font-medium bg-[rgb(var(--color-primary-900))] text-[rgb(var(--color-primary-400))]"
+                      >
+                        {tag}
+                      </span>
+                    ))}
+                  </div>
                   <div className="mt-4 text-sm text-[rgb(var(--color-text-tertiary))]">
                     {project.start_date} - {project.end_date || 'Present'}
                   </div>
