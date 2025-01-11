@@ -10,6 +10,13 @@
   to = "/index.html"
   status = 200
 
+# Handle wildcard subdomains
+[[redirects]]
+  from = "https://:username.myphd.site/*"
+  to = "https://myphd.site/:splat"
+  status = 200
+  force = true
+
 # Custom domain configuration
 [context.production]
   base = "/"
