@@ -9,6 +9,7 @@ import Projects from './pages/Projects';
 import Publications from './pages/Publications';
 import Settings from './pages/Settings';
 import Website from './pages/Website';
+import WebsiteDemo from './pages/WebsiteDemo';
 import { AuthProvider, useAuth } from './lib/auth';
 
 function PrivateRoute({ children }: { children: React.ReactNode }) {
@@ -33,6 +34,9 @@ function AppRoutes() {
       <Routes>
         {/* Landing page route */}
         <Route path="/" element={user ? <Navigate to="/dashboard" /> : <Landing />} />
+        
+        {/* Demo route */}
+        <Route path="/demo" element={<WebsiteDemo />} />
         
         {/* Public website route */}
         <Route path="/:username" element={<Website />} />

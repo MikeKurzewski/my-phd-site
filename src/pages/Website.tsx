@@ -1,14 +1,35 @@
 import React, { useState, useEffect } from 'react';
 import { useParams } from 'react-router-dom';
-import { ExternalLink, Mail, Linkedin, Github, Twitter } from 'lucide-react';
+import { ExternalLink, Mail, Linkedin, Github, Twitter, BookOpen, Briefcase } from 'lucide-react';
 import { supabase } from '../lib/supabase';
+
+interface TabProps {
+  label: string;
+  icon: React.ReactNode;
+  isActive: boolean;
+  onClick: () => void;
+}
+
+const Tab: React.FC<TabProps> = ({ label, icon, isActive, onClick }) => (
+  <button
+    onClick={onClick}
+    className={`flex items-center px-4 py-2 rounded-lg transition-colors ${
+      isActive
+        ? 'bg-[rgb(var(--color-primary-900))] text-[rgb(var(--color-primary-400))]'
+        : 'text-[rgb(var(--color-text-secondary))] hover:bg-[rgb(var(--color-bg-tertiary))]'
+    }`}
+  >
+    {icon}
+    <span className="ml-2">{label}</span>
+  </button>
+);
 
 export default function Website() {
   const { username } = useParams();
   const [profile, setProfile] = useState<any>(null);
   const [projects, setProjects] = useState([]);
   const [publications, setPublications] = useState([]);
-  const [qualifications, setQualifications] = useState([]);
+  const [activeTab, setActiveTab] = useState('about');
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -44,15 +65,6 @@ export default function Website() {
         .order('publication_date', { ascending: false });
 
       setPublications(publicationsData || []);
-
-      // Get qualifications
-      const { data: qualificationsData } = await supabase
-        .from('qualifications')
-        .select('*')
-        .eq('user_id', profileData.id)
-        .order('year', { ascending: false });
-
-      setQualifications(qualificationsData || []);
     } catch (error) {
       console.error('Error fetching profile data:', error);
     } finally {
@@ -61,161 +73,250 @@ export default function Website() {
   };
 
   if (loading) {
-    return <div>Loading...</div>;
+    return (
+      <div className="flex items-center justify-center min-h-screen bg-[rgb(var(--color-bg-primary))]">
+        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-[rgb(var(--color-primary-400))]"></div>
+      </div>
+    );
   }
 
   if (!profile) {
-    return <div>Profile not found</div>;
+    return (
+      <div className="flex items-center justify-center min-h-screen bg-[rgb(var(--color-bg-primary))]">
+        <div className="text-[rgb(var(--color-text-primary))]">Profile not found</div>
+      </div>
+    );
   }
 
   return (
-    <div className="min-h-screen bg-gray-50">
-      {/* Header */}
-      <div className="bg-white shadow">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
-          <div className="text-center">
-            {profile.profile_image_url && (
-              <img
-                src={profile.profile_image_url}
-                alt={profile.name}
-                className="w-32 h-32 rounded-full mx-auto mb-4 border-4 border-white shadow-lg"
-              />
-            )}
-            <h1 className="text-3xl font-bold text-gray-900">{profile.name}</h1>
-            <p className="mt-2 text-xl text-gray-600">{profile.title}</p>
-            <p className="mt-1 text-gray-500">{profile.institution}</p>
-            <p className="mt-1 text-gray-500">{profile.department}</p>
-            
-            <div className="mt-4 flex justify-center space-x-4">
-              {profile.social_links?.email && (
-                <a href={`mailto:${profile.social_links.email}`} className="text-gray-400 hover:text-gray-500">
-                  <Mail className="h-6 w-6" />
-                </a>
-              )}
-              {profile.social_links?.linkedin && (
-                <a href={profile.social_links.linkedin} target="_blank" rel="noopener noreferrer" className="text-gray-400 hover:text-gray-500">
-                  <Linkedin className="h-6 w-6" />
-                </a>
-              )}
-              {profile.social_links?.github && (
-                <a href={profile.social_links.github} target="_blank" rel="noopener noreferrer" className="text-gray-400 hover:text-gray-500">
-                  <Github className="h-6 w-6" />
-                </a>
-              )}
-              {profile.social_links?.twitter && (
-                <a href={profile.social_links.twitter} target="_blank" rel="noopener noreferrer" className="text-gray-400 hover:text-gray-500">
-                  <Twitter className="h-6 w-6" />
-                </a>
-              )}
+    <div className="min-h-screen bg-[rgb(var(--color-bg-primary))]">
+      {/* Header with Banner */}
+      <div className="relative h-64 bg-gradient-to-r from-[rgb(var(--color-primary-600))] to-[rgb(var(--color-primary-400))]">
+        {profile.banner_image_url && (
+          <img
+            src={supabase.storage.from('profile-images').getPublicUrl(profile.banner_image_url).data.publicUrl}
+            alt="Banner"
+            className="w-full h-full object-cover"
+          />
+        )}
+        <div className="absolute inset-0 bg-black bg-opacity-40" />
+      </div>
+
+      {/* Profile Section */}
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div className="relative -mt-32 pb-12">
+          <div className="bg-[rgb(var(--color-bg-secondary))] rounded-lg shadow-xl p-8 border border-[rgb(var(--color-border-primary))]">
+            <div className="flex flex-col md:flex-row items-center md:items-start gap-8">
+              {/* Profile Image */}
+              <div className="relative">
+                <div className="w-40 h-40 rounded-full overflow-hidden border-4 border-[rgb(var(--color-bg-secondary))] shadow-xl">
+                  {profile.profile_image_url ? (
+                    <img
+                      src={supabase.storage.from('profile-images').getPublicUrl(profile.profile_image_url).data.publicUrl}
+                      alt={profile.name}
+                      className="w-full h-full object-cover"
+                    />
+                  ) : (
+                    <div className="w-full h-full bg-[rgb(var(--color-bg-tertiary))] flex items-center justify-center">
+                      <span className="text-4xl text-[rgb(var(--color-text-tertiary))]">
+                        {profile.name?.charAt(0) || '?'}
+                      </span>
+                    </div>
+                  )}
+                </div>
+              </div>
+
+              {/* Profile Info */}
+              <div className="flex-1 text-center md:text-left">
+                <h1 className="text-3xl font-bold text-[rgb(var(--color-text-primary))]">{profile.name}</h1>
+                <p className="mt-2 text-xl text-[rgb(var(--color-text-secondary))]">{profile.title}</p>
+                <p className="mt-1 text-[rgb(var(--color-text-secondary))]">
+                  {profile.institution} • {profile.department}
+                </p>
+
+                {/* Social Links */}
+                <div className="mt-4 flex justify-center md:justify-start space-x-4">
+                  {profile.social_links?.email && (
+                    <a
+                      href={`mailto:${profile.social_links.email}`}
+                      className="text-[rgb(var(--color-text-tertiary))] hover:text-[rgb(var(--color-text-secondary))]"
+                    >
+                      <Mail className="h-6 w-6" />
+                    </a>
+                  )}
+                  {profile.social_links?.linkedin && (
+                    <a
+                      href={profile.social_links.linkedin}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="text-[rgb(var(--color-text-tertiary))] hover:text-[rgb(var(--color-text-secondary))]"
+                    >
+                      <Linkedin className="h-6 w-6" />
+                    </a>
+                  )}
+                  {profile.social_links?.github && (
+                    <a
+                      href={profile.social_links.github}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="text-[rgb(var(--color-text-tertiary))] hover:text-[rgb(var(--color-text-secondary))]"
+                    >
+                      <Github className="h-6 w-6" />
+                    </a>
+                  )}
+                  {profile.social_links?.twitter && (
+                    <a
+                      href={profile.social_links.twitter}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="text-[rgb(var(--color-text-tertiary))] hover:text-[rgb(var(--color-text-secondary))]"
+                    >
+                      <Twitter className="h-6 w-6" />
+                    </a>
+                  )}
+                </div>
+
+                {/* Research Interests */}
+                {profile.research_interests?.length > 0 && (
+                  <div className="mt-6">
+                    <div className="flex flex-wrap gap-2">
+                      {profile.research_interests.map((interest: string) => (
+                        <span
+                          key={interest}
+                          className="px-3 py-1 rounded-full text-sm font-medium bg-[rgb(var(--color-primary-900))] text-[rgb(var(--color-primary-400))]"
+                        >
+                          {interest}
+                        </span>
+                      ))}
+                    </div>
+                  </div>
+                )}
+              </div>
+            </div>
+
+            {/* Navigation Tabs */}
+            <div className="mt-8 border-t border-[rgb(var(--color-border-primary))] pt-6">
+              <div className="flex space-x-4">
+                <Tab
+                  label="About"
+                  icon={<BookOpen className="h-5 w-5" />}
+                  isActive={activeTab === 'about'}
+                  onClick={() => setActiveTab('about')}
+                />
+                <Tab
+                  label="Publications"
+                  icon={<BookOpen className="h-5 w-5" />}
+                  isActive={activeTab === 'publications'}
+                  onClick={() => setActiveTab('publications')}
+                />
+                <Tab
+                  label="Projects"
+                  icon={<Briefcase className="h-5 w-5" />}
+                  isActive={activeTab === 'projects'}
+                  onClick={() => setActiveTab('projects')}
+                />
+              </div>
             </div>
           </div>
         </div>
-      </div>
 
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
-        <div className="space-y-16">
-          {/* Bio Section */}
-          {profile.bio && (
-            <section>
-              <h2 className="text-2xl font-bold text-gray-900 mb-4">About</h2>
-              <div className="prose max-w-none">
-                <p className="text-gray-600">{profile.bio}</p>
-              </div>
-            </section>
-          )}
+        {/* Content Sections */}
+        <div className="pb-16">
+          {/* About Section */}
+          {activeTab === 'about' && (
+            <div className="space-y-8">
+              {profile.bio && (
+                <div className="bg-[rgb(var(--color-bg-secondary))] rounded-lg p-6 border border-[rgb(var(--color-border-primary))]">
+                  <h2 className="text-xl font-semibold text-[rgb(var(--color-text-primary))] mb-4">About</h2>
+                  <p className="text-[rgb(var(--color-text-secondary))]">{profile.bio}</p>
+                </div>
+              )}
 
-          {/* Research Interests */}
-          {profile.research_interests?.length > 0 && (
-            <section>
-              <h2 className="text-2xl font-bold text-gray-900 mb-4">Research Interests</h2>
-              <div className="flex flex-wrap gap-2">
-                {profile.research_interests.map((interest: string) => (
-                  <span
-                    key={interest}
-                    className="inline-flex items-center px-3 py-0.5 rounded-full text-sm font-medium bg-indigo-100 text-indigo-800"
+              {profile.cv_url && (
+                <div className="bg-[rgb(var(--color-bg-secondary))] rounded-lg p-6 border border-[rgb(var(--color-border-primary))]">
+                  <h2 className="text-xl font-semibold text-[rgb(var(--color-text-primary))] mb-4">CV</h2>
+                  <a
+                    href={supabase.storage.from('profile-files').getPublicUrl(profile.cv_url).data.publicUrl}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="inline-flex items-center px-4 py-2 rounded-lg bg-[rgb(var(--color-primary-900))] text-[rgb(var(--color-primary-400))] hover:bg-[rgb(var(--color-primary-800))] transition-colors"
                   >
-                    {interest}
-                  </span>
-                ))}
-              </div>
-            </section>
+                    <ExternalLink className="h-4 w-4 mr-2" />
+                    View CV
+                  </a>
+                </div>
+              )}
+            </div>
           )}
 
-          {/* Education */}
-          {qualifications.length > 0 && (
-            <section>
-              <h2 className="text-2xl font-bold text-gray-900 mb-4">Education</h2>
-              <div className="space-y-4">
-                {qualifications.map((qual: any) => (
-                  <div key={qual.id} className="bg-white shadow rounded-lg p-6">
-                    <h3 className="text-lg font-medium text-gray-900">{qual.degree} in {qual.field}</h3>
-                    <p className="text-gray-600">{qual.institution}</p>
-                    <p className="text-gray-500">{qual.year}</p>
-                  </div>
-                ))}
-              </div>
-            </section>
-          )}
-
-          {/* Projects */}
-          {projects.length > 0 && (
-            <section>
-              <h2 className="text-2xl font-bold text-gray-900 mb-4">Projects</h2>
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                {projects.map((project: any) => (
-                  <div key={project.id} className="bg-white shadow rounded-lg p-6">
-                    <h3 className="text-lg font-medium text-gray-900">{project.title}</h3>
-                    <p className="mt-2 text-gray-600">{project.description}</p>
-                    {project.tags?.length > 0 && (
-                      <div className="mt-4 flex flex-wrap gap-2">
-                        {project.tags.map((tag: string) => (
-                          <span
-                            key={tag}
-                            className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-gray-100 text-gray-800"
-                          >
-                            {tag}
-                          </span>
-                        ))}
-                      </div>
-                    )}
-                    <div className="mt-4 text-sm text-gray-500">
-                      {project.start_date} - {project.end_date || 'Present'}
+          {/* Publications Section */}
+          {activeTab === 'publications' && (
+            <div className="space-y-6">
+              {publications.map((pub: any) => (
+                <div
+                  key={pub.id}
+                  className="bg-[rgb(var(--color-bg-secondary))] rounded-lg p-6 border border-[rgb(var(--color-border-primary))]"
+                >
+                  <div className="flex justify-between items-start">
+                    <div>
+                      <h3 className="text-lg font-medium text-[rgb(var(--color-text-primary))]">{pub.title}</h3>
+                      <span className={`inline-block px-2 py-1 text-xs font-medium rounded-full mt-2 ${
+                        pub.type === 'preprint'
+                          ? 'bg-[rgb(var(--color-warning))] bg-opacity-20 text-[rgb(var(--color-warning))]'
+                          : 'bg-[rgb(var(--color-success))] bg-opacity-20 text-[rgb(var(--color-success))]'
+                      }`}>
+                        {pub.type === 'preprint' ? 'Preprint' : 'Published'}
+                      </span>
                     </div>
                   </div>
-                ))}
-              </div>
-            </section>
+                  <p className="mt-4 text-[rgb(var(--color-text-secondary))]">{pub.abstract}</p>
+                  <div className="mt-4 text-sm text-[rgb(var(--color-text-tertiary))]">
+                    {pub.authors} • {pub.venue} • {pub.publication_date}
+                  </div>
+                  {pub.publication_url && (
+                    <a
+                      href={pub.publication_url}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="mt-4 inline-flex items-center text-[rgb(var(--color-primary-400))] hover:text-[rgb(var(--color-primary-300))]"
+                    >
+                      <ExternalLink className="h-4 w-4 mr-2" />
+                      View Publication
+                    </a>
+                  )}
+                </div>
+              ))}
+            </div>
           )}
 
-          {/* Publications */}
-          {publications.length > 0 && (
-            <section>
-              <h2 className="text-2xl font-bold text-gray-900 mb-4">Publications</h2>
-              <div className="space-y-6">
-                {publications.map((pub: any) => (
-                  <div key={pub.id} className="bg-white shadow rounded-lg p-6">
-                    <h3 className="text-lg font-medium text-gray-900">{pub.title}</h3>
-                    <p className="mt-2 text-gray-600">{pub.abstract}</p>
-                    <p className="mt-4 text-sm text-gray-500">
-                      {pub.authors.join(', ')} • {pub.venue} • {pub.publication_date}
-                    </p>
-                    <div className="mt-4 flex space-x-4">
-                      {pub.publication_url && (
-                        <a
-                          href={pub.publication_url}
-                          target="_blank"
-                          rel="noopener noreferrer"
-                          className="inline-flex items-center text-indigo-600 hover:text-indigo-700"
+          {/* Projects Section */}
+          {activeTab === 'projects' && (
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              {projects.map((project: any) => (
+                <div
+                  key={project.id}
+                  className="bg-[rgb(var(--color-bg-secondary))] rounded-lg p-6 border border-[rgb(var(--color-border-primary))]"
+                >
+                  <h3 className="text-lg font-medium text-[rgb(var(--color-text-primary))]">{project.title}</h3>
+                  <p className="mt-2 text-[rgb(var(--color-text-secondary))]">{project.description}</p>
+                  {project.tags?.length > 0 && (
+                    <div className="mt-4 flex flex-wrap gap-2">
+                      {project.tags.map((tag: string) => (
+                        <span
+                          key={tag}
+                          className="px-2 py-1 rounded-full text-xs font-medium bg-[rgb(var(--color-primary-900))] text-[rgb(var(--color-primary-400))]"
                         >
-                          <ExternalLink className="h-4 w-4 mr-1" />
-                          View Publication
-                        </a>
-                      )}
+                          {tag}
+                        </span>
+                      ))}
                     </div>
+                  )}
+                  <div className="mt-4 text-sm text-[rgb(var(--color-text-tertiary))]">
+                    {project.start_date} - {project.end_date || 'Present'}
                   </div>
-                ))}
-              </div>
-            </section>
+                </div>
+              ))}
+            </div>
           )}
         </div>
       </div>
