@@ -85,6 +85,15 @@ export default function Profile() {
       const fileName = `${user.id}/${type}-${Date.now()}.${fileExt}`;
       const bucket = type === 'cv' ? 'profile-files' : 'profile-images';
       
+      // Delete existing file if it exists
+      if (type === 'profile' && profile.profile_image_url) {
+        await supabase.storage.from(bucket).remove([profile.profile_image_url]);
+      } else if (type === 'banner' && profile.banner_image_url) {
+        await supabase.storage.from(bucket).remove([profile.banner_image_url]);
+      } else if (type === 'cv' && profile.cv_url) {
+        await supabase.storage.from(bucket).remove([profile.cv_url]);
+      }
+      
       const { error: uploadError, data } = await supabase.storage
         .from(bucket)
         .upload(fileName, file, {
