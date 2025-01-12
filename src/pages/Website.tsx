@@ -319,8 +319,8 @@ export default function Website() {
                       <h3 className="text-lg font-medium text-[rgb(var(--color-text-primary))]">{pub.title}</h3>
                       <span className={`inline-block px-2 py-1 text-xs font-medium rounded-full mt-2 ${
                         pub.type === 'preprint'
-                          ? 'bg-[rgb(var(--color-warning))] bg-opacity-20 text-[rgb(var(--color-warning))]'
-                          : 'bg-[rgb(var(--color-success))] bg-opacity-20 text-[rgb(var(--color-success))]'
+                          ? 'bg-[rgb(var(--color-warning))] bg-opacity-20 text-[rgb(var(--color-text-primary))]'
+                          : 'bg-[rgb(var(--color-success))] bg-opacity-20 text-[rgb(var(--color-text-primary))]'
                       }`}>
                         {pub.type === 'preprint' ? 'Preprint' : 'Published'}
                       </span>
