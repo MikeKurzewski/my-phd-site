@@ -279,8 +279,8 @@ export default function Publications() {
                   <h3 className="text-lg font-medium text-[rgb(var(--color-text-primary))]">{publication.title}</h3>
                   <span className={`inline-block px-2 py-1 text-xs font-medium rounded-full mt-1 ${
                     publication.type === 'preprint' 
-                      ? 'bg-[rgb(var(--color-warning))] bg-opacity-20 text-[rgb(var(--color-warning))]' 
-                      : 'bg-[rgb(var(--color-success))] bg-opacity-20 text-[rgb(var(--color-success))]'
+                      ? 'bg-[rgb(var(--color-warning))] bg-opacity-20 text-[rgb(var(--color-text-primary))]' 
+                      : 'bg-[rgb(var(--color-success))] bg-opacity-20 text-[rgb(var(--color-text-primary))]'
                   }`}>
                     {publication.type === 'preprint' ? 'Preprint' : 'Published'}
                   </span>
@@ -404,7 +404,7 @@ export default function Publications() {
                             onClick={() => setFormData({ ...formData, type: 'publication' })}
                             className={`flex-1 px-4 py-2 rounded-md text-sm font-medium transition-colors ${
                               formData.type === 'publication'
-                                ? 'bg-[rgb(var(--color-success))] bg-opacity-20 text-[rgb(var(--color-success))] border-2 border-[rgb(var(--color-success))] border-opacity-20'
+                                ? 'bg-[rgb(var(--color-success))] bg-opacity-20 text-[rgb(var(--color-text-primary))] border-2 border-[rgb(var(--color-success))] border-opacity-20'
                                 : 'bg-[rgb(var(--color-bg-tertiary))] text-[rgb(var(--color-text-secondary))] hover:bg-[rgb(var(--color-bg-primary))]'
                             }`}
                           >
