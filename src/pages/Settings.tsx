@@ -217,11 +217,9 @@ export default function Settings() {
               <label className="block text-sm font-medium text-[rgb(var(--color-text-secondary))]">Your Website Address</label>
               <div className="mt-1 flex rounded-md shadow-sm">
                 <span className="inline-flex items-center px-3 rounded-l-md border border-r-0 border-[rgb(var(--color-border-primary))] bg-[rgb(var(--color-bg-primary))] text-[rgb(var(--color-text-tertiary))] text-sm">
-                  https://
+                  https://myphd.site/
                 </span>
-                <span className="inline-flex items-center px-3 rounded-r-md border border-l-0 border-[rgb(var(--color-border-primary))] bg-[rgb(var(--color-bg-primary))] text-[rgb(var(--color-text-tertiary))] text-sm">
-                  myphd.site/
-                </span>
+                
                 <input
                   type="text"
                   value={profile?.username || ''}
