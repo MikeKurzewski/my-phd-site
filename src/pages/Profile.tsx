@@ -85,15 +85,6 @@ export default function Profile() {
       const fileName = `${user.id}/${type}-${Date.now()}.${fileExt}`;
       const bucket = type === 'cv' ? 'profile-files' : 'profile-images';
       
-      // Delete existing file if it exists
-      if (type === 'profile' && profile.profile_image_url) {
-        await supabase.storage.from(bucket).remove([profile.profile_image_url]);
-      } else if (type === 'banner' && profile.banner_image_url) {
-        await supabase.storage.from(bucket).remove([profile.banner_image_url]);
-      } else if (type === 'cv' && profile.cv_url) {
-        await supabase.storage.from(bucket).remove([profile.cv_url]);
-      }
-      
       const { error: uploadError, data } = await supabase.storage
         .from(bucket)
         .upload(fileName, file, {
@@ -298,22 +289,26 @@ export default function Profile() {
       )}
 
       <div className="bg-[rgb(var(--color-bg-secondary))] shadow-sm rounded-lg border border-[rgb(var(--color-border-primary))]">
-        <div className="h-32 bg-gradient-to-r from-[rgb(var(--color-primary-600))] to-[rgb(var(--color-primary-400))] rounded-t-lg relative">
-          {profile.banner_image_url && (
-            <img
-              src={getFileUrl(profile.banner_image_url, 'profile-images')}
-              alt="Banner"
-              className="w-full h-full object-cover rounded-t-lg"
-            />
-          )}
-          <button 
-            onClick={() => handleFileClick('banner')}
-            disabled={!!uploadingImage}
-            className="absolute bottom-4 right-4 p-2 bg-[rgb(var(--color-bg-secondary))] rounded-full shadow-sm hover:bg-[rgb(var(--color-bg-tertiary))] transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
-            title="Change banner image"
-          >
-            <Camera className="h-5 w-5 text-[rgb(var(--color-text-primary))]" />
-          </button>
+        <div className="relative h-32">
+          <div className="absolute inset-0 bg-gradient-to-r from-[rgb(var(--color-primary-600))] to-[rgb(var(--color-primary-400))] rounded-t-lg">
+            {profile.banner_image_url && (
+              <img
+                src={getFileUrl(profile.banner_image_url, 'profile-images')}
+                alt="Banner"
+                className="w-full h-full object-cover rounded-t-lg"
+              />
+            )}
+          </div>
+          <div className="absolute inset-0 flex items-center justify-center">
+            <button 
+              onClick={() => handleFileClick('banner')}
+              disabled={!!uploadingImage}
+              className="p-3 bg-[rgb(var(--color-bg-secondary))] rounded-full shadow-lg hover:bg-[rgb(var(--color-bg-tertiary))] transition-colors disabled:opacity-50 disabled:cursor-not-allowed z-10"
+              title="Change banner image"
+            >
+              <Camera className="h-6 w-6 text-[rgb(var(--color-text-primary))]" />
+            </button>
+          </div>
         </div>
 
         <div className="px-6 pb-6">
