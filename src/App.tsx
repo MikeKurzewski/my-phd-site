@@ -28,7 +28,16 @@ function PrivateRoute({ children }: { children: React.ReactNode }) {
 
 function AppRoutes() {
   const { user } = useAuth();
+  const hostname = window.location.hostname;
+  const isSubdomain = hostname.split('.').length > 2;
 
+  // If we're on a subdomain, extract the username and render the Website component
+  if (isSubdomain) {
+    const username = hostname.split('.')[0];
+    return <Website key={username} />;
+  }
+
+  // Otherwise, render the main app routes
   return (
     <BrowserRouter>
       <Routes>
@@ -38,7 +47,7 @@ function AppRoutes() {
         {/* Demo route */}
         <Route path="/demo" element={<WebsiteDemo />} />
         
-        {/* Public website route */}
+        {/* Public website route - for path-based access */}
         <Route path="/:username" element={<Website />} />
         
         {/* Auth & Dashboard routes */}

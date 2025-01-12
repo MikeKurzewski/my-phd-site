@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useParams } from 'react-router-dom';
-import { ExternalLink, Mail, Linkedin, Github, Twitter, BookOpen, Briefcase } from 'lucide-react';
+import { ExternalLink, Mail, Linkedin, Github, Twitter, BookOpen, Briefcase, GraduationCap } from 'lucide-react';
 import { supabase } from '../lib/supabase';
 
 interface TabProps {
@@ -25,23 +25,30 @@ const Tab: React.FC<TabProps> = ({ label, icon, isActive, onClick }) => (
 );
 
 export default function Website() {
-  const { username } = useParams();
+  const params = useParams();
   const [profile, setProfile] = useState<any>(null);
-  const [projects, setProjects] = useState([]);
-  const [publications, setPublications] = useState([]);
+  const [qualifications, setQualifications] = useState<any[]>([]);
+  const [projects, setProjects] = useState<any[]>([]);
+  const [publications, setPublications] = useState<any[]>([]);
   const [activeTab, setActiveTab] = useState('about');
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     fetchProfileData();
-  }, [username]);
+  }, [params.username]);
 
   const fetchProfileData = async () => {
     try {
-      // Extract username from subdomain if needed
-      let searchUsername = username;
-      if (window.location.hostname.includes('.myphd.site')) {
+      // Get username from either subdomain or route parameter
+      let searchUsername = params.username;
+      if (!searchUsername && window.location.hostname.includes('.myphd.site')) {
         searchUsername = window.location.hostname.split('.')[0];
+      }
+
+      // If we still don't have a username, show error
+      if (!searchUsername) {
+        setLoading(false);
+        return;
       }
 
       // Get profile
@@ -51,8 +58,27 @@ export default function Website() {
         .eq('username', searchUsername)
         .single();
 
-      if (profileError) throw profileError;
+      if (profileError) {
+        console.error('Error fetching profile:', profileError);
+        setLoading(false);
+        return;
+      }
+
+      if (!profileData) {
+        setLoading(false);
+        return;
+      }
+
       setProfile(profileData);
+
+      // Get qualifications
+      const { data: qualificationsData } = await supabase
+        .from('qualifications')
+        .select('*')
+        .eq('user_id', profileData.id)
+        .order('year', { ascending: false });
+
+      setQualifications(qualificationsData || []);
 
       // Get projects
       const { data: projectsData } = await supabase
@@ -238,6 +264,45 @@ export default function Website() {
                 <h2 className="text-xl font-semibold text-[rgb(var(--color-text-primary))] mb-4">About</h2>
                 <p className="text-[rgb(var(--color-text-secondary))]">{profile.bio}</p>
               </div>
+
+              {/* Qualifications Section */}
+              {qualifications.length > 0 && (
+                <div className="bg-[rgb(var(--color-bg-secondary))] rounded-lg p-6 border border-[rgb(var(--color-border-primary))]">
+                  <h2 className="text-xl font-semibold text-[rgb(var(--color-text-primary))] mb-4">Education</h2>
+                  <div className="space-y-4">
+                    {qualifications.map((qual: any) => (
+                      <div key={qual.id} className="flex items-start space-x-4">
+                        <div className="mt-1">
+                          <GraduationCap className="h-6 w-6 text-[rgb(var(--color-primary-400))]" />
+                        </div>
+                        <div>
+                          <h3 className="font-medium text-[rgb(var(--color-text-primary))]">
+                            {qual.degree} in {qual.field}
+                          </h3>
+                          <p className="text-[rgb(var(--color-text-secondary))]">{qual.institution}</p>
+                          <p className="text-sm text-[rgb(var(--color-text-tertiary))]">{qual.year}</p>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
+
+              {/* CV Section */}
+              {profile.cv_url && (
+                <div className="bg-[rgb(var(--color-bg-secondary))] rounded-lg p-6 border border-[rgb(var(--color-border-primary))]">
+                  <h2 className="text-xl font-semibold text-[rgb(var(--color-text-primary))] mb-4">Curriculum Vitae</h2>
+                  <a
+                    href={supabase.storage.from('profile-files').getPublicUrl(profile.cv_url).data.publicUrl}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="inline-flex items-center text-[rgb(var(--color-primary-400))] hover:text-[rgb(var(--color-primary-300))]"
+                  >
+                    <ExternalLink className="h-5 w-5 mr-2" />
+                    View CV
+                  </a>
+                </div>
+              )}
             </div>
           )}
 
