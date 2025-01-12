@@ -219,15 +219,15 @@ export default function Settings() {
                 <span className="inline-flex items-center px-3 rounded-l-md border border-r-0 border-[rgb(var(--color-border-primary))] bg-[rgb(var(--color-bg-primary))] text-[rgb(var(--color-text-tertiary))] text-sm">
                   https://
                 </span>
+                <span className="inline-flex items-center px-3 rounded-r-md border border-l-0 border-[rgb(var(--color-border-primary))] bg-[rgb(var(--color-bg-primary))] text-[rgb(var(--color-text-tertiary))] text-sm">
+                  myphd.site/
+                </span>
                 <input
                   type="text"
                   value={profile?.username || ''}
                   readOnly
                   className="flex-1 min-w-0 block w-full px-3 py-2 rounded-none bg-[rgb(var(--color-bg-primary))] border border-[rgb(var(--color-border-primary))] text-[rgb(var(--color-text-tertiary))] text-sm"
                 />
-                <span className="inline-flex items-center px-3 rounded-r-md border border-l-0 border-[rgb(var(--color-border-primary))] bg-[rgb(var(--color-bg-primary))] text-[rgb(var(--color-text-tertiary))] text-sm">
-                  .myphd.site
-                </span>
               </div>
             </div>
             <a
