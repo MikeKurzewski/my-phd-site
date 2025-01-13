@@ -225,6 +225,59 @@ export default function Settings() {
       )}
 
       <div className="bg-[rgb(var(--color-bg-secondary))] shadow-sm rounded-lg divide-y divide-[rgb(var(--color-border-primary))] border border-[rgb(var(--color-border-primary))]">
+        {/* Subscription Section */}
+        <div className="p-6">
+          <div className="flex items-center gap-4 mb-4">
+            <div className="p-2 bg-[rgb(var(--color-primary-900))] rounded-lg">
+              <CreditCard className="h-6 w-6 text-[rgb(var(--color-primary-400))]" />
+            </div>
+            <h3 className="text-lg font-medium text-[rgb(var(--color-text-primary))]">Subscription</h3>
+          </div>
+          <div className="space-y-4">
+            <div className="flex justify-between items-center">
+              <div>
+                <p className="text-[rgb(var(--color-text-primary))] font-medium">
+                  Current Plan: {subscription?.plan === 'free' ? 'Free' : 'Pro'}
+                </p>
+                <p className="text-sm text-[rgb(var(--color-text-secondary))]">
+                  {subscription?.plan === 'free' 
+                    ? 'Limited features available'
+                    : `Next billing date: ${new Date(subscription?.current_period_end || '').toLocaleDateString()}`
+                  }
+                </p>
+              </div>
+              {subscription?.plan === 'free' ? (
+                <button
+                  onClick={handleUpgrade}
+                  className="btn-primary"
+                >
+                  Upgrade to Pro
+                </button>
+              ) : (
+                <button
+                  onClick={handleCancelSubscription}
+                  className="btn-secondary"
+                  disabled={subscription?.cancel_at_period_end}
+                >
+                  {subscription?.cancel_at_period_end ? 'Cancellation Scheduled' : 'Cancel Subscription'}
+                </button>
+              )}
+            </div>
+            {subscription?.plan === 'free' && (
+              <div className="bg-[rgb(var(--color-bg-primary))] p-4 rounded-md space-y-2">
+                <h4 className="font-medium text-[rgb(var(--color-text-primary))]">Pro Plan Benefits</h4>
+                <ul className="space-y-2 text-sm text-[rgb(var(--color-text-secondary))]">
+                  <li>• Custom domain support</li>
+                  <li>• Unlimited projects</li>
+                  <li>• Unlimited publications</li>
+                  <li>• Advanced analytics</li>
+                  <li>• Priority support</li>
+                </ul>
+              </div>
+            )}
+          </div>
+        </div>
+
         {/* Website URL Section */}
         <div className="p-6">
           <div className="flex items-center gap-4 mb-4">
@@ -277,8 +330,74 @@ export default function Settings() {
           </div>
         </div>
 
-        {/* Rest of the settings component remains the same */}
-        {/* ... */}
+        {/* Theme Section */}
+        <div className="p-6">
+          <div className="flex items-center gap-4 mb-4">
+            <div className="p-2 bg-[rgb(var(--color-primary-900))] rounded-lg">
+              <Palette className="h-6 w-6 text-[rgb(var(--color-primary-400))]" />
+            </div>
+            <h3 className="text-lg font-medium text-[rgb(var(--color-text-primary))]">Website Theme</h3>
+          </div>
+          <div className="flex items-center gap-4">
+            <button
+              onClick={() => handleThemeChange('light')}
+              className={`flex items-center gap-2 px-4 py-2 rounded-md transition-colors ${
+                theme === 'light'
+                  ? 'bg-[rgb(var(--color-primary-900))] text-[rgb(var(--color-primary-400))]'
+                  : 'text-[rgb(var(--color-text-secondary))] hover:bg-[rgb(var(--color-bg-tertiary))]'
+              }`}
+            >
+              <Sun className="h-5 w-5" />
+              Light
+            </button>
+            <button
+              onClick={() => handleThemeChange('dark')}
+              className={`flex items-center gap-2 px-4 py-2 rounded-md transition-colors ${
+                theme === 'dark'
+                  ? 'bg-[rgb(var(--color-primary-900))] text-[rgb(var(--color-primary-400))]'
+                  : 'text-[rgb(var(--color-text-secondary))] hover:bg-[rgb(var(--color-bg-tertiary))]'
+              }`}
+            >
+              <Moon className="h-5 w-5" />
+              Dark
+            </button>
+          </div>
+        </div>
+
+        {/* Account Settings Section */}
+        <div className="p-6">
+          <div className="flex items-center gap-4 mb-4">
+            <div className="p-2 bg-[rgb(var(--color-primary-900))] rounded-lg">
+              <Lock className="h-6 w-6 text-[rgb(var(--color-primary-400))]" />
+            </div>
+            <h3 className="text-lg font-medium text-[rgb(var(--color-text-primary))]">Account Settings</h3>
+          </div>
+          <div className="space-y-4">
+            <div>
+              <label className="block text-sm font-medium text-[rgb(var(--color-text-secondary))]">Email Address</label>
+              <input
+                type="email"
+                value={user?.email || ''}
+                readOnly
+                className="mt-1 block w-full rounded-md border-[rgb(var(--color-border-primary))] bg-[rgb(var(--color-bg-primary))] text-[rgb(var(--color-text-tertiary))] shadow-sm focus:border-[rgb(var(--color-primary-400))] focus:ring-[rgb(var(--color-primary-400))] sm:text-sm"
+              />
+            </div>
+            <div className="flex space-x-4">
+              <button 
+                className="btn-secondary"
+                onClick={() => {/* TODO: Implement password reset */}}
+              >
+                Reset Password
+              </button>
+              <button
+                onClick={handleSignOut}
+                className="btn-error"
+              >
+                Sign Out
+              </button>
+            </div>
+          </div>
+        </div>
       </div>
     </div>
   );
