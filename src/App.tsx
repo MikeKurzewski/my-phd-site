@@ -11,6 +11,9 @@ import Settings from './pages/Settings';
 import Website from './pages/Website';
 import WebsiteDemo from './pages/WebsiteDemo';
 import { AuthProvider, useAuth } from './lib/auth';
+import { initTheme } from './lib/theme';
+
+initTheme();
 
 function PrivateRoute({ children }: { children: React.ReactNode }) {
   const { user, loading } = useAuth();
