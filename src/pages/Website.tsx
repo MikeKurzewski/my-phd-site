@@ -241,7 +241,7 @@ export default function Website() {
 
             {/* Navigation Tabs */}
             <div className="mt-8 border-t border-[rgb(var(--color-border-primary))] pt-6">
-              <div className="flex flex-wrap space-x-4 space-y-4">
+              <div className="flex flex-wrap flex flex-wrap gap-4">
                 <Tab
                   label="About"
                   icon={<BookOpen className="h-5 w-5" />}
