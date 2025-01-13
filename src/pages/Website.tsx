@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useParams } from 'react-router-dom';
 import { ExternalLink, Mail, Linkedin, Github, Twitter, BookOpen, Briefcase, GraduationCap } from 'lucide-react';
 import { supabase } from '../lib/supabase';
+import { useTheme } from '../lib/theme';
 
 interface TabProps {
   label: string;
@@ -32,10 +33,19 @@ export default function Website() {
   const [publications, setPublications] = useState<any[]>([]);
   const [activeTab, setActiveTab] = useState('about');
   const [loading, setLoading] = useState(true);
+  const [theme, setTheme] = useState<'light' | 'dark'>('light');
 
   useEffect(() => {
     fetchProfileData();
   }, [params.username]);
+
+  useEffect(() => {
+    if (profile?.theme) {
+      setTheme(profile.theme);
+    }
+  }, [profile?.theme]);
+  
+  useTheme(theme);  
 
   const fetchProfileData = async () => {
     try {
