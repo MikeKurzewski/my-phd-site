@@ -229,7 +229,7 @@ export default function Settings() {
               </div>
             </div>
             <a
-              href={`https://${profile?.username}.myphd.site`}
+              href={`https://myphd.site/${profile?.username}`}
               target="_blank"
               rel="noopener noreferrer"
               className="inline-flex items-center text-[rgb(var(--color-primary-400))] hover:text-[rgb(var(--color-primary-300))]"

@@ -182,7 +182,7 @@ export default function Dashboard() {
                 </button>
               </div>
               <a
-                href={`/${user?.id}?theme=${theme}`}
+                href={`https://myphd.site/${profile?.username}`}
                 target="_blank"
                 rel="noopener noreferrer"
                 className="inline-flex items-center px-4 py-2 bg-[rgb(var(--color-primary-500))] hover:bg-[rgb(var(--color-primary-600))] text-white rounded-md font-medium transition-colors"
