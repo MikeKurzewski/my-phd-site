@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Globe, Lock, Palette, Sun, Moon, ExternalLink, CreditCard } from 'lucide-react';
 import { useAuth } from '../lib/auth';
 import { supabase } from '../lib/supabase';
+import { useTheme } from '../lib/theme';
 
 interface Profile {
   id: string;
@@ -21,7 +22,7 @@ export default function Settings() {
   const { user, signOut } = useAuth();
   const [profile, setProfile] = useState<Profile | null>(null);
   const [subscription, setSubscription] = useState<Subscription | null>(null);
-  const [theme, setTheme] = useState<'light' | 'dark'>('light');
+  const [theme, setTheme] = useState<'light' | 'dark'>('dark');
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState<string | null>(null);
@@ -35,6 +36,16 @@ export default function Settings() {
     }
   }, [user?.id]);
 
+  useEffect(() => {
+    if (profile) {
+      setEditingUsername(profile.username || '');
+      setTheme(profile.theme || 'dark');
+    }
+  }, [profile]);
+
+  // Use the theme hook
+  useTheme(theme);
+
   const fetchProfile = async () => {
     try {
       const { data, error } = await supabase
@@ -45,77 +56,11 @@ export default function Settings() {
 
       if (error) throw error;
       setProfile(data);
-      setEditingUsername(data.username || '');
-      setTheme(data.theme || 'light');
     } catch (error) {
       console.error('Error fetching profile:', error);
       setError('Failed to load profile settings');
     } finally {
       setLoading(false);
-    }
-  };
-
-  const checkUsernameAvailability = async (username: string) => {
-    try {
-      setCheckingUsername(true);
-      const { data, error } = await supabase
-        .from('profiles')
-        .select('username')
-        .eq('username', username)
-        .neq('id', user?.id) // Exclude current user's username
-        .single();
-
-      if (error && error.code === 'PGRST116') {
-        // No rows returned means username is available
-        return true;
-      }
-      
-      if (data) {
-        // Username exists
-        return false;
-      }
-
-      return true;
-    } catch (error) {
-      console.error('Error checking username:', error);
-      return false;
-    } finally {
-      setCheckingUsername(false);
-    }
-  };
-
-  const handleUsernameChange = async () => {
-    try {
-      setError(null);
-      setSuccess(null);
-
-      // Validate username format
-      const usernameRegex = /^[a-z0-9-]+$/;
-      if (!usernameRegex.test(editingUsername)) {
-        setError('Username can only contain lowercase letters, numbers, and hyphens');
-        return;
-      }
-
-      // Check username availability
-      const isAvailable = await checkUsernameAvailability(editingUsername);
-      if (!isAvailable) {
-        setError('This username is already taken');
-        return;
-      }
-
-      // Update username
-      const { error: updateError } = await supabase
-        .from('profiles')
-        .update({ username: editingUsername })
-        .eq('id', user?.id);
-
-      if (updateError) throw updateError;
-
-      setSuccess('Username updated successfully');
-      setProfile(prev => prev ? { ...prev, username: editingUsername } : null);
-    } catch (error) {
-      console.error('Error updating username:', error);
-      setError('Failed to update username');
     }
   };
 
@@ -136,16 +81,64 @@ export default function Settings() {
 
   const handleThemeChange = async (newTheme: 'light' | 'dark') => {
     try {
+      setError(null);
+      setSuccess(null);
+
       const { error } = await supabase
         .from('profiles')
         .update({ theme: newTheme })
         .eq('id', user?.id);
 
       if (error) throw error;
+      
       setTheme(newTheme);
+      setSuccess('Theme updated successfully');
     } catch (error) {
       console.error('Error updating theme:', error);
       setError('Failed to update theme preference');
+    }
+  };
+
+  const handleUsernameChange = async () => {
+    if (!editingUsername.trim() || editingUsername === profile?.username) return;
+
+    try {
+      setCheckingUsername(true);
+      setError(null);
+      setSuccess(null);
+
+      // Check if username exists
+      const { data: existingUser, error: checkError } = await supabase
+        .from('profiles')
+        .select('username')
+        .eq('username', editingUsername)
+        .neq('id', user?.id)
+        .single();
+
+      if (checkError && checkError.code !== 'PGRST116') {
+        throw checkError;
+      }
+
+      if (existingUser) {
+        setError('Username already exists');
+        return;
+      }
+
+      // Update username
+      const { error: updateError } = await supabase
+        .from('profiles')
+        .update({ username: editingUsername })
+        .eq('id', user?.id);
+
+      if (updateError) throw updateError;
+
+      setSuccess('Username updated successfully');
+      setProfile(prev => prev ? { ...prev, username: editingUsername } : null);
+    } catch (error) {
+      console.error('Error updating username:', error);
+      setError('Failed to update username');
+    } finally {
+      setCheckingUsername(false);
     }
   };
 
@@ -160,14 +153,14 @@ export default function Settings() {
 
   const handleUpgrade = async () => {
     try {
-      const response = await fetch('/api/create-checkout-session', {
+      const response = await fetch('https://foyumeaalmplfvleuxgr.supabase.co/functions/v1/create-checkout-session', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
           Authorization: `Bearer ${(await supabase.auth.getSession()).data.session?.access_token}`,
         },
         body: JSON.stringify({
-          priceId: 'price_H5ggYwtDq4fbrJ',
+          priceId: 'price_1QfG2GGIpe9EVtMn1qmrvMMw',
         }),
       });
 
@@ -183,7 +176,7 @@ export default function Settings() {
     if (!confirm('Are you sure you want to cancel your subscription?')) return;
 
     try {
-      const response = await fetch('/api/cancel-subscription', {
+      const response = await fetch('https://foyumeaalmplfvleuxgr.supabase.co/functions/v1/cancel-subscription', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -296,23 +289,16 @@ export default function Settings() {
                 <input
                   type="text"
                   value={editingUsername}
-                  onChange={(e) => {
-                    setEditingUsername(e.target.value.toLowerCase());
-                    setError(null);
-                    setSuccess(null);
-                  }}
-                  className="flex-1 min-w-0 block w-full px-3 py-2 rounded-none rounded-r-md bg-[rgb(var(--color-bg-primary))] border border-[rgb(var(--color-border-primary))] text-[rgb(var(--color-text-primary))] text-sm focus:ring-[rgb(var(--color-primary-400))] focus:border-[rgb(var(--color-primary-400))]"
-                  placeholder="your-username"
+                  onChange={(e) => setEditingUsername(e.target.value)}
+                  className="flex-1 min-w-0 block w-full px-3 py-2 rounded-none rounded-r-md bg-[rgb(var(--color-bg-primary))] border border-[rgb(var(--color-border-primary))] text-[rgb(var(--color-text-primary))] focus:ring-[rgb(var(--color-primary-400))] focus:border-[rgb(var(--color-primary-400))]"
+                  placeholder="username"
                 />
               </div>
-              <div className="mt-2 flex justify-between items-center">
-                <p className="text-sm text-[rgb(var(--color-text-tertiary))]">
-                  Only lowercase letters, numbers, and hyphens are allowed
-                </p>
+              <div className="mt-2 flex justify-end">
                 <button
                   onClick={handleUsernameChange}
-                  disabled={checkingUsername || editingUsername === profile?.username}
-                  className="btn-primary text-sm"
+                  disabled={checkingUsername || !editingUsername.trim() || editingUsername === profile?.username}
+                  className="btn-primary"
                 >
                   {checkingUsername ? 'Checking...' : 'Update Username'}
                 </button>
