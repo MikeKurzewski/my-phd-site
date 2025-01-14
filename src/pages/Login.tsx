@@ -11,15 +11,11 @@ interface SignUpFormData {
 export default function Login() {
   const [isSignUp, setIsSignUp] = useState(false);
   const [error, setError] = useState('');
-  const { signIn, signUp, signInWithGithub, signInWithGoogle } = useAuth();
+  const { signIn, signUp } = useAuth();
   const navigate = useNavigate();
   const [formData, setFormData] = useState<SignUpFormData>({
     email: '',
     password: '',
-    name: '',
-    title: '',
-    institution: '',
-    department: '',
   });
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -31,19 +27,6 @@ export default function Login() {
         await signUp(formData);
       } else {
         await signIn(formData.email, formData.password);
-      }
-      navigate('/dashboard');
-    } catch (err) {
-      setError(err instanceof Error ? err.message : 'An error occurred');
-    }
-  };
-
-  const handleSocialSignIn = async (provider: 'github' | 'google') => {
-    try {
-      if (provider === 'github') {
-        await signInWithGithub();
-      } else if (provider === 'google') {
-        await signInWithGoogle();
       }
       navigate('/dashboard');
     } catch (err) {

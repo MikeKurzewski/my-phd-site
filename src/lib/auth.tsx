@@ -5,10 +5,6 @@ import { supabase } from './supabase';
 interface SignUpData {
   email: string;
   password: string;
-  name: string;
-  title: string;
-  institution: string;
-  department: string;
 }
 
 interface AuthContextType {
