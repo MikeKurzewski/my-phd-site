@@ -106,7 +106,14 @@ export default function Publications() {
             body: JSON.stringify({ name: profileData.name }),
         });
 
-        const responseData = await response.json();
+        // Parse JSON string if necessary
+        let responseData;
+        const responseText = await response.text(); // Get the response as a string
+        try {
+            responseData = JSON.parse(responseText); // Parse it to JSON
+        } catch (parseError) {
+            throw new Error('Invalid JSON response from webhook.');
+        }
 
         // Ensure the response contains a `publications` key
         if (!responseData.publications || !Array.isArray(responseData.publications)) {
@@ -148,6 +155,7 @@ export default function Publications() {
         setLoading(false);
     }
 };
+
 
 
 
