@@ -141,7 +141,6 @@ export default function Publications() {
                 .eq('title', publication.title)
                 .eq('authors', publication.authors)
                 .eq('venue', publication.venue)
-                .eq('publication_date', publication.publication_date)
                 .eq('user_id', user.id);
 
             if (fetchError) {
@@ -158,7 +157,6 @@ export default function Publications() {
                         title: publication.title,
                         abstract: publication.abstract,
                         authors: publication.authors,
-                        publication_date: publication.publication_date,
                         venue: publication.venue,
                         publication_url: publication.publication_url,
                         user_id: user.id,
