@@ -89,7 +89,7 @@ export default function Publications() {
 
     try {
         setLoading(true);
-
+        console.log('Starting handleFindPublications');
         // Get user's full name from profile
         const { data: profileData, error: profileError } = await supabase
             .from('profiles')
@@ -108,9 +108,16 @@ export default function Publications() {
 
         // Parse the entire response JSON
         const fullResponse = await response.json();
+        console.log('Raw response from webhook:', fullResponse);
 
         // Extract and parse the body field, which contains the actual JSON string
-        const parsedBody = JSON.parse(fullResponse.body || '{}');
+        let parsedBody;
+        try{
+          parsedBody = JSON.parse(fullResponse.body || '{}');
+        } catch (parseError) {
+          console.error('Error parsing response:', parseError);
+          throw new Error('Invalid JSON response from webhook.');
+        }
 
         // Ensure the response contains a `publications` key
         if (!parsedBody.publications || !Array.isArray(parsedBody.publications)) {
