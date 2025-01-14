@@ -84,6 +84,73 @@ export default function Publications() {
     }
   };
 
+  const handleFindPublications = async () => {
+    if (!user?.id) return;
+
+    try {
+        setLoading(true);
+
+        // Get user's full name from profile
+        const { data: profileData, error: profileError } = await supabase
+            .from('profiles')
+            .select('name')
+            .eq('id', user.id)
+            .single();
+
+        if (profileError) throw profileError;
+
+        // Send request to the webhook
+        const response = await fetch('https://hook.eu2.make.com/jeneij84qvhhuv2db8svjnvfvj6w8nov', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ name: profileData.name }),
+        });
+
+        const responseData = await response.json();
+
+        // Ensure the response contains a `publications` key
+        if (!responseData.publications || !Array.isArray(responseData.publications)) {
+            throw new Error('Invalid response format from webhook.');
+        }
+
+        const publications = responseData.publications;
+
+        for (const publication of publications) {
+            // Check if the publication already exists
+            const { data: existingPublications, error: fetchError } = await supabase
+                .from('publications')
+                .select('id')
+                .eq('title', publication.title)
+                .eq('authors', publication.authors)
+                .eq('publication_date', publication.publication_date)
+                .eq('venue', publication.venue)
+                .eq('user_id', user.id);
+
+            if (fetchError) throw fetchError;
+
+            // If no existing publication is found, insert the new one
+            if (!existingPublications || existingPublications.length === 0) {
+                const { error: insertError } = await supabase
+                    .from('publications')
+                    .insert({
+                        ...publication,
+                        user_id: user.id,
+                    });
+
+                if (insertError) throw insertError;
+            }
+        }
+
+        fetchPublications();
+    } catch (error) {
+        console.error('Error finding publications:', error);
+    } finally {
+        setLoading(false);
+    }
+};
+
+
+
   const findPublication = async () => {
     if (!user?.id || !searchTitle.trim()) return;
 
@@ -243,6 +310,13 @@ export default function Publications() {
       <div className="flex justify-between items-center">
         <h2 className="text-2xl font-semibold text-[rgb(var(--color-text-primary))]">Publications</h2>
         <button
+            onClick={handleFindPublications}
+            className="btn-primary"
+        >
+            <Search className="h-5 w-5 mr-2" />
+            Find My Publications
+        </button>
+        <button
           onClick={() => {
             setEditingPublication(null);
             setFormData({
@@ -264,7 +338,13 @@ export default function Publications() {
         </button>
       </div>
 
-      {publications.length === 0 ? (
+      { loading ? (
+    <div className="text-center p-6">
+        <p className="text-[rgb(var(--color-text-secondary))]">
+            Finding Publications. This may take a few minutes.
+        </p>
+    </div>
+) : {publications.length === 0 ? (
         <div className="bg-[rgb(var(--color-bg-secondary))] shadow-sm rounded-lg p-6 text-center border border-[rgb(var(--color-border-primary))]">
           <p className="text-[rgb(var(--color-text-secondary))]">
             No publications added yet. Click "Add Publication" to get started.
@@ -333,6 +413,7 @@ export default function Publications() {
           ))}
         </div>
       )}
+    }
 
       {isModalOpen && (
         <div className="modal-overlay">
