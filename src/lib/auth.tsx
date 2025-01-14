@@ -47,30 +47,31 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     return () => subscription.unsubscribe();
   }, []);
 
-  const signUp = async (data: SignUpData) => {
-    try {
-      // Sign up with Supabase Auth
-      const { data: authData, error: signUpError } = await supabase.auth.signUp({
+  const createProfile = async (userId: string, data: Partial<SignUpData>) => {
+    const { error } = await supabase.from('profiles').insert([
+      {
+        id: userId,
         email: data.email,
-        password: data.password,
-        options: {
-          data: {
-            name: data.name,
-            title: data.title,
-            institution: data.institution,
-            department: data.department,
-          },
-        },
-      });
-
-      if (signUpError) throw signUpError;
-      if (!authData.user) throw new Error('No user data returned');
-
-      // The profile will be created automatically by the database trigger
-      return;
-    } catch (error) {
-      console.error('Error in signUp:', error);
+        name: data.name || '',
+        title: data.title || '',
+        institution: data.institution || '',
+        department: data.department || '',
+        social_links: {},
+      }
+    ]);
+    if (error && error.code !== '23505') { // Ignore duplicate key errors
       throw error;
+    }
+  };
+
+  const signUp = async (data: SignUpData) => {
+    const { data: authData, error } = await supabase.auth.signUp({
+      email: data.email,
+      password: data.password,
+    });
+    if (error) throw error;
+    if (authData.user) {
+      await createProfile(authData.user.id, data);
     }
   };
 
