@@ -54,7 +54,12 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         email: data.email,
         password: data.password,
         options: {
-          
+          data: {
+            name: data.name,
+            title: data.title,
+            institution: data.institution,
+            department: data.department,
+          },
         },
       });
 
