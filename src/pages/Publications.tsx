@@ -110,7 +110,7 @@ export default function Publications() {
         const fullResponse = await response.json();
 
         // Extract and parse the body field, which contains the actual JSON string
-        const parsedBody = JSON.parse(fullResponse[0]?.body || '{}');
+        const parsedBody = JSON.parse(fullResponse.body || '{}');
 
         // Ensure the response contains a `publications` key
         if (!parsedBody.publications || !Array.isArray(parsedBody.publications)) {
