@@ -39,6 +39,10 @@ interface WebhookResponse {
   error?: string;
 }
 
+interface PublicationsWebhookResponse {
+  publications: Publication[];
+}
+
 export default function Publications() {
   const { user } = useAuth();
   const [publications, setPublications] = useState<Publication[]>([]);
@@ -89,7 +93,9 @@ export default function Publications() {
 
     try {
         setLoading(true);
+
         console.log('Starting handleFindPublications');
+
         // Get user's full name from profile
         const { data: profileData, error: profileError } = await supabase
             .from('profiles')
@@ -97,7 +103,12 @@ export default function Publications() {
             .eq('id', user.id)
             .single();
 
-        if (profileError) throw profileError;
+        if (profileError) {
+            console.error('Error fetching profile:', profileError);
+            throw profileError;
+        }
+
+        console.log('User profile fetched:', profileData);
 
         // Send request to the webhook
         const response = await fetch('https://hook.eu2.make.com/jeneij84qvhhuv2db8svjnvfvj6w8nov', {
@@ -106,27 +117,23 @@ export default function Publications() {
             body: JSON.stringify({ name: profileData.name }),
         });
 
-        // Parse the entire response JSON
-        const fullResponse = await response.json();
-        console.log('Raw response from webhook:', fullResponse);
-
-        // Extract and parse the body field, which contains the actual JSON string
-        let parsedBody;
-        try{
-          parsedBody = JSON.parse(fullResponse.body || '{}');
-        } catch (parseError) {
-          console.error('Error parsing response:', parseError);
-          throw new Error('Invalid JSON response from webhook.');
+        if (!response.ok) {
+            console.error('Webhook returned an error:', response.statusText);
+            throw new Error('Failed to fetch publications from webhook.');
         }
 
-        // Ensure the response contains a `publications` key
-        if (!parsedBody.publications || !Array.isArray(parsedBody.publications)) {
+        // Directly process the response as JSON
+        const { publications }: PublicationsWebhookResponse = await response.json();
+
+        if (!publications || !Array.isArray(publications)) {
             throw new Error('Invalid response format from webhook.');
         }
 
-        const publications = parsedBody.publications;
+        console.log('Publications to process:', publications);
 
         for (const publication of publications) {
+            console.log('Processing publication:', publication);
+
             // Check if the publication already exists
             const { data: existingPublications, error: fetchError } = await supabase
                 .from('publications')
@@ -134,33 +141,46 @@ export default function Publications() {
                 .eq('title', publication.title)
                 .eq('authors', publication.authors)
                 .eq('venue', publication.venue)
+                .eq('publication_date', publication.publication_date)
                 .eq('user_id', user.id);
 
-            if (fetchError) throw fetchError;
+            if (fetchError) {
+                console.error('Error checking existing publications:', fetchError);
+                throw fetchError;
+            }
 
-            // If no existing publication is found, insert the new one
             if (!existingPublications || existingPublications.length === 0) {
+                console.log('Inserting new publication:', publication);
+
                 const { error: insertError } = await supabase
                     .from('publications')
                     .insert({
-                      title: publication.title,
-                      abstract: publication.abstract,
-                      venue: publication.venue,
-                      publication_url: publication.publication_url,
-                      user_id: user.id,
+                        title: publication.title,
+                        abstract: publication.abstract,
+                        authors: publication.authors,
+                        publication_date: publication.publication_date,
+                        venue: publication.venue,
+                        publication_url: publication.publication_url,
+                        user_id: user.id,
                     });
 
-                if (insertError) throw insertError;
+                if (insertError) {
+                    console.error('Error inserting publication:', insertError);
+                    throw insertError;
+                }
+            } else {
+                console.log('Publication already exists:', publication.title);
             }
         }
 
         fetchPublications();
     } catch (error) {
-        console.error('Error finding publications:', error);
+        console.error('Error in handleFindPublications:', error);
     } finally {
         setLoading(false);
     }
 };
+
 
 
 
