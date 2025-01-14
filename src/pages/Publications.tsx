@@ -344,7 +344,7 @@ export default function Publications() {
             Finding Publications. This may take a few minutes.
         </p>
     </div>
-) : {publications.length === 0 ? (
+) : publications.length === 0 ? (
         <div className="bg-[rgb(var(--color-bg-secondary))] shadow-sm rounded-lg p-6 text-center border border-[rgb(var(--color-border-primary))]">
           <p className="text-[rgb(var(--color-text-secondary))]">
             No publications added yet. Click "Add Publication" to get started.
@@ -413,7 +413,6 @@ export default function Publications() {
           ))}
         </div>
       )}
-    }
 
       {isModalOpen && (
         <div className="modal-overlay">
