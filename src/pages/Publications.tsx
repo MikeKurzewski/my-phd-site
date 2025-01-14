@@ -133,7 +133,6 @@ export default function Publications() {
                 .select('id')
                 .eq('title', publication.title)
                 .eq('authors', publication.authors)
-                .eq('publication_date', publication.publication_date)
                 .eq('venue', publication.venue)
                 .eq('user_id', user.id);
 
@@ -144,8 +143,11 @@ export default function Publications() {
                 const { error: insertError } = await supabase
                     .from('publications')
                     .insert({
-                        ...publication,
-                        user_id: user.id,
+                      title: publication.title,
+                      abstract: publication.abstract,
+                      venue: publication.venue,
+                      publication_url: publication.publication_url,
+                      user_id: user.id,
                     });
 
                 if (insertError) throw insertError;
