@@ -106,21 +106,18 @@ export default function Publications() {
             body: JSON.stringify({ name: profileData.name }),
         });
 
-        // Parse JSON string if necessary
-        let responseData;
-        const responseText = await response.text(); // Get the response as a string
-        try {
-            responseData = JSON.parse(responseText); // Parse it to JSON
-        } catch (parseError) {
-            throw new Error('Invalid JSON response from webhook.');
-        }
+        // Parse the entire response JSON
+        const fullResponse = await response.json();
+
+        // Extract and parse the body field, which contains the actual JSON string
+        const parsedBody = JSON.parse(fullResponse[0]?.body || '{}');
 
         // Ensure the response contains a `publications` key
-        if (!responseData.publications || !Array.isArray(responseData.publications)) {
+        if (!parsedBody.publications || !Array.isArray(parsedBody.publications)) {
             throw new Error('Invalid response format from webhook.');
         }
 
-        const publications = responseData.publications;
+        const publications = parsedBody.publications;
 
         for (const publication of publications) {
             // Check if the publication already exists
