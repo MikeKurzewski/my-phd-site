@@ -346,29 +346,35 @@ export default function Publications() {
             className="btn-primary"
         >
             <Search className="h-5 w-5 mr-2" />
-            Find My Publications
+            Auto Add My Publications
         </button>
         <button
-          onClick={() => {
-            setEditingPublication(null);
-            setFormData({
-              title: '',
-              abstract: '',
-              authors: '',
-              publication_date: new Date().toISOString().split('T')[0],
-              venue: '',
-              publication_url: '',
-              type: 'publication'
-            });
-            setShowFullForm(false);
-            setIsModalOpen(true);
-          }}
-          className="btn-primary"
-        >
-          <Plus className="h-5 w-5 mr-2" />
-          Add Publication
-        </button>
+            onClick={() => {
+              setEditingPublication(null);
+              setFormData({
+                title: '',
+                abstract: '',
+                authors: '',
+                publication_date: new Date().toISOString().split('T')[0],
+                venue: '',
+                publication_url: '',
+                type: 'publication'
+              });
+              setShowFullForm(false);
+              setIsModalOpen(true);
+            }}
+            className="btn-secondary"
+          >
+            <Plus className="h-5 w-5 mr-2" />
+            Add Publication
+          </button>
       </div>
+      <div className="bg-[rgb(var(--color-bg-tertiary))] shadow-sm rounded-lg p-6 text-center border border-[rgb(var(--color-border-primary))]">
+          <p className="text-[rgb(var(--color-text-secondary))]">
+            Your publications will auto update once a month. Add publications manually by clicking the button above.
+          </p>
+      </div>
+      
 
       { loading ? (
     <div className="text-center p-6">

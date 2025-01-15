@@ -341,6 +341,12 @@ export default function Profile() {
             )}
           </div>
 
+          <button
+            className="btn-primary"
+        >
+            Auto fill with Linkedin
+        </button>
+
           <form onSubmit={handleSubmit} className="space-y-6">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               <div>
