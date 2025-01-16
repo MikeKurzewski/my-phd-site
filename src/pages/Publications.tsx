@@ -337,13 +337,7 @@ export default function Publications() {
     <div className="space-y-6">
       <div className="flex justify-between items-center">
         <h2 className="text-2xl font-semibold text-[rgb(var(--color-text-primary))]">Publications</h2>
-        <button
-            onClick={handleFindPublications}
-            className="btn-primary"
-        >
-            <Search className="h-5 w-5 mr-2" />
-            Auto Add My Publications
-        </button>
+        
         <button
             onClick={() => {
               setEditingPublication(null);
@@ -370,7 +364,7 @@ export default function Publications() {
             Your publications will auto update once a month. Add publications manually by clicking the button above.
           </p>
       </div>
-      
+      <div><hr /></div>
 
       { loading ? (
     <div className="text-center p-6">
@@ -379,10 +373,20 @@ export default function Publications() {
         </p>
     </div>
 ) : publications.length === 0 ? (
+          <div className='flex flex-col gap-6'>
+            <button
+            onClick={handleFindPublications}
+            className="btn-primary w-full"
+            >
+                <Search className="h-5 w-5 mr-2" />
+                Auto Find My Publications
+            </button>
+        
         <div className="bg-[rgb(var(--color-bg-secondary))] shadow-sm rounded-lg p-6 text-center border border-[rgb(var(--color-border-primary))]">
           <p className="text-[rgb(var(--color-text-secondary))]">
             No publications added yet. Click "Add Publication" to get started.
           </p>
+        </div>
         </div>
       ) : (
         <div className="space-y-4">
