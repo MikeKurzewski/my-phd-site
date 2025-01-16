@@ -10,12 +10,13 @@ interface SignUpFormData {
   title: string;
   institution: string;
   department: string;
+  linkedin: string;
 }
 
 export default function Login() {
   const [isSignUp, setIsSignUp] = useState(false);
   const [error, setError] = useState('');
-  const { signIn, signUp, signInWithGithub, signInWithGoogle } = useAuth();
+  const { signIn, signUp } = useAuth();
   const navigate = useNavigate();
   const [formData, setFormData] = useState<SignUpFormData>({
     email: '',
@@ -24,6 +25,7 @@ export default function Login() {
     title: '',
     institution: '',
     department: '',
+    linkedin: '',
   });
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -42,18 +44,18 @@ export default function Login() {
     }
   };
 
-  const handleSocialSignIn = async (provider: 'github' | 'google') => {
-    try {
-      if (provider === 'github') {
-        await signInWithGithub();
-      } else if (provider === 'google') {
-        await signInWithGoogle();
-      }
-      navigate('/dashboard');
-    } catch (err) {
-      setError(err instanceof Error ? err.message : 'An error occurred');
-    }
-  };
+  // const handleSocialSignIn = async (provider: 'github' | 'google') => {
+  //   try {
+  //     if (provider === 'github') {
+  //       await signInWithGithub();
+  //     } else if (provider === 'google') {
+  //       await signInWithGoogle();
+  //     }
+  //     navigate('/dashboard');
+  //   } catch (err) {
+  //     setError(err instanceof Error ? err.message : 'An error occurred');
+  //   }
+  // };
 
   return (
     <div className="min-h-screen bg-[rgb(var(--color-bg-primary))] flex flex-col justify-center py-12 sm:px-6 lg:px-8">
@@ -177,6 +179,23 @@ export default function Login() {
                         required
                         value={formData.department}
                         onChange={(e) => setFormData({ ...formData, department: e.target.value })}
+                        className="form-input"
+                      />
+                    </div>
+                  </div>
+
+                  <div>
+                    <label htmlFor="department" className="block text-sm font-medium text-[rgb(var(--color-text-secondary))]">
+                      LinkedIn URL
+                    </label>
+                    <div className="mt-1">
+                      <input
+                        id="linkedin"
+                        name="linkedin"
+                        type="url"
+                        required
+                        value={formData.linkedin}
+                        onChange={(e) => setFormData({ ...formData, linkedin: e.target.value })}
                         className="form-input"
                       />
                     </div>

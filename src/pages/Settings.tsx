@@ -212,7 +212,7 @@ export default function Settings() {
       )}
 
       {success && (
-        <div className="bg-[rgb(var(--color-success))] bg-opacity-10 border border-[rgb(var(--color-success))] text-[rgb(var(--color-success))] px-4 py-3 rounded-md">
+        <div className="bg-[rgb(var(--color-success))] bg-opacity-10 border border-[rgb(var(--color-success))] text-[rgb(var(--color-primary))] px-4 py-3 rounded-md">
           {success}
         </div>
       )}

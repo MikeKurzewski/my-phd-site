@@ -179,10 +179,6 @@ export default function Publications() {
     }
 };
 
-
-
-
-
   const findPublication = async () => {
     if (!user?.id || !searchTitle.trim()) return;
 
