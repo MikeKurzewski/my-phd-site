@@ -9,10 +9,12 @@ interface Project {
   title: string;
   description: string;
   tags: string[];
-  media_urls: string[];
   start_date: string;
   end_date?: string;
   user_id: string;
+  url: string;
+  funding_source: string,
+
 }
 
 interface ProjectFormData {
@@ -21,6 +23,9 @@ interface ProjectFormData {
   tags: string;
   start_date: string;
   end_date?: string;
+  url: string;
+  funding_source: string,
+
 }
 
 export default function Projects() {
@@ -35,6 +40,8 @@ export default function Projects() {
     description: '',
     tags: '',
     start_date: new Date().toISOString().split('T')[0],
+    url: '',
+    funding_source: '',
   });
 
   useEffect(() => {
@@ -110,6 +117,8 @@ export default function Projects() {
         description: '',
         tags: '',
         start_date: new Date().toISOString().split('T')[0],
+        url: '',
+        funding_source: '',
       });
       fetchProjects();
       fetchAllTags();
@@ -126,6 +135,9 @@ export default function Projects() {
       tags: project.tags.join(', '),
       start_date: project.start_date,
       end_date: project.end_date,
+      url: project.url,
+      funding_source: project.funding_source,
+
     });
     setIsModalOpen(true);
   };
@@ -167,6 +179,8 @@ export default function Projects() {
               description: '',
               tags: '',
               start_date: new Date().toISOString().split('T')[0],
+              url: '',
+              funding_source: '',
             });
             setIsModalOpen(true);
           }}
@@ -253,6 +267,16 @@ export default function Projects() {
                       required
                     />
                   </div>
+                  <div>
+                    <label className="block text-sm font-medium text-[rgb(var(--color-text-secondary))]">Link</label>
+                    <input
+                      type="url"
+                      value={formData.url}
+                      onChange={(e) => setFormData({ ...formData, url: e.target.value })}
+                      className="form-input"
+                      
+                    />
+                  </div>
 
                   <div>
                     <label className="block text-sm font-medium text-[rgb(var(--color-text-secondary))]">Tags</label>
@@ -261,6 +285,16 @@ export default function Projects() {
                       onChange={(tags) => setFormData({ ...formData, tags: tags.join(', ') })}
                       placeholder="Add tags..."
                       existingTags={allTags}
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium text-[rgb(var(--color-text-secondary))]">Funding Source</label>
+                    <input
+                      type="text"
+                      value={formData.funding_source}
+                      onChange={(e) => setFormData({ ...formData, funding_source: e.target.value })}
+                      className="form-input"
+                      
                     />
                   </div>
 

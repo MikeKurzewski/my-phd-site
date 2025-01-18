@@ -15,11 +15,17 @@ const Navigation = ({ isOpen }: NavigationProps) => {
     { icon: Settings, label: 'Settings', href: '/settings' },
   ];
 
+  const handleLinkClick = () => {
+    // Logic to close the menu
+    const closeMenuEvent = new Event('closeMenu');
+    window.dispatchEvent(closeMenuEvent);
+  };
+
   return (
     <nav
       className={`${
         isOpen ? 'block' : 'hidden'
-      } md:block w-64 bg-[rgb(var(--color-bg-secondary))] shadow-sm rounded-lg h-fit border border-[rgb(var(--color-border-primary))]`}
+      } md:block w-64 bg-[rgb(var(--color-bg-secondary))] shadow-sm rounded-lg h-fit border border-[rgb(var(--color-border-primary))] transform transition-transform duration-300`}
     >
       <div className="p-4">
         <ul className="space-y-2">
@@ -27,6 +33,7 @@ const Navigation = ({ isOpen }: NavigationProps) => {
             <li key={item.label}>
               <NavLink
                 to={item.href}
+                onClick={handleLinkClick}
                 className={({ isActive }) =>
                   `flex items-center gap-3 px-4 py-2 rounded-md hover:bg-[rgb(var(--color-bg-tertiary))] ${
                     isActive

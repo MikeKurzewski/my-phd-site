@@ -9,6 +9,7 @@ interface SignUpData {
   title: string;
   institution: string;
   department: string;
+  linkedin: string;
 }
 
 interface AuthContextType {
@@ -68,6 +69,15 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     const { data: authData, error } = await supabase.auth.signUp({
       email: data.email,
       password: data.password,
+      options: {
+        data: {
+          name: data.name,
+          title: data.title,
+          institution: data.institution,
+          department: data.department,
+          linkedin: data.linkedin,
+        },
+      }
     });
     if (error) throw error;
     if (authData.user) {

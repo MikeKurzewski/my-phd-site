@@ -179,10 +179,6 @@ export default function Publications() {
     }
 };
 
-
-
-
-
   const findPublication = async () => {
     if (!user?.id || !searchTitle.trim()) return;
 
@@ -341,34 +337,34 @@ export default function Publications() {
     <div className="space-y-6">
       <div className="flex justify-between items-center">
         <h2 className="text-2xl font-semibold text-[rgb(var(--color-text-primary))]">Publications</h2>
+        
         <button
-            onClick={handleFindPublications}
+            onClick={() => {
+              setEditingPublication(null);
+              setFormData({
+                title: '',
+                abstract: '',
+                authors: '',
+                publication_date: new Date().toISOString().split('T')[0],
+                venue: '',
+                publication_url: '',
+                type: 'publication'
+              });
+              setShowFullForm(false);
+              setIsModalOpen(true);
+            }}
             className="btn-primary"
-        >
-            <Search className="h-5 w-5 mr-2" />
-            Find My Publications
-        </button>
-        <button
-          onClick={() => {
-            setEditingPublication(null);
-            setFormData({
-              title: '',
-              abstract: '',
-              authors: '',
-              publication_date: new Date().toISOString().split('T')[0],
-              venue: '',
-              publication_url: '',
-              type: 'publication'
-            });
-            setShowFullForm(false);
-            setIsModalOpen(true);
-          }}
-          className="btn-primary"
-        >
-          <Plus className="h-5 w-5 mr-2" />
-          Add Publication
-        </button>
+          >
+            <Plus className="h-5 w-5 mr-2" />
+            Add Publication
+          </button>
       </div>
+      <div className="bg-[rgb(var(--color-bg-tertiary))] shadow-sm rounded-lg p-6 text-center border border-[rgb(var(--color-border-primary))]">
+          <p className="text-[rgb(var(--color-text-secondary))]">
+            Your publications will auto update once a month. Add publications manually by clicking the button above.
+          </p>
+      </div>
+      <div><hr /></div>
 
       { loading ? (
     <div className="text-center p-6">
@@ -377,10 +373,20 @@ export default function Publications() {
         </p>
     </div>
 ) : publications.length === 0 ? (
+          <div className='flex flex-col gap-6'>
+            <button
+            onClick={handleFindPublications}
+            className="btn-primary w-full"
+            >
+                <Search className="h-5 w-5 mr-2" />
+                Auto Find My Publications
+            </button>
+        
         <div className="bg-[rgb(var(--color-bg-secondary))] shadow-sm rounded-lg p-6 text-center border border-[rgb(var(--color-border-primary))]">
           <p className="text-[rgb(var(--color-text-secondary))]">
             No publications added yet. Click "Add Publication" to get started.
           </p>
+        </div>
         </div>
       ) : (
         <div className="space-y-4">
@@ -555,7 +561,6 @@ export default function Publications() {
                           onChange={(e) => setFormData({ ...formData, authors: e.target.value })}
                           placeholder="Enter authors separated by commas"
                           className="form-input"
-                          required
                         />
                       </div>
 
@@ -567,7 +572,6 @@ export default function Publications() {
                           onChange={(e) => setFormData({ ...formData, venue: e.target.value })}
                           placeholder="Journal or Conference name"
                           className="form-input"
-                          required
                         />
                       </div>
 

@@ -33,7 +33,7 @@ export default function Website() {
   const [publications, setPublications] = useState<any[]>([]);
   const [activeTab, setActiveTab] = useState('about');
   const [loading, setLoading] = useState(true);
-  const [theme, setTheme] = useState<'light' | 'dark'>('light');
+  const [theme, setTheme] = useState<'light-teal' | 'dark-teal' | 'light-blue' | 'dark-blue'>('dark-teal');
 
   useEffect(() => {
     fetchProfileData();
@@ -44,7 +44,7 @@ export default function Website() {
       setTheme(profile.theme);
     }
   }, [profile?.theme]);
-  
+
   useTheme(theme);  
 
   const fetchProfileData = async () => {
@@ -375,6 +375,19 @@ export default function Website() {
                         {tag}
                       </span>
                     ))}
+                  </div>
+                  <div>
+                  {project.url && (
+                    <a
+                      href={project.url}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="mt-4 text-[rgb(var(--color-primary-400))] hover:text-[rgb(var(--color-primary-300))]"
+                    >
+                      <ExternalLink className="h-4 w-4 mr-2" />
+                      View Project
+                    </a>
+                  )}
                   </div>
                   <div className="mt-4 text-sm text-[rgb(var(--color-text-tertiary))]">
                     {project.start_date} - {project.end_date || 'Present'}
