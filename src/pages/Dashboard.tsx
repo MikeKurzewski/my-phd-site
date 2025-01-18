@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useAuth } from '../lib/auth';
 import { supabase } from '../lib/supabase';
-import { ExternalLink, Sun, Moon } from 'lucide-react';
+import { ExternalLink } from 'lucide-react';
 
 interface Profile {
   name: string | null;
@@ -23,7 +23,6 @@ interface Profile {
 export default function Dashboard() {
   const { user } = useAuth();
   const [profile, setProfile] = useState<Profile | null>(null);
-  const [theme, setTheme] = useState<'light' | 'dark'>('light');
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -159,28 +158,6 @@ export default function Dashboard() {
           <h3 className="text-lg font-medium text-[rgb(var(--color-text-primary))] mb-4">Website Preview</h3>
           <div className="space-y-4">
             <div className="flex items-center justify-between">
-              <div className="flex items-center space-x-4">
-                <button
-                  onClick={() => setTheme('light')}
-                  className={`p-2 rounded-md ${
-                    theme === 'light'
-                      ? 'bg-[rgb(var(--color-primary-900))] text-[rgb(var(--color-primary-400))]'
-                      : 'text-[rgb(var(--color-text-tertiary))] hover:text-[rgb(var(--color-text-secondary))]'
-                  }`}
-                >
-                  <Sun className="h-5 w-5" />
-                </button>
-                <button
-                  onClick={() => setTheme('dark')}
-                  className={`p-2 rounded-md ${
-                    theme === 'dark'
-                      ? 'bg-[rgb(var(--color-primary-900))] text-[rgb(var(--color-primary-400))]'
-                      : 'text-[rgb(var(--color-text-tertiary))] hover:text-[rgb(var(--color-text-secondary))]'
-                  }`}
-                >
-                  <Moon className="h-5 w-5" />
-                </button>
-              </div>
               <a
                 href={`https://myphd.site/${profile?.username}`}
                 target="_blank"
@@ -190,13 +167,6 @@ export default function Dashboard() {
                 <ExternalLink className="h-4 w-4 mr-2" />
                 Launch Website
               </a>
-            </div>
-            <div className={`aspect-video rounded-md border border-[rgb(var(--color-border-primary))] ${
-              theme === 'light' ? 'bg-gray-50' : 'bg-[rgb(var(--color-bg-primary))]'
-            } flex items-center justify-center`}>
-              <span className={theme === 'light' ? 'text-gray-500' : 'text-[rgb(var(--color-text-tertiary))]'}>
-                Preview your website with the selected theme
-              </span>
             </div>
           </div>
         </div>

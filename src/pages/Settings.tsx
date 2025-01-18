@@ -7,7 +7,7 @@ import { useTheme } from '../lib/theme';
 interface Profile {
   id: string;
   username: string;
-  theme: 'light' | 'dark';
+  theme: 'light-teal' | 'dark-teal' | 'light-blue' | 'dark-blue';
 }
 
 interface Subscription {
@@ -22,7 +22,7 @@ export default function Settings() {
   const { user, signOut } = useAuth();
   const [profile, setProfile] = useState<Profile | null>(null);
   const [subscription, setSubscription] = useState<Subscription | null>(null);
-  const [theme, setTheme] = useState<'light' | 'dark'>('dark');
+  const [theme, setTheme] = useState<'light-teal' | 'dark-teal' | 'light-blue' | 'dark-blue'>('dark-teal');
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState<string | null>(null);
@@ -39,7 +39,7 @@ export default function Settings() {
   useEffect(() => {
     if (profile) {
       setEditingUsername(profile.username || '');
-      setTheme(profile.theme || 'dark');
+      setTheme(profile.theme || 'dark-teal');
     }
   }, [profile]);
 
@@ -79,7 +79,7 @@ export default function Settings() {
     }
   };
 
-  const handleThemeChange = async (newTheme: 'light' | 'dark') => {
+  const handleThemeChange = async (newTheme: 'light-teal' | 'dark-teal' | 'light-blue' | 'dark-blue') => {
     try {
       setError(null);
       setSuccess(null);
@@ -326,26 +326,48 @@ export default function Settings() {
           </div>
           <div className="flex items-center gap-4">
             <button
-              onClick={() => handleThemeChange('light')}
+              onClick={() => handleThemeChange('light-teal')}
               className={`flex items-center gap-2 px-4 py-2 rounded-md transition-colors ${
-                theme === 'light'
+                theme === 'light-teal'
                   ? 'bg-[rgb(var(--color-primary-900))] text-[rgb(var(--color-primary-400))]'
                   : 'text-[rgb(var(--color-text-secondary))] hover:bg-[rgb(var(--color-bg-tertiary))]'
               }`}
             >
               <Sun className="h-5 w-5" />
-              Light
+              Light Teal
             </button>
             <button
-              onClick={() => handleThemeChange('dark')}
+              onClick={() => handleThemeChange('dark-teal')}
               className={`flex items-center gap-2 px-4 py-2 rounded-md transition-colors ${
-                theme === 'dark'
+                theme === 'dark-teal'
                   ? 'bg-[rgb(var(--color-primary-900))] text-[rgb(var(--color-primary-400))]'
                   : 'text-[rgb(var(--color-text-secondary))] hover:bg-[rgb(var(--color-bg-tertiary))]'
               }`}
             >
               <Moon className="h-5 w-5" />
-              Dark
+              Dark Teal
+            </button>
+            <button
+              onClick={() => handleThemeChange('light-blue')}
+              className={`flex items-center gap-2 px-4 py-2 rounded-md transition-colors ${
+                theme === 'light-blue'
+                  ? 'bg-[rgb(var(--color-primary-900))] text-[rgb(var(--color-primary-400))]'
+                  : 'text-[rgb(var(--color-text-secondary))] hover:bg-[rgb(var(--color-bg-tertiary))]'
+              }`}
+            >
+              <Moon className="h-5 w-5" />
+              Light Blue
+            </button>
+            <button
+              onClick={() => handleThemeChange('dark-blue')}
+              className={`flex items-center gap-2 px-4 py-2 rounded-md transition-colors ${
+                theme === 'dark-blue'
+                  ? 'bg-[rgb(var(--color-primary-900))] text-[rgb(var(--color-primary-400))]'
+                  : 'text-[rgb(var(--color-text-secondary))] hover:bg-[rgb(var(--color-bg-tertiary))]'
+              }`}
+            >
+              <Moon className="h-5 w-5" />
+              Dark Blue
             </button>
           </div>
         </div>

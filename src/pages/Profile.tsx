@@ -404,16 +404,20 @@ export default function Profile() {
             )}
           </div>
 
-          <div className="flex justify-between items-center">
+          <div className="flex justify-between items-center pb-6">
           <h2 className="text-2xl font-semibold text-[rgb(var(--color-text-primary))]">Profile</h2>
+          {profile.social_links?.linkedin && (
           <button
-            // onClick={autoCompleteProfile}
+            onClick={autoCompleteProfile}
             className="btn-primary"
         >
             {/* <Search className="h-5 w-5 mr-2" /> */}
             Use my LinkedIn Profile
           </button>
+          )}
           </div>
+
+          <div className="pb-6"><hr /></div>
 
 
           <form onSubmit={handleSubmit} className="space-y-6">
@@ -651,7 +655,7 @@ export default function Profile() {
                 {qualifications.map((qual) => (
                   <div
                     key={qual.id}
-                    className="flex justify-between items-center p-4 bg-[rgb(var(--color-bg-secondary))] border border-[rgb(var(--color-border-primary))] rounded-md"
+                    className="flex justify-between items-center p-4 bg-[rgb(var(--color-bg-tertiary))] rounded-md"
                   >
                     <div>
                       <h4 className="font-medium text-[rgb(var(--color-text-primary))]">{qual.degree} in {qual.field}</h4>

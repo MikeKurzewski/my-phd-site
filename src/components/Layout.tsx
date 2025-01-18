@@ -6,8 +6,16 @@ interface LayoutProps {
   children: React.ReactNode;
 }
 
+
 export default function Layout({ children }: LayoutProps) {
   const [isMenuOpen, setIsMenuOpen] = React.useState(false);
+
+  React.useEffect(() => {
+    const closeMenuHandler = () => setIsMenuOpen(false);
+    window.addEventListener('closeMenu', closeMenuHandler);
+  
+    return () => window.removeEventListener('closeMenu', closeMenuHandler);
+  }, []);
 
   return (
     <div className="min-h-screen bg-[rgb(var(--color-bg-primary))]">

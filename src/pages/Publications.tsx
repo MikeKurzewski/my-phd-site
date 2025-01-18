@@ -353,7 +353,7 @@ export default function Publications() {
               setShowFullForm(false);
               setIsModalOpen(true);
             }}
-            className="btn-secondary"
+            className="btn-primary"
           >
             <Plus className="h-5 w-5 mr-2" />
             Add Publication
@@ -561,7 +561,6 @@ export default function Publications() {
                           onChange={(e) => setFormData({ ...formData, authors: e.target.value })}
                           placeholder="Enter authors separated by commas"
                           className="form-input"
-                          required
                         />
                       </div>
 
@@ -573,7 +572,6 @@ export default function Publications() {
                           onChange={(e) => setFormData({ ...formData, venue: e.target.value })}
                           placeholder="Journal or Conference name"
                           className="form-input"
-                          required
                         />
                       </div>
 

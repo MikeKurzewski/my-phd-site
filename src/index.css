@@ -3,7 +3,7 @@
 @tailwind utilities;
 
 @layer base {
-  :root[data-theme="dark"] {
+  :root[data-theme="dark-teal"] {
     /* Primary colors (Teal) */
     --color-primary-50: 240 253 250;   /* teal-50 */
     --color-primary-100: 204 251 241;  /* teal-100 */
@@ -38,7 +38,7 @@
     --color-info: 45 212 191;           /* teal-400 */
   }
 
-  :root[data-theme="light"] {
+  :root[data-theme="light-teal"] {
     /* Primary colors (Teal) - Same as dark theme */
     --color-primary-50: 240 253 250;
     --color-primary-100: 204 251 241;
@@ -72,6 +72,76 @@
     --color-warning: 202 138 4;         /* yellow-600 */
     --color-info: 13 148 136;           /* teal-600 */
   }
+
+  :root[data-theme="dark-blue"] {
+    /* Primary colors (Blue) */
+    --color-primary-50: 239 246 255;   /* blue-50 */
+    --color-primary-100: 239 246 255;  /* blue-100 */
+    --color-primary-200: 239 246 255;  /* blue-200 */
+    --color-primary-300: 239 246 255;  /* blue-300 */
+    --color-primary-400: 239 246 255;   /* blue-400 */
+    --color-primary-500: 59 130 246;   /* blue-500 */
+    --color-primary-600: 37 99 235;    /* blue-600 */
+    --color-primary-700: 29 78 216;    /* blue-700 */
+    --color-primary-800: 30 64 175;    /* blue-800 */
+    --color-primary-900: 30 58 138;    /* blue-900 */
+    --color-primary-950: 23 37 84;     /* blue-950 */
+
+    /* Background colors */
+    --color-bg-primary: 17 24 39;       /* gray-900 */
+    --color-bg-secondary: 31 41 55;     /* gray-800 */
+    --color-bg-tertiary: 55 65 81;      /* gray-700 */
+
+    /* Text colors */
+    --color-text-primary: 243 244 246;  /* gray-100 */
+    --color-text-secondary: 209 213 219; /* gray-300 */
+    --color-text-tertiary: 156 163 175;  /* gray-400 */
+
+    /* Border colors */
+    --color-border-primary: 75 85 99;    /* gray-600 */
+    --color-border-secondary: 55 65 81;  /* gray-700 */
+
+    /* Status colors */
+    --color-success: 34 197 94;         /* green-500 */
+    --color-error: 239 68 68;           /* red-500 */
+    --color-warning: 234 179 8;         /* yellow-500 */
+    --color-info: 96 165 250;           /* blue-400 */
+  }
+
+  :root[data-theme="light-blue"] {
+     /* Primary colors (Blue) */
+     --color-primary-50: 240 248 255;   /* blue-50 */
+     --color-primary-100: 240 248 255;  /* blue-100 */
+     --color-primary-200: 240 248 255;  /* blue-200 */
+     --color-primary-300: 240 248 255;   /* blue-300 */
+     --color-primary-400: 0 116 204;   /* blue-400 */
+     --color-primary-500: 0 116 204;    /* blue-500 */
+     --color-primary-600: 0 116 204;    /* blue-600 */
+     --color-primary-700: 0 116 204;     /* blue-700 */
+     --color-primary-800: 6 41 75;     /* blue-800 */
+     --color-primary-900: 6 41 75;    /* blue-900 */
+     --color-primary-950: 6 41 75;      /* blue-950 */
+ 
+     /* Background colors */
+     --color-bg-primary: 240 248 255;   /* near-white */
+     --color-bg-secondary: 223 239 255; /* light gray */
+     --color-bg-tertiary: 184 224 255;  /* gray-200 */
+ 
+     /* Text colors */
+     --color-text-primary: 6 41 75;     /* gray-800 */
+     --color-text-secondary: 4 79 136;  /* gray-700 */
+     --color-text-tertiary: 0 116 204;  /* gray-600 */
+ 
+     /* Border colors */
+     --color-border-primary: 6 41 75;   /* gray-500 */
+     --color-border-secondary: 0 93 165; /* gray-400 */
+
+    /* Status colors */
+    --color-success: 22 163 74;        /* green-600 */
+    --color-error: 220 38 38;          /* red-600 */
+    --color-warning: 202 138 4;        /* yellow-600 */
+    --color-info: 59 130 246;          /* blue-500 */
+}
 
   /* Set default theme */
   :root {
@@ -221,6 +291,22 @@
   .nav-link-active {
     @apply bg-[rgb(var(--color-primary-900))]
            text-[rgb(var(--color-primary-400))];
+  }
+}
+
+@media (max-width: 768px) {
+  nav {
+    position: fixed;
+    top: 0;
+    right: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.8);
+    z-index: 1000;
+  }
+
+  .menu-open {
+    display: flex;
   }
 }
 
