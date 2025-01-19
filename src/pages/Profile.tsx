@@ -30,6 +30,11 @@ interface Qualification {
   field: string;
 }
 
+interface LinkedinWebhookResponse {
+  bio: string;
+  interests: string;
+}
+
 interface QualificationFormData {
   degree: string;
   institution: string;
@@ -261,6 +266,64 @@ export default function Profile() {
     }
   };
 
+  const autoCompleteProfile = async () => {
+      if (!user?.id) return;
+  
+      try {
+        // setSearching(true);
+  
+        // Get user's full name from profile
+        const { data: profileData, error: profileError } = await supabase
+          .from('profiles')
+          .select('social_links')
+          .eq('id', user.id)
+          .single();
+  
+        if (profileError) throw profileError;
+
+        const linkedinUrl = profileData?.social_links?.linkedin;
+  
+        const response = await fetch('https://hook.eu2.make.com/ggjxotdvke95ig31ui8lu43kia58pn54', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            linkedin: linkedinUrl,
+          }),
+        });
+  
+        const data: LinkedinWebhookResponse = await response.json();
+  
+        if (data) {
+          const interestsArray = data.interests
+          .split(',')
+          .map((interest) => interest.trim());
+          try {
+            setError(null);
+            const { error } = await supabase
+              .from('profiles')
+              .update({
+                bio: data.bio,
+                research_interests: interestsArray,
+              })
+              .eq('id', user.id);
+      
+            if (error) throw error;
+            alert('Profile updated successfully! Please refresh your page');
+          } catch (error) {
+            console.error('Error updating profile:', error);
+            setError('Failed to update profile. Please try again.');
+          }
+        }
+        // setShowFullForm(true);
+      } catch (error) {
+        console.error('Error finding publication:', error);
+      } finally {
+        // setSearching(false);
+      }
+    };
+
   const handleDeleteQualification = async (id: string) => {
     try {
       const { error } = await supabase
@@ -344,6 +407,22 @@ export default function Profile() {
               </div>
             )}
           </div>
+
+          <div className="flex justify-between items-center pb-6">
+          <h2 className="text-2xl font-semibold text-[rgb(var(--color-text-primary))]">Profile</h2>
+          {profile.social_links?.linkedin && (
+          <button
+            onClick={autoCompleteProfile}
+            className="btn-primary"
+        >
+            {/* <Search className="h-5 w-5 mr-2" /> */}
+            Use my LinkedIn Profile
+          </button>
+          )}
+          </div>
+
+          <div className="pb-6"><hr /></div>
+
 
           <form onSubmit={handleSubmit} className="space-y-6">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -580,7 +659,7 @@ export default function Profile() {
                 {qualifications.map((qual) => (
                   <div
                     key={qual.id}
-                    className="flex justify-between items-center p-4 bg-[rgb(var(--color-bg-secondary))] border border-[rgb(var(--color-border-primary))] rounded-md"
+                    className="flex justify-between items-center p-4 bg-[rgb(var(--color-bg-tertiary))] rounded-md"
                   >
                     <div>
                       <h4 className="font-medium text-[rgb(var(--color-text-primary))]">{qual.degree} in {qual.field}</h4>
