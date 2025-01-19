@@ -8,7 +8,7 @@ interface Publication {
   title: string;
   abstract: string;
   authors: string;
-  publication_date: string;
+  year: string;
   venue: string;
   publication_url: string;
   media_files: string;
@@ -20,7 +20,7 @@ interface PublicationFormData {
   title: string;
   abstract: string;
   authors: string;
-  publication_date: string;
+  year: string;
   venue: string;
   publication_url: string;
   type: 'preprint' | 'publication';
@@ -32,7 +32,7 @@ interface WebhookResponse {
     title: string;
     abstract: string;
     authors: string;
-    publication_date: string;
+    year: string;
     venue: string;
     publication_url: string;
   };
@@ -57,7 +57,7 @@ export default function Publications() {
     title: '',
     abstract: '',
     authors: '',
-    publication_date: new Date().toISOString().split('T')[0],
+    year: '',
     venue: '',
     publication_url: '',
     type: 'publication'
@@ -77,7 +77,7 @@ export default function Publications() {
         .from('publications')
         .select('*')
         .eq('user_id', user.id)
-        .order('publication_date', { ascending: false });
+        .order('year', { ascending: false });
 
       if (error) throw error;
       setPublications(data || []);
@@ -214,7 +214,7 @@ export default function Publications() {
           title: data.data.title,
           abstract: data.data.abstract,
           authors: data.data.authors,
-          publication_date: data.data.publication_date,
+          year: data.data.year,
           venue: data.data.venue,
           publication_url: data.data.publication_url
         });
@@ -281,7 +281,7 @@ export default function Publications() {
         title: '',
         abstract: '',
         authors: '',
-        publication_date: new Date().toISOString().split('T')[0],
+        year: '',
         venue: '',
         publication_url: '',
         type: 'publication'
@@ -300,7 +300,7 @@ export default function Publications() {
       title: publication.title,
       abstract: publication.abstract,
       authors: publication.authors,
-      publication_date: publication.publication_date,
+      year: publication.year,
       venue: publication.venue,
       publication_url: publication.publication_url,
       type: publication.type
@@ -345,7 +345,7 @@ export default function Publications() {
                 title: '',
                 abstract: '',
                 authors: '',
-                publication_date: new Date().toISOString().split('T')[0],
+                year: '',
                 venue: '',
                 publication_url: '',
                 type: 'publication'
@@ -420,7 +420,7 @@ export default function Publications() {
               </div>
               <p className="text-[rgb(var(--color-text-secondary))] mb-4">{publication.abstract}</p>
               <div className="text-sm text-[rgb(var(--color-text-tertiary))] mb-4">
-                {publication.authors} • {publication.venue} • {publication.publication_date}
+                {publication.authors} • {publication.venue} • {publication.year}
               </div>
               <div className="flex space-x-4">
                 {publication.publication_url && (
@@ -579,8 +579,8 @@ export default function Publications() {
                         <label className="block text-sm font-medium text-[rgb(var(--color-text-secondary))]">Publication Date</label>
                         <input
                           type="date"
-                          value={formData.publication_date}
-                          onChange={(e) => setFormData({ ...formData, publication_date: e.target.value })}
+                          value={formData.year}
+                          onChange={(e) => setFormData({ ...formData, year: e.target.value })}
                           className="form-input"
                           required
                         />
