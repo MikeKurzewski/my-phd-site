@@ -68,7 +68,7 @@ export default function Dashboard() {
 
     fields.forEach(field => {
       const value = profile[field.name as keyof Profile];
-      
+
       if (field.isArray) {
         if (Array.isArray(value) && value.length > 0) {
           completionScore += field.weight;
@@ -159,7 +159,10 @@ export default function Dashboard() {
           <div className="space-y-4">
             <div className="flex items-center justify-between">
               <a
-                href={`https://myphd.site/${profile?.username}`}
+                href={import.meta.env.DEV
+                  ? `http://localhost:5173/${profile?.username}`
+                  : `https://myphd.site/${profile?.username}`
+                }
                 target="_blank"
                 rel="noopener noreferrer"
                 className="inline-flex items-center px-4 py-2 bg-[rgb(var(--color-primary-500))] hover:bg-[rgb(var(--color-primary-600))] text-white rounded-md font-medium transition-colors"
