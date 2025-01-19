@@ -30,6 +30,13 @@ interface Qualification {
   field: string;
 }
 
+interface QualificationFormData {
+  degree: string;
+  institution: string;
+  year: number;
+  field: string;
+}
+
 const defaultProfile: Profile = {
   id: '',
   name: null,
@@ -51,7 +58,7 @@ export default function Profile() {
   const [loading, setLoading] = useState(true);
   const [uploadingImage, setUploadingImage] = useState<'profile' | 'banner' | 'cv' | null>(null);
   const [error, setError] = useState<string | null>(null);
-  const [newQualification, setNewQualification] = useState({
+  const [newQualification, setNewQualification] = useState<QualificationFormData>({
     degree: '',
     institution: '',
     year: new Date().getFullYear(),
@@ -237,18 +244,15 @@ export default function Profile() {
     if (!user?.id) return;
 
     try {
+      setError(null);
+      const qualification = { ...newQualification, user_id: user.id };
+
       const { error } = await supabase
         .from('qualifications')
-        .insert([{ ...newQualification, user_id: user.id }]);
+        .insert([qualification]);
 
       if (error) throw error;
 
-      setNewQualification({
-        degree: '',
-        institution: '',
-        year: new Date().getFullYear(),
-        field: ''
-      });
       setShowQualificationForm(false);
       fetchQualifications();
     } catch (error) {
