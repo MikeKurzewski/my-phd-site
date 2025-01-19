@@ -16,9 +16,9 @@ const Tab: React.FC<TabProps> = ({ label, icon, isActive, onClick }) => (
     onClick={onClick}
     className={`flex items-center px-4 py-2 rounded-lg transition-colors ${
       isActive
-        ? 'bg-[rgb(var(--color-primary-900))] text-[rgb(var(--color-primary-400))]'
-        : 'text-[rgb(var(--color-text-secondary))] hover:bg-[rgb(var(--color-bg-tertiary))]'
-    }`}
+      ? 'bg-[rgb(var(--color-primary-900))] text-[rgb(var(--color-primary-400))]'
+      : 'text-[rgb(var(--color-text-secondary))] hover:bg-[rgb(var(--color-bg-tertiary))]'
+      }`}
   >
     {icon}
     <span className="ml-2">{label}</span>
@@ -45,7 +45,7 @@ export default function Website() {
     }
   }, [profile?.theme]);
 
-  useTheme(theme);  
+  useTheme(theme);
 
   const fetchProfileData = async () => {
     try {
@@ -241,25 +241,26 @@ export default function Website() {
 
             {/* Navigation Tabs */}
             <div className="mt-8 border-t border-[rgb(var(--color-border-primary))] pt-6">
-              <div className="flex flex-wrap flex flex-wrap gap-4">
-                <Tab
-                  label="About"
-                  icon={<BookOpen className="h-5 w-5" />}
-                  isActive={activeTab === 'about'}
-                  onClick={() => setActiveTab('about')}
-                />
-                <Tab
-                  label="Publications"
-                  icon={<BookOpen className="h-5 w-5" />}
-                  isActive={activeTab === 'publications'}
-                  onClick={() => setActiveTab('publications')}
-                />
-                <Tab
-                  label="Projects"
-                  icon={<Briefcase className="h-5 w-5" />}
-                  isActive={activeTab === 'projects'}
-                  onClick={() => setActiveTab('projects')}
-                />
+              <div className="flex flex-wrap gap-4">
+                {[
+                  { label: 'About', icon: <BookOpen className="h-5 w-5" />, key: 'about' },
+                  ...(publications.length > 0
+                    ? [{ label: 'Publications', icon: <Briefcase className="h-5 w-5" />, key: 'publications' }]
+                    : []
+                  ),
+                  ...(projects.length > 0
+                    ? [{ label: 'Projects', icon: <Briefcase className="h-5 w-5" />, key: 'projects' }]
+                    : []
+                  )
+                ].map((tab) => (
+                  <Tab
+                    key={tab.key}
+                    label={tab.label}
+                    icon={tab.icon}
+                    isActive={activeTab === tab.key}
+                    onClick={() => setActiveTab(tab.key)}
+                  />
+                ))}
               </div>
             </div>
           </div>
@@ -327,11 +328,10 @@ export default function Website() {
                   <div className="flex justify-between items-start">
                     <div>
                       <h3 className="text-lg font-medium text-[rgb(var(--color-text-primary))]">{pub.title}</h3>
-                      <span className={`inline-block px-2 py-1 text-xs font-medium rounded-full mt-2 ${
-                        pub.type === 'preprint'
-                          ? 'bg-[rgb(var(--color-warning))] bg-opacity-20 text-[rgb(var(--color-text-primary))]'
-                          : 'bg-[rgb(var(--color-success))] bg-opacity-20 text-[rgb(var(--color-text-primary))]'
-                      }`}>
+                      <span className={`inline-block px-2 py-1 text-xs font-medium rounded-full mt-2 ${pub.type === 'preprint'
+                        ? 'bg-[rgb(var(--color-warning))] bg-opacity-20 text-[rgb(var(--color-text-primary))]'
+                        : 'bg-[rgb(var(--color-success))] bg-opacity-20 text-[rgb(var(--color-text-primary))]'
+                        }`}>
                         {pub.type === 'preprint' ? 'Preprint' : 'Published'}
                       </span>
                     </div>
@@ -377,17 +377,17 @@ export default function Website() {
                     ))}
                   </div>
                   <div>
-                  {project.url && (
-                    <a
-                      href={project.url}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="mt-4 text-[rgb(var(--color-primary-400))] hover:text-[rgb(var(--color-primary-300))]"
-                    >
-                      <ExternalLink className="h-4 w-4 mr-2" />
-                      View Project
-                    </a>
-                  )}
+                    {project.url && (
+                      <a
+                        href={project.url}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="mt-4 text-[rgb(var(--color-primary-400))] hover:text-[rgb(var(--color-primary-300))]"
+                      >
+                        <ExternalLink className="h-4 w-4 mr-2" />
+                        View Project
+                      </a>
+                    )}
                   </div>
                   <div className="mt-4 text-sm text-[rgb(var(--color-text-tertiary))]">
                     {project.start_date} - {project.end_date || 'Present'}
