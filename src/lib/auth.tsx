@@ -1,15 +1,11 @@
 import { createContext, useContext, useEffect, useState } from 'react';
 import { User } from '@supabase/supabase-js';
 import { supabase } from './supabase';
-
+import { fetchAuthorData } from "../lib/serpapi"; // SerpAPI function
 interface SignUpData {
   email: string;
   password: string;
-  name: string;
-  title: string;
-  institution: string;
-  department: string;
-  linkedin: string;
+  scholarId: string;
 }
 
 interface AuthContextType {
@@ -48,40 +44,92 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     return () => subscription.unsubscribe();
   }, []);
 
-  const createProfile = async (userId: string, data: Partial<SignUpData>) => {
-    const { error } = await supabase.from('profiles').insert([
+  const createProfile = async (userId: string, data: Partial<SignUpData>,
+    author: {
+      name: string;
+      affiliations: string;
+      interests: { title: string }[];
+    },
+    articles: {
+      title: string;
+      link: string;
+      citation_id: string;
+      authors: string;
+      publication: string;
+      year: string;
+    }[]
+  ) => {
+    const parseAffiliations = (affiliations: string) => {
+      const [department, institution] = affiliations.split(',').map((part) => part.trim());
+      return {
+        department: department || '',
+        institution: institution || '',
+      };
+    };
+
+    try{
+    const { department, institution } = parseAffiliations(author.affiliations);
+    const { error } = await supabase.from('profiles').update([
       {
-        id: userId,
-        email: data.email,
-        name: data.name || '',
-        title: data.title || '',
-        institution: data.institution || '',
-        department: data.department || '',
-        social_links: {},
+        name: author.name || '',
+        affiliations: author.affiliations || '',
+        scholar_id: data.scholarId || '',
+        research_interests: author.interests
+          ? author.interests.map((interest) => interest.title)
+          : [],
+        department,
+        institution,
       }
-    ]);
+    ]).eq('id', userId);
     if (error && error.code !== '23505') { // Ignore duplicate key errors
       throw error;
     }
+    // Insert articles data
+    if (articles.length > 0) {
+      const formattedArticles = articles.map((article) => ({
+        user_id: userId,
+        title: article.title || '',
+        publication_url: article.link || '',
+        citation_id: article.citation_id || '',
+        authors: article.authors || '',
+        venue: article.publication || '',
+        year: article.year || '',
+      }));
+
+      const { error: publicationsError } = await supabase
+        .from('publications')
+        .insert(formattedArticles);
+
+      if (publicationsError) {
+        throw publicationsError;
+      }
+    }
+  } catch (error) {
+    console.error('Error creating profile and publications:', error);
+    throw error;
+  }
   };
 
   const signUp = async (data: SignUpData) => {
     const { data: authData, error } = await supabase.auth.signUp({
       email: data.email,
       password: data.password,
-      options: {
-        data: {
-          name: data.name,
-          title: data.title,
-          institution: data.institution,
-          department: data.department,
-          linkedin: data.linkedin,
-        },
-      }
     });
     if (error) throw error;
     if (authData.user) {
-      await createProfile(authData.user.id, data);
+      try {
+        const serpApiResponse = await fetchAuthorData(data.scholarId);
+        const { author, articles } = serpApiResponse;
+      
+        await createProfile(authData.user.id, data, author, articles);
+      } catch (profileError) {
+        console.error('Error setting up profile and publications:', profileError);
+        throw new Error(
+        typeof profileError === 'object' && profileError !== null
+          ? (profileError as any).message
+          : 'Failed to set up profile and publications'
+      );
+      }
     }
   };
 

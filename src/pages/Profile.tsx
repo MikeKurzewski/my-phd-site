@@ -15,6 +15,8 @@ interface Profile {
   banner_image_url: string | null;
   cv_url: string | null;
   research_interests: string[];
+  affiliations: string | null;
+  scholar_id: string | null;
   social_links: {
     linkedin?: string;
     github?: string;
@@ -52,6 +54,8 @@ const defaultProfile: Profile = {
   profile_image_url: null,
   banner_image_url: null,
   cv_url: null,
+  affiliations: null,
+  scholar_id: null,
   research_interests: [],
   social_links: {}
 };
@@ -231,6 +235,8 @@ export default function Profile() {
           department: profile.department,
           bio: profile.bio,
           research_interests: profile.research_interests,
+          affiliations: profile.affiliations,
+          scholar_id: profile.scholar_id,
           social_links: profile.social_links,
           updated_at: new Date().toISOString()
         })
@@ -459,6 +465,24 @@ export default function Profile() {
                   type="text"
                   value={profile.department || ''}
                   onChange={(e) => setProfile({ ...profile, department: e.target.value })}
+                  className="form-input"
+                />
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-[rgb(var(--color-text-secondary))]">Affiliations</label>
+                <input
+                  type="text"
+                  value={profile.affiliations || ''}
+                  onChange={(e) => setProfile({ ...profile, affiliations: e.target.value })}
+                  className="form-input"
+                />
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-[rgb(var(--color-text-secondary))]">Google Scholar ID</label>
+                <input
+                  type="text"
+                  value={profile.scholar_id || ''}
+                  onChange={(e) => setProfile({ ...profile, scholar_id: e.target.value })}
                   className="form-input"
                 />
               </div>
