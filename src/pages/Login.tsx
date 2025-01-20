@@ -37,8 +37,8 @@ export default function Login() {
         await signUp(formData);
       } else {
         await signIn(formData.email, formData.password);
+        navigate('/dashboard');
       }
-      navigate('/dashboard');
     } catch (err) {
       setError(err instanceof Error ? err.message : 'An error occurred');
     }
