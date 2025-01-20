@@ -104,7 +104,7 @@ export default function Website() {
         .from('publications')
         .select('*')
         .eq('user_id', profileData.id)
-        .order('publication_date', { ascending: false });
+        .order('year', { ascending: false });
 
       setPublications(publicationsData || []);
     } catch (error) {
@@ -338,7 +338,7 @@ export default function Website() {
                   </div>
                   <p className="mt-4 text-[rgb(var(--color-text-secondary))]">{pub.abstract}</p>
                   <div className="mt-4 text-sm text-[rgb(var(--color-text-tertiary))]">
-                    {pub.authors} • {pub.venue} • {pub.publication_date}
+                    {pub.authors} • {pub.venue} • {pub.year}
                   </div>
                   {pub.publication_url && (
                     <a
