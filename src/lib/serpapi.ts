@@ -13,7 +13,7 @@ export async function fetchAuthorData(authorId: string): Promise<{
     year: string;
   }[];
 }> {
-  const proxyEndpoint = 'https://serpapi-proxy.vercel.app/search'; // Replace with your proxy server URL
+  const proxyEndpoint = 'https://serpapi-proxy.vercel.app/api/index'; // Replace with your proxy server URL
   const url = `${proxyEndpoint}?author_id=${authorId}`;
 
   try {

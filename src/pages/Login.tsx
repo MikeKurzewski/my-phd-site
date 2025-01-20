@@ -32,7 +32,7 @@ export default function Login() {
         setMessage('Setting up your profile...');
         await signUp(formData);
         setMessage('Profile created successfully! Redirecting...');
-        setTimeout(() => navigate('/dashboard'), 2000); // Redirect after a delay
+        setTimeout(() => navigate('/dashboard'), 5000); // Redirect after a delay
       } else {
         await signIn(formData.email, formData.password);
       }
