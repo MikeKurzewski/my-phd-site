@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Globe, Lock, Palette, Sun, Moon, ExternalLink, CreditCard } from 'lucide-react';
+import { Globe, Lock, Palette, Sun, Moon, ExternalLink, CreditCard, Layout} from 'lucide-react';
 import { useAuth } from '../lib/auth';
 import { supabase } from '../lib/supabase';
 import { useTheme } from '../lib/theme';
@@ -8,6 +8,7 @@ interface Profile {
   id: string;
   username: string;
   theme: 'light-teal' | 'dark-teal' | 'light-blue' | 'dark-blue';
+  layout: 'default' | 'academic';
 }
 
 interface Subscription {
@@ -99,19 +100,19 @@ export default function Settings() {
     }
   };
 
-  const handleLayoutChange = async (layout: 'default' | 'academic') => {
+  const handleLayoutChange = async (newLayout: 'default' | 'academic') => {
     try {
       setError(null);
       setSuccess(null);
 
       const { error } = await supabase
         .from('profiles')
-        .update({ layout: layout })
+        .update({ layout: newLayout })
         .eq('id', user?.id);
 
       if (error) throw error;
 
-      setProfile(prev => prev ? { ...prev, layout: layout } : null);
+      setProfile(prev => prev ? { ...prev, layout: newLayout } : null);
       setSuccess('Layout updated successfully');
     } catch (error) {
       console.error('Error updating layout:', error);
@@ -389,7 +390,6 @@ export default function Settings() {
         </div>
 
         {/* Layout Selection Section */}
-        {/* Layout Section */}
         <div className="p-6">
           <div className="flex items-center gap-4 mb-4">
             <div className="p-2 bg-[rgb(var(--color-primary-900))] rounded-lg">
@@ -400,7 +400,8 @@ export default function Settings() {
           <div className="flex items-center gap-4">
             <button
               onClick={() => handleLayoutChange('default')}
-              className={`flex items-center gap-2 px-4 py-2 rounded-md transition-colors ${profile.layout_preference === 'default'
+              className={`flex items-center gap-2 px-4 py-2 rounded-md transition-colors ${
+                profile?.layout === 'default'
                 ? 'bg-[rgb(var(--color-primary-900))] text-[rgb(var(--color-primary-400))]'
                 : 'text-[rgb(var(--color-text-secondary))] hover:bg-[rgb(var(--color-bg-tertiary))]'
                 }`}
@@ -409,7 +410,8 @@ export default function Settings() {
             </button>
             <button
               onClick={() => handleLayoutChange('academic')}
-              className={`flex items-center gap-2 px-4 py-2 rounded-md transition-colors ${profile.layout_preference === 'academic'
+              className={`flex items-center gap-2 px-4 py-2 rounded-md transition-colors ${
+                profile?.layout === 'academic'
                 ? 'bg-[rgb(var(--color-primary-900))] text-[rgb(var(--color-primary-400))]'
                 : 'text-[rgb(var(--color-text-secondary))] hover:bg-[rgb(var(--color-bg-tertiary))]'
                 }`}
