@@ -382,7 +382,7 @@ export default function Website() {
                         href={project.url}
                         target="_blank"
                         rel="noopener noreferrer"
-                        className="mt-4 text-[rgb(var(--color-primary-400))] hover:text-[rgb(var(--color-primary-300))]"
+                        className="mt-4 inline-flex items-center text-[rgb(var(--color-primary-400))] hover:text-[rgb(var(--color-primary-300))]"
                       >
                         <ExternalLink className="h-4 w-4 mr-2" />
                         View Project
