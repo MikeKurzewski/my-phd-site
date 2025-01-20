@@ -6,41 +6,42 @@ import { GraduationCap, Github, Mail } from 'lucide-react';
 interface SignUpFormData {
   email: string;
   password: string;
-  name: string;
-  title: string;
-  institution: string;
-  department: string;
-  linkedin: string;
+  scholarId: string;
 }
 
 export default function Login() {
   const [isSignUp, setIsSignUp] = useState(false);
   const [error, setError] = useState('');
+  const [message, setMessage] = useState(''); // State to hold user messages
+  const [loading, setLoading] = useState(false); // Loading state
   const { signIn, signUp } = useAuth();
   const navigate = useNavigate();
   const [formData, setFormData] = useState<SignUpFormData>({
     email: '',
     password: '',
-    name: '',
-    title: '',
-    institution: '',
-    department: '',
-    linkedin: '',
+    scholarId: '',
   });
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError('');
+    setLoading(true); // Start loading
 
     try {
       if (isSignUp) {
+        setMessage('Setting up your profile...');
         await signUp(formData);
+        setMessage('Profile created successfully! Redirecting...');
+        setTimeout(() => navigate('/dashboard'), 5000); // Redirect after a delay
       } else {
         await signIn(formData.email, formData.password);
         navigate('/dashboard');
       }
     } catch (err) {
       setError(err instanceof Error ? err.message : 'An error occurred');
+    }
+      finally {
+      setLoading(false); // Stop loading
     }
   };
 
@@ -118,84 +119,16 @@ export default function Login() {
                 <>
                   <div>
                     <label htmlFor="name" className="block text-sm font-medium text-[rgb(var(--color-text-secondary))]">
-                      Full Name
+                      Google Scholar ID
                     </label>
                     <div className="mt-1">
                       <input
-                        id="name"
-                        name="name"
+                        id="scholarId"
+                        name="scholarId"
                         type="text"
                         required
-                        value={formData.name}
-                        onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-                        className="form-input"
-                      />
-                    </div>
-                  </div>
-
-                  <div>
-                    <label htmlFor="title" className="block text-sm font-medium text-[rgb(var(--color-text-secondary))]">
-                      Title
-                    </label>
-                    <div className="mt-1">
-                      <input
-                        id="title"
-                        name="title"
-                        type="text"
-                        required
-                        value={formData.title}
-                        onChange={(e) => setFormData({ ...formData, title: e.target.value })}
-                        className="form-input"
-                      />
-                    </div>
-                  </div>
-
-                  <div>
-                    <label htmlFor="institution" className="block text-sm font-medium text-[rgb(var(--color-text-secondary))]">
-                      Institution
-                    </label>
-                    <div className="mt-1">
-                      <input
-                        id="institution"
-                        name="institution"
-                        type="text"
-                        required
-                        value={formData.institution}
-                        onChange={(e) => setFormData({ ...formData, institution: e.target.value })}
-                        className="form-input"
-                      />
-                    </div>
-                  </div>
-
-                  <div>
-                    <label htmlFor="department" className="block text-sm font-medium text-[rgb(var(--color-text-secondary))]">
-                      Department
-                    </label>
-                    <div className="mt-1">
-                      <input
-                        id="department"
-                        name="department"
-                        type="text"
-                        required
-                        value={formData.department}
-                        onChange={(e) => setFormData({ ...formData, department: e.target.value })}
-                        className="form-input"
-                      />
-                    </div>
-                  </div>
-
-                  <div>
-                    <label htmlFor="department" className="block text-sm font-medium text-[rgb(var(--color-text-secondary))]">
-                      LinkedIn URL
-                    </label>
-                    <div className="mt-1">
-                      <input
-                        id="linkedin"
-                        name="linkedin"
-                        type="url"
-                        required
-                        value={formData.linkedin}
-                        onChange={(e) => setFormData({ ...formData, linkedin: e.target.value })}
+                        value={formData.scholarId}
+                        onChange={(e) => setFormData({ ...formData, scholarId: e.target.value })}
                         className="form-input"
                       />
                     </div>
@@ -226,6 +159,17 @@ export default function Login() {
           </div>
         </div>
       </div>
+      {loading && (
+      <div className="modal-overlay">
+        <div className="modal">
+          <div className="modal-content p-4">
+            <p className="text-center mb-4">{message}</p>
+            <div className="spinner mx-auto"></div>
+          </div>
+        </div>
+      </div>
+    )}
     </div>
+    
   );
 }
