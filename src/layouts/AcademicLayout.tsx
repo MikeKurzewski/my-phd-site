@@ -43,10 +43,10 @@ export default function AcademicLayout({
       <nav className={`
         fixed top-0 left-0 h-full bg-[rgb(var(--color-bg-secondary))] border-r border-[rgb(var(--color-border-primary))]
         transform transition-transform duration-300 ease-in-out z-40
-        w-64 md:w-16 lg:w-64
-        ${isSidebarOpen ? 'translate-x-0' : '-translate-x-full md:translate-x-0'}
+        w-64
+        ${isSidebarOpen ? 'translate-x-0' : '-translate-x-full lg:translate-x-0'}
       `}>
-        <div className="p-6 space-y-6">
+        <div className="p-6 pt-16 space-y-6">
           {/* Navigation Tabs */}
           <div className="space-y-2">
             <Tab
@@ -83,7 +83,7 @@ export default function AcademicLayout({
             {/* Profile Info Section */}
             <aside className="mb-8 lg:mb-0">
               {/* Profile Photo */}
-              <div className="aspect-square relative rounded-lg overflow-hidden mb-6">
+              <div className="aspect-square relative rounded-lg overflow-hidden mb-6 max-w-xs mx-auto">
                 {profile.profile_image_url ? (
                   <img
                     src={getFileUrl(profile.profile_image_url, 'profile-images')}
