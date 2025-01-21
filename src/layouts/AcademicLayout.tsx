@@ -94,8 +94,9 @@ export default function AcademicLayout({
       <main className="lg:ml-64 p-4 md:p-8">
         <div className="max-w-7xl mx-auto">
           {/* Profile Card */}
-          <div className="lg:grid lg:grid-cols-[18rem_1fr] gap-8">
+          <div className={`${activeTab === 'about' ? 'lg:grid lg:grid-cols-[18rem_1fr]' : ''} gap-8`}>
             {/* Profile Info Section */}
+            {activeTab === 'about' && (
             <aside className="mb-8 lg:mb-0">
               {/* Profile Photo */}
               <div className="aspect-square relative rounded-lg overflow-hidden mb-6 max-w-xs mx-auto">
@@ -165,13 +166,14 @@ export default function AcademicLayout({
                 </div>
               </div>
             </aside>
+            )}
 
             {/* Content Sections */}
             <div className="space-y-8">
               {activeTab === 'about' && (
                 <div className="space-y-8">
                   <div className="bg-[rgb(var(--color-bg-secondary))] rounded-lg p-6 border border-[rgb(var(--color-border-primary))]">
-                    <h2 className="text-xl font-semibold text-[rgb(var(--color-text-primary))] mb-4">About</h2>
+                    <h2 className="text-xl font-semibold text-[rgb(var(--color-text-primary))] mb-4">About Me</h2>
                     <p className="text-[rgb(var(--color-text-secondary))]">{profile.bio}</p>
                   </div>
 
