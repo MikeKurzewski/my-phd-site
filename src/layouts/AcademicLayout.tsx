@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { BookOpen, Briefcase, FileText, Mail, Linkedin, Github, Twitter, Menu, X } from 'lucide-react';
+import { BookOpen, Briefcase, FileText, Mail, Linkedin, Github, Twitter, Menu, X, ExternalLink } from 'lucide-react';
 import { TabProps } from '../types/common';
 
 interface AcademicLayoutProps {
@@ -30,7 +30,7 @@ export default function AcademicLayout({
       {/* Mobile Menu Button */}
       <button
         onClick={() => setIsSidebarOpen(!isSidebarOpen)}
-        className="fixed top-4 left-4 z-50 p-2 rounded-md md:hidden bg-[rgb(var(--color-bg-secondary))] text-[rgb(var(--color-text-primary))]"
+        className="fixed top-4 left-4 z-50 p-2 rounded-md lg:hidden bg-[rgb(var(--color-bg-secondary))] text-[rgb(var(--color-text-primary))]"
       >
         {isSidebarOpen ? (
           <X className="h-6 w-6" />
@@ -72,13 +72,28 @@ export default function AcademicLayout({
               />
             )}
           </div>
+
+          {/* CV Button */}
+          {profile.cv_url && (
+            <div className="pt-4 border-t border-[rgb(var(--color-border-primary))]">
+              <a
+                href={getFileUrl(profile.cv_url, 'profile-files')}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="flex items-center px-4 py-2 text-[rgb(var(--color-text-secondary))] hover:text-[rgb(var(--color-primary-400))] transition-colors"
+              >
+                <FileText className="h-5 w-5 mr-2" />
+                <span>Download CV</span>
+              </a>
+            </div>
+          )}
         </div>
       </nav>
 
       {/* Main Content Area */}
-      <main className="md:ml-16 lg:ml-64 p-4 md:p-8">
+      <main className="lg:ml-64 p-4 md:p-8">
         <div className="max-w-7xl mx-auto">
-          {/* Content Grid */}
+          {/* Profile Card */}
           <div className="lg:grid lg:grid-cols-[18rem_1fr] gap-8">
             {/* Profile Info Section */}
             <aside className="mb-8 lg:mb-0">
@@ -100,7 +115,7 @@ export default function AcademicLayout({
               </div>
 
               {/* Profile Info */}
-              <div className="space-y-4">
+              <div className="space-y-4 text-center lg:text-left">
                 <div className="space-y-1">
                   <h2 className="text-lg font-medium text-[rgb(var(--color-text-primary))]">{profile.title}</h2>
                   <p className="text-[rgb(var(--color-text-secondary))]">{profile.institution}</p>
@@ -108,7 +123,7 @@ export default function AcademicLayout({
                 </div>
 
                 {/* Social Links */}
-                <div className="flex space-x-3">
+                <div className="flex justify-center lg:justify-start space-x-3">
                   {profile.social_links?.email && (
                     <a
                       href={`mailto:${profile.social_links.email}`}
@@ -151,44 +166,114 @@ export default function AcademicLayout({
               </div>
             </aside>
 
-            {/* Main Content */}
+            {/* Content Sections */}
             <div className="space-y-8">
-              {/* Bio */}
-              <div className="prose prose-lg max-w-none">
-                <p className="text-[rgb(var(--color-text-secondary))]">{profile.bio}</p>
-              </div>
+              {activeTab === 'about' && (
+                <div className="space-y-8">
+                  <div className="bg-[rgb(var(--color-bg-secondary))] rounded-lg p-6 border border-[rgb(var(--color-border-primary))]">
+                    <h2 className="text-xl font-semibold text-[rgb(var(--color-text-primary))] mb-4">About</h2>
+                    <p className="text-[rgb(var(--color-text-secondary))]">{profile.bio}</p>
+                  </div>
 
-              {/* Education & Interests */}
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                <div>
-                  <h2 className="text-xl font-semibold text-[rgb(var(--color-text-primary))] mb-4">Education</h2>
-                  <div className="space-y-4">
-                    {qualifications?.map((qual) => (
-                      <div key={qual.id} className="space-y-1">
-                        <h3 className="font-medium text-[rgb(var(--color-text-primary))]">
-                          {qual.degree} in {qual.field}
-                        </h3>
-                        <p className="text-[rgb(var(--color-text-secondary))]">{qual.institution}</p>
-                        <p className="text-sm text-[rgb(var(--color-text-tertiary))]">{qual.year}</p>
+                  {/* Education & Interests */}
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div>
+                      <h2 className="text-xl font-semibold text-[rgb(var(--color-text-primary))] mb-4">Education</h2>
+                      <div className="space-y-4">
+                        {qualifications?.map((qual) => (
+                          <div key={qual.id} className="space-y-1">
+                            <h3 className="font-medium text-[rgb(var(--color-text-primary))]">
+                              {qual.degree} in {qual.field}
+                            </h3>
+                            <p className="text-[rgb(var(--color-text-secondary))]">{qual.institution}</p>
+                            <p className="text-sm text-[rgb(var(--color-text-tertiary))]">{qual.year}</p>
+                          </div>
+                        ))}
                       </div>
-                    ))}
-                  </div>
-                </div>
+                    </div>
 
-                <div>
-                  <h2 className="text-xl font-semibold text-[rgb(var(--color-text-primary))] mb-4">Research Interests</h2>
-                  <div className="flex flex-wrap gap-2">
-                    {profile.research_interests?.map((interest: string) => (
-                      <span
-                        key={interest}
-                        className="px-3 py-1 rounded-full text-sm font-medium bg-[rgb(var(--color-primary-900))] text-[rgb(var(--color-primary-400))]"
-                      >
-                        {interest}
-                      </span>
-                    ))}
+                    <div>
+                      <h2 className="text-xl font-semibold text-[rgb(var(--color-text-primary))] mb-4">Research Interests</h2>
+                      <div className="flex flex-wrap gap-2">
+                        {profile.research_interests?.map((interest: string) => (
+                          <span
+                            key={interest}
+                            className="px-3 py-1 rounded-full text-sm font-medium bg-[rgb(var(--color-primary-900))] text-[rgb(var(--color-primary-400))]"
+                          >
+                            {interest}
+                          </span>
+                        ))}
+                      </div>
+                    </div>
                   </div>
                 </div>
-              </div>
+              )}
+
+              {activeTab === 'publications' && (
+                <div className="space-y-6">
+                  {publications.map((pub) => (
+                    <div
+                      key={pub.id}
+                      className="bg-[rgb(var(--color-bg-secondary))] rounded-lg p-6 border border-[rgb(var(--color-border-primary))]"
+                    >
+                      <div className="flex justify-between items-start">
+                        <div>
+                          <h3 className="text-lg font-medium text-[rgb(var(--color-text-primary))]">{pub.title}</h3>
+                          <span className={`inline-block px-2 py-1 text-xs font-medium rounded-full mt-2 ${
+                            pub.type === 'preprint'
+                              ? 'bg-[rgb(var(--color-warning))] bg-opacity-20 text-[rgb(var(--color-text-primary))]'
+                              : 'bg-[rgb(var(--color-success))] bg-opacity-20 text-[rgb(var(--color-text-primary))]'
+                          }`}>
+                            {pub.type === 'preprint' ? 'Preprint' : 'Published'}
+                          </span>
+                        </div>
+                      </div>
+                      <p className="mt-4 text-[rgb(var(--color-text-secondary))]">{pub.abstract}</p>
+                      <div className="mt-4 text-sm text-[rgb(var(--color-text-tertiary))]">
+                        {pub.authors} • {pub.venue} • {pub.publication_date}
+                      </div>
+                      {pub.publication_url && (
+                        <a
+                          href={pub.publication_url}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="mt-4 inline-flex items-center text-[rgb(var(--color-primary-400))] hover:text-[rgb(var(--color-primary-300))]"
+                        >
+                          <ExternalLink className="h-4 w-4 mr-2" />
+                          View Publication
+                        </a>
+                      )}
+                    </div>
+                  ))}
+                </div>
+              )}
+
+              {activeTab === 'projects' && (
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                  {projects.map((project) => (
+                    <div
+                      key={project.id}
+                      className="bg-[rgb(var(--color-bg-secondary))] rounded-lg p-6 border border-[rgb(var(--color-border-primary))]"
+                    >
+                      <h3 className="text-lg font-medium text-[rgb(var(--color-text-primary))]">{project.title}</h3>
+                      <p className="mt-2 text-[rgb(var(--color-text-secondary))]">{project.description}</p>
+                      <div className="mt-4 flex flex-wrap gap-2">
+                        {project.tags.map((tag: string) => (
+                          <span
+                            key={tag}
+                            className="px-2 py-1 rounded-full text-xs font-medium bg-[rgb(var(--color-primary-900))] text-[rgb(var(--color-primary-400))]"
+                          >
+                            {tag}
+                          </span>
+                        ))}
+                      </div>
+                      <div className="mt-4 text-sm text-[rgb(var(--color-text-tertiary))]">
+                        {project.start_date} - {project.end_date || 'Present'}
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              )}
             </div>
           </div>
         </div>
@@ -197,7 +282,7 @@ export default function AcademicLayout({
       {/* Mobile Sidebar Overlay */}
       {isSidebarOpen && (
         <div
-          className="fixed inset-0 bg-black bg-opacity-50 z-30 md:hidden"
+          className="fixed inset-0 bg-black bg-opacity-50 z-30 lg:hidden"
           onClick={() => setIsSidebarOpen(false)}
         />
       )}
