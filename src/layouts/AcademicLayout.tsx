@@ -1,5 +1,5 @@
-import React from 'react';
-import { BookOpen, Briefcase, FileText, Mail, Linkedin, Github, Twitter } from 'lucide-react';
+import React, { useState } from 'react';
+import { BookOpen, Briefcase, FileText, Mail, Linkedin, Github, Twitter, Menu, X } from 'lucide-react';
 import { TabProps } from '../types/common';
 
 interface AcademicLayoutProps {
@@ -23,43 +23,67 @@ export default function AcademicLayout({
   Tab,
   getFileUrl,
 }: AcademicLayoutProps) {
+  const [isSidebarOpen, setIsSidebarOpen] = useState(false);
+
   return (
-    // Main grid layout
-    <div className="grid grid-cols-[16rem_1fr] min-h-screen bg-[rgb(var(--color-bg-primary))]">
+    <div className="min-h-screen bg-[rgb(var(--color-bg-primary))]">
+      {/* Mobile Menu Button */}
+      <button
+        onClick={() => setIsSidebarOpen(!isSidebarOpen)}
+        className="fixed top-4 left-4 z-50 p-2 rounded-md md:hidden bg-[rgb(var(--color-bg-secondary))] text-[rgb(var(--color-text-primary))]"
+      >
+        {isSidebarOpen ? (
+          <X className="h-6 w-6" />
+        ) : (
+          <Menu className="h-6 w-6" />
+        )}
+      </button>
+
       {/* Sidebar Navigation */}
-      <nav className="bg-[rgb(var(--color-bg-secondary))] border-r border-[rgb(var(--color-border-primary))] p-6 space-y-2">
-        <Tab
-          label="About"
-          icon={<BookOpen className="h-5 w-5" />}
-          isActive={activeTab === 'about'}
-          onClick={() => onTabChange('about')}
-        />
-        {publications.length > 0 && (
-          <Tab
-            label="Publications"
-            icon={<BookOpen className="h-5 w-5" />}
-            isActive={activeTab === 'publications'}
-            onClick={() => onTabChange('publications')}
-          />
-        )}
-        {projects.length > 0 && (
-          <Tab
-            label="Projects"
-            icon={<Briefcase className="h-5 w-5" />}
-            isActive={activeTab === 'projects'}
-            onClick={() => onTabChange('projects')}
-          />
-        )}
+      <nav className={`
+        fixed top-0 left-0 h-full bg-[rgb(var(--color-bg-secondary))] border-r border-[rgb(var(--color-border-primary))]
+        transform transition-transform duration-300 ease-in-out z-40
+        w-64 md:w-16 lg:w-64
+        ${isSidebarOpen ? 'translate-x-0' : '-translate-x-full md:translate-x-0'}
+      `}>
+        <div className="p-6 space-y-6">
+          {/* Navigation Tabs */}
+          <div className="space-y-2">
+            <Tab
+              label="About"
+              icon={<BookOpen className="h-5 w-5" />}
+              isActive={activeTab === 'about'}
+              onClick={() => onTabChange('about')}
+            />
+            {publications.length > 0 && (
+              <Tab
+                label="Publications"
+                icon={<BookOpen className="h-5 w-5" />}
+                isActive={activeTab === 'publications'}
+                onClick={() => onTabChange('publications')}
+              />
+            )}
+            {projects.length > 0 && (
+              <Tab
+                label="Projects"
+                icon={<Briefcase className="h-5 w-5" />}
+                isActive={activeTab === 'projects'}
+                onClick={() => onTabChange('projects')}
+              />
+            )}
+          </div>
+        </div>
       </nav>
 
       {/* Main Content Area */}
-      <main className="p-8">
+      <main className="md:ml-16 lg:ml-64 p-4 md:p-8">
         <div className="max-w-7xl mx-auto">
-          <div className="grid grid-cols-[18rem_1fr] gap-8">
-            {/* Profile Sidebar */}
-            <aside className="space-y-6">
+          {/* Content Grid */}
+          <div className="lg:grid lg:grid-cols-[18rem_1fr] gap-8">
+            {/* Profile Info Section */}
+            <aside className="mb-8 lg:mb-0">
               {/* Profile Photo */}
-              <div className="aspect-square relative rounded-lg overflow-hidden">
+              <div className="aspect-square relative rounded-lg overflow-hidden mb-6">
                 {profile.profile_image_url ? (
                   <img
                     src={getFileUrl(profile.profile_image_url, 'profile-images')}
@@ -82,6 +106,19 @@ export default function AcademicLayout({
                   <p className="text-[rgb(var(--color-text-secondary))]">{profile.institution}</p>
                   <p className="text-sm text-[rgb(var(--color-text-secondary))]">{profile.department}</p>
                 </div>
+
+                {/* CV Button */}
+                {profile.cv_url && (
+                  <a
+                    href={getFileUrl(profile.cv_url, 'profile-files')}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="flex items-center justify-center w-full px-4 py-2 bg-[rgb(var(--color-primary-400))] text-white rounded-md hover:bg-[rgb(var(--color-primary-500))] transition-colors"
+                  >
+                    <FileText className="h-4 w-4 mr-2" />
+                    Download CV
+                  </a>
+                )}
 
                 {/* Social Links */}
                 <div className="flex space-x-3">
@@ -124,19 +161,6 @@ export default function AcademicLayout({
                     </a>
                   )}
                 </div>
-
-                {/* CV Button */}
-                {profile.cv_url && (
-                  <a
-                    href={getFileUrl(profile.cv_url, 'profile-files')}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="flex items-center justify-center w-full px-4 py-2 bg-[rgb(var(--color-primary-400))] text-white rounded-md hover:bg-[rgb(var(--color-primary-500))] transition-colors"
-                  >
-                    <FileText className="h-4 w-4 mr-2" />
-                    Download CV
-                  </a>
-                )}
               </div>
             </aside>
 
@@ -182,6 +206,14 @@ export default function AcademicLayout({
           </div>
         </div>
       </main>
+
+      {/* Mobile Sidebar Overlay */}
+      {isSidebarOpen && (
+        <div
+          className="fixed inset-0 bg-black bg-opacity-50 z-30 md:hidden"
+          onClick={() => setIsSidebarOpen(false)}
+        />
+      )}
     </div>
   );
 }
