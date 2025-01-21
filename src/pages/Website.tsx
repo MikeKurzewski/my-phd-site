@@ -134,6 +134,7 @@ export default function Website() {
   return profile?.layout === 'academic' ? (
     <AcademicLayout
       profile={profile}
+      qualifications={qualifications}
       projects={projects}
       publications={publications}
       activeTab={activeTab}
@@ -151,6 +152,7 @@ export default function Website() {
       onTabChange={setActiveTab}
       Tab={Tab}
       getFileUrl={getFileUrl}
+
     />
   );
 }
