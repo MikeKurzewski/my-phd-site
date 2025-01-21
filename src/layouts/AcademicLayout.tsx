@@ -107,19 +107,6 @@ export default function AcademicLayout({
                   <p className="text-sm text-[rgb(var(--color-text-secondary))]">{profile.department}</p>
                 </div>
 
-                {/* CV Button */}
-                {profile.cv_url && (
-                  <a
-                    href={getFileUrl(profile.cv_url, 'profile-files')}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="flex items-center justify-center w-full px-4 py-2 bg-[rgb(var(--color-primary-400))] text-white rounded-md hover:bg-[rgb(var(--color-primary-500))] transition-colors"
-                  >
-                    <FileText className="h-4 w-4 mr-2" />
-                    Download CV
-                  </a>
-                )}
-
                 {/* Social Links */}
                 <div className="flex space-x-3">
                   {profile.social_links?.email && (
