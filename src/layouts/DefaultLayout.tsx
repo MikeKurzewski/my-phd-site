@@ -1,4 +1,5 @@
 import { ExternalLink, Mail, Linkedin, Github, Twitter, BookOpen, Briefcase, GraduationCap } from 'lucide-react';
+import { TabProps } from '../types/common';
 
 interface DefaultLayoutProps {
   profile: any;

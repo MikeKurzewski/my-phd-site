@@ -1,4 +1,5 @@
 import { FileText, Mail, Linkedin, Github, Twitter, ExternalLink } from 'lucide-react';
+import { TabProps } from '../types/common';
 
 interface AcademicLayoutProps {
   profile: any;

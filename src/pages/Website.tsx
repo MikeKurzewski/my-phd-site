@@ -4,13 +4,7 @@ import { supabase } from '../lib/supabase';
 import { useTheme } from '../lib/theme';
 import DefaultLayout from '../layouts/DefaultLayout';
 import AcademicLayout from '../layouts/AcademicLayout';
-
-interface TabProps {
-  label: string;
-  icon: React.ReactNode;
-  isActive: boolean;
-  onClick: () => void;
-}
+import { TabProps } from '../types/common';
 
 const Tab: React.FC<TabProps> = ({ label, icon, isActive, onClick }) => (
   <button
