@@ -49,7 +49,7 @@ export function useSubscription() {
           Authorization: `Bearer ${(await supabase.auth.getSession()).data.session?.access_token}`,
         },
         body: JSON.stringify({
-          priceId: 'price_1QfG2GGIpe9EVtMn1qmrvMMw',
+          priceId: 'price_1Qjf3ZGIpe9EVtMntPBCloj6',
         }),
       });
 

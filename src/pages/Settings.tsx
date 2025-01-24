@@ -172,26 +172,26 @@ export default function Settings() {
     }
   };
 
-  // const handleUpgrade = async () => {
-  //   try {
-  //     const response = await fetch('https://foyumeaalmplfvleuxgr.supabase.co/functions/v1/create-checkout-session', {
-  //       method: 'POST',
-  //       headers: {
-  //         'Content-Type': 'application/json',
-  //         Authorization: `Bearer ${(await supabase.auth.getSession()).data.session?.access_token}`,
-  //       },
-  //       body: JSON.stringify({
-  //         priceId: 'price_1QfG2GGIpe9EVtMn1qmrvMMw',
-  //       }),
-  //     });
+  const handleUpgrade = async () => {
+    try {
+      const response = await fetch('https://foyumeaalmplfvleuxgr.supabase.co/functions/v1/create-checkout-session', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${(await supabase.auth.getSession()).data.session?.access_token}`,
+        },
+        body: JSON.stringify({
+          priceId: 'price_1Qjf3ZGIpe9EVtMntPBCloj6',
+        }),
+      });
 
-  //     const { session } = await response.json();
-  //     window.location.href = session.url;
-  //   } catch (error) {
-  //     console.error('Error creating checkout session:', error);
-  //     setError('Failed to start upgrade process');
-  //   }
-  // };
+      const { session } = await response.json();
+      window.location.href = session.url;
+    } catch (error) {
+      console.error('Error creating checkout session:', error);
+      setError('Failed to start upgrade process');
+    }
+  };
 
   const handleCancelSubscription = async () => {
     if (!confirm('Are you sure you want to cancel your subscription?')) return;
@@ -240,7 +240,7 @@ export default function Settings() {
 
       <div className="bg-[rgb(var(--color-bg-secondary))] shadow-sm rounded-lg divide-y divide-[rgb(var(--color-border-primary))] border border-[rgb(var(--color-border-primary))]">
         {/* Subscription Section */}
-        {/* <div className="p-6">
+        <div className="p-6">
           <div className="flex items-center gap-4 mb-4">
             <div className="p-2 bg-[rgb(var(--color-primary-900))] rounded-lg">
               <CreditCard className="h-6 w-6 text-[rgb(var(--color-primary-400))]" />
@@ -290,7 +290,7 @@ export default function Settings() {
               </div>
             )}
           </div>
-        </div> */}
+        </div>
 
         {/* Website URL Section */}
         <div className="p-6">
