@@ -9,7 +9,7 @@ interface EditableWrapperProps {
   label?: string;
 }
 
-const EditableWrapper = ({
+export const EditableWrapper = ({
   isEditing,
   children,
   onEdit,
