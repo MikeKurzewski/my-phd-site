@@ -5,6 +5,8 @@ import { useTheme } from '../lib/theme';
 import DefaultLayout from '../layouts/DefaultLayout';
 import AcademicLayout from '../layouts/AcademicLayout';
 import { TabProps } from '../types/common';
+import { useAuth } from '../lib/auth';
+import { Edit2 } from 'lucide-react';
 
 const Tab: React.FC<TabProps> = ({ label, icon, isActive, onClick }) => (
   <button
@@ -19,6 +21,24 @@ const Tab: React.FC<TabProps> = ({ label, icon, isActive, onClick }) => (
   </button>
 );
 
+// Edit button component
+const EditButton = () => {
+  const handleEdit = () => {
+    console.log('edit button clicked');
+    // Will add edit logic here
+  };
+
+  return (
+    <button
+      onClick={handleEdit}
+      className="fixed top-4 right-4 z-50 inline-flex items-center px-4 py-2 bg-[rgb(var(--color-primary-400))] text-white rounded-md hover:bg-[rgb(var(--color-primary-500))] transition-colors"
+    >
+      <Edit2 className="h-4 w-4 mr-2" />
+      Edit Profile
+    </button>
+  );
+};
+
 export default function Website() {
   const params = useParams();
   const [profile, setProfile] = useState<any>(null);
@@ -28,6 +48,8 @@ export default function Website() {
   const [activeTab, setActiveTab] = useState('about');
   const [loading, setLoading] = useState(true);
   const [theme, setTheme] = useState<'light-teal' | 'dark-teal' | 'light-blue' | 'dark-blue'>('dark-teal');
+  const [isOwner, setIsOwner] = useState(false);
+  const { user } = useAuth();
 
   useEffect(() => {
     fetchProfileData();
@@ -39,12 +61,22 @@ export default function Website() {
     }
   }, [profile?.theme]);
 
+  useEffect(() => {
+    if (profile && user) {
+      setIsOwner(user.id === profile.id);
+    }
+  }, [user, profile]);
+
   useTheme(theme);
 
   const fetchProfileData = async () => {
     try {
       // Get username from either subdomain or route parameter
+      // Subdomain if visited directly, route parameter if accessed via path (from 'launch website')
       let searchUsername = params.username;
+      if (searchUsername) {
+        setIsOwner(true);
+      }
       if (!searchUsername && window.location.hostname.includes('.myphd.site')) {
         searchUsername = window.location.hostname.split('.')[0];
       }
@@ -62,6 +94,7 @@ export default function Website() {
         .eq('username', searchUsername)
         .single();
 
+
       if (profileError) {
         console.error('Error fetching profile:', profileError);
         setLoading(false);
@@ -73,6 +106,7 @@ export default function Website() {
         return;
       }
 
+      setIsOwner(user?.id === profileData?.id);
       setProfile(profileData);
 
       // Get qualifications
@@ -131,28 +165,32 @@ export default function Website() {
     );
   }
 
-  return profile?.layout === 'academic' ? (
-    <AcademicLayout
-      profile={profile}
-      qualifications={qualifications}
-      projects={projects}
-      publications={publications}
-      activeTab={activeTab}
-      onTabChange={setActiveTab}
-      Tab={Tab}
-      getFileUrl={getFileUrl}
-    />
-  ) : (
-    <DefaultLayout
-      profile={profile}
-      qualifications={qualifications}
-      projects={projects}
-      publications={publications}
-      activeTab={activeTab}
-      onTabChange={setActiveTab}
-      Tab={Tab}
-      getFileUrl={getFileUrl}
-
-    />
+  return (
+    <div className="relative">
+      {isOwner && <EditButton />}
+      {profile?.layout === 'academic' ? (
+        <AcademicLayout
+          profile={profile}
+          qualifications={qualifications}
+          projects={projects}
+          publications={publications}
+          activeTab={activeTab}
+          onTabChange={setActiveTab}
+          Tab={Tab}
+          getFileUrl={getFileUrl}
+        />
+      ) : (
+        <DefaultLayout
+          profile={profile}
+          qualifications={qualifications}
+          projects={projects}
+          publications={publications}
+          activeTab={activeTab}
+          onTabChange={setActiveTab}
+          Tab={Tab}
+          getFileUrl={getFileUrl}
+        />
+      )}
+    </div>
   );
 }
