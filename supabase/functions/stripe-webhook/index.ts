@@ -1,61 +1,37 @@
-import { serve } from 'https://deno.land/std@0.168.0/http/server.ts'
-import { createClient } from 'https://esm.sh/@supabase/supabase-js@2'
-import Stripe from 'https://esm.sh/stripe@12.0.0'
 
-const stripe = new Stripe(Deno.env.get('STRIPE_SECRET_KEY') as string, {
-  apiVersion: '2023-10-16',
+// Import via bare specifier thanks to the import_map.json file.
+import Stripe from 'https://esm.sh/stripe@17.5.0?target=deno'
+
+const stripe = new Stripe(Deno.env.get('STRIPE_API_KEY') as string, {
+  // This is needed to use the Fetch API rather than relying on the Node http
+  // package.
+  apiVersion: '2022-11-15',
+  httpClient: Stripe.createFetchHttpClient(),
 })
+// This is needed in order to use the Web Crypto API in Deno.
+const cryptoProvider = Stripe.createSubtleCryptoProvider()
 
-// Use the provided webhook secret
-const webhookSecret = 'whsec_3wxGpdBu3Zcf8pZhCKc8JVeO48LqGxeM'
+console.log('Hello from Stripe Webhook!')
 
-serve(async (req) => {
-  const signature = req.headers.get('stripe-signature')
+Deno.serve(async (request) => {
+  const signature = request.headers.get('Stripe-Signature')
 
-  if (!signature) {
-    return new Response('No signature', { status: 400 })
-  }
-
+  // First step is to verify the event. The .text() method must be used as the
+  // verification relies on the raw request body rather than the parsed JSON.
+  const body = await request.text()
+  let receivedEvent
   try {
-    const event = stripe.webhooks.constructEvent(
-      await req.text(),
-      signature,
-      webhookSecret
+    receivedEvent = await stripe.webhooks.constructEventAsync(
+      body,
+      signature!,
+      Deno.env.get('STRIPE_WEBHOOK_SIGNING_SECRET')!,
+      undefined,
+      cryptoProvider
     )
-
-    const supabase = createClient(
-      Deno.env.get('SUPABASE_URL') as string,
-      Deno.env.get('SUPABASE_SERVICE_ROLE_KEY') as string
-    )
-
-    switch (event.type) {
-      case 'customer.subscription.created':
-      case 'customer.subscription.updated':
-        const subscription = event.data.object
-        await supabase
-          .from('subscriptions')
-          .upsert({
-            id: subscription.id,
-            user_id: subscription.metadata.user_id,
-            status: subscription.status,
-            plan: subscription.items.data[0].price.lookup_key,
-            current_period_end: new Date(subscription.current_period_end * 1000).toISOString(),
-            cancel_at_period_end: subscription.cancel_at_period_end,
-          })
-        break
-
-      case 'customer.subscription.deleted':
-        const deletedSubscription = event.data.object
-        await supabase
-          .from('subscriptions')
-          .update({ status: 'canceled' })
-          .eq('id', deletedSubscription.id)
-        break
-    }
-
-    return new Response(JSON.stringify({ ok: true }), { status: 200 })
   } catch (err) {
-    console.error('Error processing webhook:', err)
-    return new Response('Webhook Error', { status: 400 })
+    return new Response(err.message, { status: 400 })
   }
+  console.log(`🔔 Event received: ${receivedEvent.id}`)
+  console.log(receivedEvent)
+  return new Response(JSON.stringify({ ok: true }), { status: 200 })
 })

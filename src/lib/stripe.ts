@@ -1,7 +1,9 @@
 import { loadStripe } from '@stripe/stripe-js';
+//import {Stripe} from 'https://esm.sh/stripe@12.0.0'
+
 
 // Initialize Stripe with the public key
-const stripePromise = loadStripe('pk_live_51Qex0xGIpe9EVtMnLFXrqtpkRKvl4gnT5qItbeCrUtwJDyEUz6JIb59mrECKAmomAYezmQxlhHAhmbozx23BKaQR00urY2lO8m');
+const stripePromise = loadStripe('pk_test_51Qex0xGIpe9EVtMn37Z9Ou47dMiBRT2iuDKAOQDj5F6RYeqCYD9wo7hBMFPaLA65MUmeQP5OS2nMJrTsLsCjpZIb00oLJZvLtq');
 
 export const createCheckoutSession = async (userId: string) => {
   try {
@@ -11,7 +13,7 @@ export const createCheckoutSession = async (userId: string) => {
         'Content-Type': 'application/json',
       },
       body: JSON.stringify({
-        priceId: 'price_1QfG2GGIpe9EVtMn1qmrvMMw',
+        priceId: 'price_1Qjf3ZGIpe9EVtMntPBCloj6',
         userId,
       }),
     });

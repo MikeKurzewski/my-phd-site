@@ -11,6 +11,7 @@
     "generate:types": "supabase gen types typescript --project-id foyumeaalmplfvleuxgr > src/lib/database.types.ts"
   },
   "dependencies": {
+    "@stripe/stripe-js": "^5.5.0",
     "@supabase/supabase-js": "^2.39.8",
     "lucide-react": "^0.344.0",
     "react": "^18.3.1",
