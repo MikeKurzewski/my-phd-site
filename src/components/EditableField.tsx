@@ -9,7 +9,7 @@ interface EditableFieldProps {
   label?: string;
 }
 
-const EditableField: React.FC<EditableFieldProps> = ({
+export const EditableField: React.FC<EditableFieldProps> = ({
   type,
   value,
   isEditing,
