@@ -132,6 +132,7 @@ export default function Website() {
   };
 
   const handleFieldUpdate = (field: string, value: string) => {
+    console.log('Updating field:', field, value);
     setPendingChanges(prev => ({
       ...prev,
       [field]: value,
@@ -148,7 +149,7 @@ export default function Website() {
 
     const handleSave = async () => {
       try {
-        // Save to Supabase
+        console.log('Saving changes:', pendingChanges);
         const { error } = await supabase
           .from('profiles')
           .update(pendingChanges)
@@ -156,7 +157,6 @@ export default function Website() {
 
         if (error) throw error;
 
-        // Update local state
         setProfile(prev => ({
           ...prev,
           ...pendingChanges
