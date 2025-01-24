@@ -164,8 +164,19 @@ export default function Settings() {
         }),
       });
 
-      const { session } = await response.json();
-      window.location.href = session.url;
+    const responseData = await response.json();
+    console.log('Backend response:', responseData);
+
+    if (!response.ok) {
+      throw new Error(responseData.error || 'Failed to create checkout session');
+    }
+
+    const { session } = responseData;
+    if (!session || !session.url) {
+      throw new Error('Stripe session URL not returned by the server');
+    }
+
+    window.location.href = session.url;
     } catch (error) {
       console.error('Error creating checkout session:', error);
       setError('Failed to start upgrade process');
