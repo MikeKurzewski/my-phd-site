@@ -18,6 +18,8 @@ export const EditableField: React.FC<EditableFieldProps> = ({
 }) => {
   const [isHovered, setIsHovered] = useState(false);
 
+  console.log('EditableField rendered', {type, isEditing, isHovered});
+
   const renderEditIcon = () => (
     <div className="absolute -right-4 top-0 opacity-0 group-hover:opacity-100 transition-opacity">
       <Edit2 className="h-4 w-4 text-[rgb(var(--color-primary-400))]" />

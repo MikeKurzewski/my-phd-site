@@ -33,6 +33,7 @@ export default function Website() {
   const [theme, setTheme] = useState<'light-teal' | 'dark-teal' | 'light-blue' | 'dark-blue'>('dark-teal');
   const [isOwner, setIsOwner] = useState(false);
   const [isEditing, setIsEditing] = useState(false);
+  const [pendingChanges, setPendingChanges] = useState({});
   const { user } = useAuth();
 
   useEffect(() => {
@@ -130,18 +131,42 @@ export default function Website() {
     return supabase.storage.from(bucket).getPublicUrl(path).data.publicUrl;
   };
 
+  const handleFieldUpdate = (field: string, value: string) => {
+    setPendingChanges(prev => ({
+      ...prev,
+      [field]: value,
+    }));
+  };
+
+
   const EditControls = () => {
     const handleEdit = () => {
       console.log('Entering edit mode');
       setIsEditing(true);
     };
 
-    const handleSave = () => {
-      console.log('Saving changes');
-      setIsEditing(false);
-      // Add save logic here... Will need to update profile data in supabase.
-    };
 
+    const handleSave = async () => {
+      try {
+        // Save to Supabase
+        const { error } = await supabase
+          .from('profiles')
+          .update(pendingChanges)
+          .eq('id', profile.id);
+
+        if (error) throw error;
+
+        // Update local state
+        setProfile(prev => ({
+          ...prev,
+          ...pendingChanges
+        }));
+        setPendingChanges({});
+        setIsEditing(false);
+      } catch (error) {
+        console.error('Error saving changes:', error);
+      }
+    };
     const handleExit = () => {
       console.log('Exiting edit mode');
       setIsEditing(false);
@@ -167,7 +192,7 @@ export default function Website() {
           </button>
         </div>
       );
-    }
+    };
 
     return (
       <button
@@ -202,7 +227,7 @@ export default function Website() {
 
   return (
     <div className="relative">
-      {isOwner && <EditControls/>}
+      {isOwner && <EditControls />}
       {profile?.layout === 'academic' ? (
         <AcademicLayout
           profile={profile}
@@ -213,6 +238,8 @@ export default function Website() {
           onTabChange={setActiveTab}
           Tab={Tab}
           getFileUrl={getFileUrl}
+          isEditing={isEditing}
+          onUpdateField={handleFieldUpdate}
         />
       ) : (
         <DefaultLayout

@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { BookOpen, Briefcase, FileText, Mail, Linkedin, Github, Twitter, Menu, X, ExternalLink } from 'lucide-react';
 import { TabProps } from '../types/common';
+import { EditableWrapper } from '../components/EditableWrapper';
 
 interface AcademicLayoutProps {
   profile: any;
@@ -11,6 +12,8 @@ interface AcademicLayoutProps {
   onTabChange: (tab: string) => void;
   Tab: React.FC<TabProps>;
   getFileUrl: (path: string, bucket: string) => string;
+  isEditing: boolean;
+  onUpdateField: (field: string, value: string) => void;
 }
 
 export default function AcademicLayout({
@@ -22,6 +25,8 @@ export default function AcademicLayout({
   onTabChange,
   Tab,
   getFileUrl,
+  isEditing,
+  onUpdateField,
 }: AcademicLayoutProps) {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
 
@@ -99,21 +104,29 @@ export default function AcademicLayout({
             {activeTab === 'about' && (
             <aside className="mb-8 lg:mb-0">
               {/* Profile Photo */}
-              <div className="aspect-square relative rounded-lg overflow-hidden mb-6 max-w-xs mx-auto">
-                {profile.profile_image_url ? (
-                  <img
-                    src={getFileUrl(profile.profile_image_url, 'profile-images')}
-                    alt={profile.name}
-                    className="w-full h-full object-cover"
-                  />
-                ) : (
-                  <div className="w-full h-full bg-[rgb(var(--color-bg-tertiary))] flex items-center justify-center">
-                    <span className="text-4xl text-[rgb(var(--color-text-tertiary))]">
-                      {profile.name?.charAt(0)}
-                    </span>
-                  </div>
-                )}
-              </div>
+              <EditableWrapper
+                isEditing={isEditing}
+                type="image"
+                value={profile.profile_image_url}
+                onEdit={(value) => onUpdateField('profile_image_url', value)}
+                label="Profile Image"
+              >
+                <div className="aspect-square relative rounded-lg overflow-hidden mb-6 max-w-xs mx-auto">
+                  {profile.profile_image_url ? (
+                    <img
+                      src={getFileUrl(profile.profile_image_url, 'profile-images')}
+                      alt={profile.name}
+                      className="w-full h-full object-cover"
+                    />
+                  ) : (
+                    <div className="w-full h-full bg-[rgb(var(--color-bg-tertiary))] flex items-center justify-center">
+                      <span className="text-4xl text-[rgb(var(--color-text-tertiary))]">
+                        {profile.name?.charAt(0)}
+                      </span>
+                    </div>
+                  )}
+                </div>
+              </EditableWrapper>
 
               {/* Profile Info */}
               <div className="space-y-4 text-center lg:text-left">
@@ -173,8 +186,18 @@ export default function AcademicLayout({
               {activeTab === 'about' && (
                 <div className="space-y-8">
                   <div className="bg-[rgb(var(--color-bg-secondary))] rounded-lg p-6 border border-[rgb(var(--color-border-primary))]">
-                    <h2 className="text-xl font-semibold text-[rgb(var(--color-text-primary))] mb-4">About Me</h2>
-                    <p className="text-[rgb(var(--color-text-secondary))]">{profile.bio}</p>
+                    <h2 className="text-xl font-semibold">About Me</h2>
+                    <EditableWrapper
+                      isEditing={isEditing}
+                      type="textarea"
+                      value={profile.bio}
+                      onEdit={(value) => onUpdateField('bio', value)}
+                      label="Bio"
+                    >
+                      <p className="text-[rgb(var(--color-text-secondary))]">
+                        {profile.bio}
+                      </p>
+                    </EditableWrapper>
                   </div>
 
                   {/* Education & Interests */}
