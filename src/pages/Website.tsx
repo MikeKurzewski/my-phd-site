@@ -6,7 +6,7 @@ import DefaultLayout from '../layouts/DefaultLayout';
 import AcademicLayout from '../layouts/AcademicLayout';
 import { TabProps } from '../types/common';
 import { useAuth } from '../lib/auth';
-import { Edit2 } from 'lucide-react';
+import { Edit2, Save, X } from 'lucide-react';
 
 const Tab: React.FC<TabProps> = ({ label, icon, isActive, onClick }) => (
   <button
@@ -21,23 +21,6 @@ const Tab: React.FC<TabProps> = ({ label, icon, isActive, onClick }) => (
   </button>
 );
 
-// Edit button component
-const EditButton = () => {
-  const handleEdit = () => {
-    console.log('edit button clicked');
-    // Will add edit logic here
-  };
-
-  return (
-    <button
-      onClick={handleEdit}
-      className="fixed top-4 right-4 z-50 inline-flex items-center px-4 py-2 bg-[rgb(var(--color-primary-400))] text-white rounded-md hover:bg-[rgb(var(--color-primary-500))] transition-colors"
-    >
-      <Edit2 className="h-4 w-4 mr-2" />
-      Edit Profile
-    </button>
-  );
-};
 
 export default function Website() {
   const params = useParams();
@@ -49,6 +32,7 @@ export default function Website() {
   const [loading, setLoading] = useState(true);
   const [theme, setTheme] = useState<'light-teal' | 'dark-teal' | 'light-blue' | 'dark-blue'>('dark-teal');
   const [isOwner, setIsOwner] = useState(false);
+  const [isEditing, setIsEditing] = useState(false);
   const { user } = useAuth();
 
   useEffect(() => {
@@ -146,6 +130,57 @@ export default function Website() {
     return supabase.storage.from(bucket).getPublicUrl(path).data.publicUrl;
   };
 
+  const EditControls = () => {
+    const handleEdit = () => {
+      console.log('Entering edit mode');
+      setIsEditing(true);
+    };
+
+    const handleSave = () => {
+      console.log('Saving changes');
+      setIsEditing(false);
+      // Add save logic here... Will need to update profile data in supabase.
+    };
+
+    const handleExit = () => {
+      console.log('Exiting edit mode');
+      setIsEditing(false);
+      // Probably should add a discard changes confirmation here.
+    };
+
+    if (isEditing) {
+      return (
+        <div className="fixed top-4 right-4 z-50 flex gap-2">
+          <button
+            onClick={handleSave}
+            className="btn-primary flex items-center gap-2"
+          >
+            <Save className="h-4 w-4" />
+            Save
+          </button>
+          <button
+            onClick={handleExit}
+            className="btn-secondary flex items-center gap-2"
+          >
+            <X className="h-4 w-4" />
+            Exit
+          </button>
+        </div>
+      );
+    }
+
+    return (
+      <button
+        onClick={handleEdit}
+        className="fixed top-4 right-4 z-50 btn-primary flex items-center gap-2"
+      >
+        <Edit2 className="h-4 w-4" />
+        Edit Profile
+      </button>
+    );
+  };
+
+  // Rendering logic
   if (loading) {
     return (
       <div className="flex items-center justify-center min-h-screen">
@@ -167,7 +202,7 @@ export default function Website() {
 
   return (
     <div className="relative">
-      {isOwner && <EditButton />}
+      {isOwner && <EditControls/>}
       {profile?.layout === 'academic' ? (
         <AcademicLayout
           profile={profile}
