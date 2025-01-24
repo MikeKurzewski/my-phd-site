@@ -13,7 +13,7 @@ export const createCheckoutSession = async (userId: string) => {
         'Content-Type': 'application/json',
       },
       body: JSON.stringify({
-        priceId: 'price_1Qjf3ZGIpe9EVtMntPBCloj6',
+        priceId: 'price_1QkiEMGIpe9EVtMn1py26ZaI',
         userId,
       }),
     });
