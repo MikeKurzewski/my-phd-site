@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Globe, Lock, Palette, Sun, Moon, ExternalLink, CreditCard } from 'lucide-react';
+import { Globe, Lock, Palette, Sun, Moon, ExternalLink, CreditCard, Layout} from 'lucide-react';
 import { useAuth } from '../lib/auth';
 import { supabase } from '../lib/supabase';
 import { useTheme } from '../lib/theme';
@@ -8,6 +8,7 @@ interface Profile {
   id: string;
   username: string;
   theme: 'light-teal' | 'dark-teal' | 'light-blue' | 'dark-blue';
+  layout: 'default' | 'academic';
 }
 
 interface Subscription {
@@ -90,12 +91,32 @@ export default function Settings() {
         .eq('id', user?.id);
 
       if (error) throw error;
-      
+
       setTheme(newTheme);
       setSuccess('Theme updated successfully');
     } catch (error) {
       console.error('Error updating theme:', error);
       setError('Failed to update theme preference');
+    }
+  };
+
+  const handleLayoutChange = async (newLayout: 'default' | 'academic') => {
+    try {
+      setError(null);
+      setSuccess(null);
+
+      const { error } = await supabase
+        .from('profiles')
+        .update({ layout: newLayout })
+        .eq('id', user?.id);
+
+      if (error) throw error;
+
+      setProfile(prev => prev ? { ...prev, layout: newLayout } : null);
+      setSuccess('Layout updated successfully');
+    } catch (error) {
+      console.error('Error updating layout:', error);
+      setError('Failed to update layout preference');
     }
   };
 
@@ -185,7 +206,7 @@ export default function Settings() {
       });
 
       if (!response.ok) throw new Error('Failed to cancel subscription');
-      
+
       await fetchSubscription();
     } catch (error) {
       console.error('Error canceling subscription:', error);
@@ -233,7 +254,7 @@ export default function Settings() {
                   Current Plan: {subscription?.plan === 'free' ? 'Free' : 'Pro'}
                 </p>
                 <p className="text-sm text-[rgb(var(--color-text-secondary))]">
-                  {subscription?.plan === 'free' 
+                  {subscription?.plan === 'free'
                     ? 'Limited features available'
                     : `Next billing date: ${new Date(subscription?.current_period_end || '').toLocaleDateString()}`
                   }
@@ -327,47 +348,75 @@ export default function Settings() {
           <div className="flex items-center gap-4">
             <button
               onClick={() => handleThemeChange('light-teal')}
-              className={`flex items-center gap-2 px-4 py-2 rounded-md transition-colors ${
-                theme === 'light-teal'
-                  ? 'bg-[rgb(var(--color-primary-900))] text-[rgb(var(--color-primary-400))]'
-                  : 'text-[rgb(var(--color-text-secondary))] hover:bg-[rgb(var(--color-bg-tertiary))]'
-              }`}
+              className={`flex items-center gap-2 px-4 py-2 rounded-md transition-colors ${theme === 'light-teal'
+                ? 'bg-[rgb(var(--color-primary-900))] text-[rgb(var(--color-primary-400))]'
+                : 'text-[rgb(var(--color-text-secondary))] hover:bg-[rgb(var(--color-bg-tertiary))]'
+                }`}
             >
               <Sun className="h-5 w-5" />
               Light Teal
             </button>
             <button
               onClick={() => handleThemeChange('dark-teal')}
-              className={`flex items-center gap-2 px-4 py-2 rounded-md transition-colors ${
-                theme === 'dark-teal'
-                  ? 'bg-[rgb(var(--color-primary-900))] text-[rgb(var(--color-primary-400))]'
-                  : 'text-[rgb(var(--color-text-secondary))] hover:bg-[rgb(var(--color-bg-tertiary))]'
-              }`}
+              className={`flex items-center gap-2 px-4 py-2 rounded-md transition-colors ${theme === 'dark-teal'
+                ? 'bg-[rgb(var(--color-primary-900))] text-[rgb(var(--color-primary-400))]'
+                : 'text-[rgb(var(--color-text-secondary))] hover:bg-[rgb(var(--color-bg-tertiary))]'
+                }`}
             >
               <Moon className="h-5 w-5" />
               Dark Teal
             </button>
             <button
               onClick={() => handleThemeChange('light-blue')}
-              className={`flex items-center gap-2 px-4 py-2 rounded-md transition-colors ${
-                theme === 'light-blue'
-                  ? 'bg-[rgb(var(--color-primary-900))] text-[rgb(var(--color-primary-400))]'
-                  : 'text-[rgb(var(--color-text-secondary))] hover:bg-[rgb(var(--color-bg-tertiary))]'
-              }`}
+              className={`flex items-center gap-2 px-4 py-2 rounded-md transition-colors ${theme === 'light-blue'
+                ? 'bg-[rgb(var(--color-primary-900))] text-[rgb(var(--color-primary-400))]'
+                : 'text-[rgb(var(--color-text-secondary))] hover:bg-[rgb(var(--color-bg-tertiary))]'
+                }`}
             >
               <Moon className="h-5 w-5" />
               Light Blue
             </button>
             <button
               onClick={() => handleThemeChange('dark-blue')}
-              className={`flex items-center gap-2 px-4 py-2 rounded-md transition-colors ${
-                theme === 'dark-blue'
-                  ? 'bg-[rgb(var(--color-primary-900))] text-[rgb(var(--color-primary-400))]'
-                  : 'text-[rgb(var(--color-text-secondary))] hover:bg-[rgb(var(--color-bg-tertiary))]'
-              }`}
+              className={`flex items-center gap-2 px-4 py-2 rounded-md transition-colors ${theme === 'dark-blue'
+                ? 'bg-[rgb(var(--color-primary-900))] text-[rgb(var(--color-primary-400))]'
+                : 'text-[rgb(var(--color-text-secondary))] hover:bg-[rgb(var(--color-bg-tertiary))]'
+                }`}
             >
               <Moon className="h-5 w-5" />
               Dark Blue
+            </button>
+          </div>
+        </div>
+
+        {/* Layout Selection Section */}
+        <div className="p-6">
+          <div className="flex items-center gap-4 mb-4">
+            <div className="p-2 bg-[rgb(var(--color-primary-900))] rounded-lg">
+              <Layout className="h-6 w-6 text-[rgb(var(--color-primary-400))]" />
+            </div>
+            <h3 className="text-lg font-medium text-[rgb(var(--color-text-primary))]">Website Layout</h3>
+          </div>
+          <div className="flex items-center gap-4">
+            <button
+              onClick={() => handleLayoutChange('default')}
+              className={`flex items-center gap-2 px-4 py-2 rounded-md transition-colors ${
+                profile?.layout === 'default'
+                ? 'bg-[rgb(var(--color-primary-900))] text-[rgb(var(--color-primary-400))]'
+                : 'text-[rgb(var(--color-text-secondary))] hover:bg-[rgb(var(--color-bg-tertiary))]'
+                }`}
+            >
+              Default
+            </button>
+            <button
+              onClick={() => handleLayoutChange('academic')}
+              className={`flex items-center gap-2 px-4 py-2 rounded-md transition-colors ${
+                profile?.layout === 'academic'
+                ? 'bg-[rgb(var(--color-primary-900))] text-[rgb(var(--color-primary-400))]'
+                : 'text-[rgb(var(--color-text-secondary))] hover:bg-[rgb(var(--color-bg-tertiary))]'
+                }`}
+            >
+              Academic
             </button>
           </div>
         </div>
@@ -391,9 +440,9 @@ export default function Settings() {
               />
             </div>
             <div className="flex space-x-4">
-              <button 
+              <button
                 className="btn-secondary"
-                onClick={() => {/* TODO: Implement password reset */}}
+                onClick={() => {/* TODO: Implement password reset */ }}
               >
                 Reset Password
               </button>
