@@ -1,9 +1,10 @@
-import { ExternalLink, Mail, Linkedin, Github, Twitter, BookOpen, Briefcase, GraduationCap } from 'lucide-react';
+import { ExternalLink, Mail, Linkedin, Github, Twitter, BookOpen, Briefcase } from 'lucide-react';
 import { TabProps } from '../types/common';
 
 interface DefaultLayoutProps {
   profile: any;
   publications: any[];
+  qualifications: any[];
   projects: any[];
   activeTab: string;
   onTabChange: (tab: string) => void;
@@ -168,7 +169,7 @@ export default function DefaultLayout({
                 <div className="bg-[rgb(var(--color-bg-secondary))] rounded-lg p-6 border border-[rgb(var(--color-border-primary))]">
                   <h2 className="text-xl font-semibold text-[rgb(var(--color-text-primary))] mb-4">Curriculum Vitae</h2>
                   <a
-                    href={getFileUrl(profile.cv_url,'profile-files')}
+                    href={getFileUrl(profile.cv_url, 'profile-files')}
                     target="_blank"
                     rel="noopener noreferrer"
                     className="inline-flex items-center text-[rgb(var(--color-primary-400))] hover:text-[rgb(var(--color-primary-300))]"

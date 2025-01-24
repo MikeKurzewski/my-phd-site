@@ -2,6 +2,7 @@ import { createContext, useContext, useEffect, useState } from 'react';
 import { User } from '@supabase/supabase-js';
 import { supabase } from './supabase';
 import { fetchAuthorData } from "../lib/serpapi"; // SerpAPI function
+
 interface SignUpData {
   email: string;
   password: string;
@@ -18,9 +19,9 @@ interface AuthContextType {
 
 const AuthContext = createContext<AuthContextType>({
   user: null,
-  signIn: async () => {},
-  signUp: async () => {},
-  signOut: async () => {},
+  signIn: async () => { },
+  signUp: async () => { },
+  signOut: async () => { },
   loading: true,
 });
 
@@ -67,47 +68,47 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       };
     };
 
-    try{
-    const { department, institution } = parseAffiliations(author.affiliations);
-    const { error } = await supabase.from('profiles').update([
-      {
-        name: author.name || '',
-        affiliations: author.affiliations || '',
-        scholar_id: data.scholarId || '',
-        research_interests: author.interests
-          ? author.interests.map((interest) => interest.title)
-          : [],
-        department,
-        institution,
+    try {
+      const { department, institution } = parseAffiliations(author.affiliations);
+      const { error } = await supabase.from('profiles').update([
+        {
+          name: author.name || '',
+          affiliations: author.affiliations || '',
+          scholar_id: data.scholarId || '',
+          research_interests: author.interests
+            ? author.interests.map((interest) => interest.title)
+            : [],
+          department,
+          institution,
+        }
+      ]).eq('id', userId);
+      if (error && error.code !== '23505') { // Ignore duplicate key errors
+        throw error;
       }
-    ]).eq('id', userId);
-    if (error && error.code !== '23505') { // Ignore duplicate key errors
+      // Insert articles data
+      if (articles.length > 0) {
+        const formattedArticles = articles.map((article) => ({
+          user_id: userId,
+          title: article.title || '',
+          publication_url: article.link || '',
+          citation_id: article.citation_id || '',
+          authors: article.authors || '',
+          venue: article.publication || '',
+          year: article.year || '',
+        }));
+
+        const { error: publicationsError } = await supabase
+          .from('publications')
+          .insert(formattedArticles);
+
+        if (publicationsError) {
+          throw publicationsError;
+        }
+      }
+    } catch (error) {
+      console.error('Error creating profile and publications:', error);
       throw error;
     }
-    // Insert articles data
-    if (articles.length > 0) {
-      const formattedArticles = articles.map((article) => ({
-        user_id: userId,
-        title: article.title || '',
-        publication_url: article.link || '',
-        citation_id: article.citation_id || '',
-        authors: article.authors || '',
-        venue: article.publication || '',
-        year: article.year || '',
-      }));
-
-      const { error: publicationsError } = await supabase
-        .from('publications')
-        .insert(formattedArticles);
-
-      if (publicationsError) {
-        throw publicationsError;
-      }
-    }
-  } catch (error) {
-    console.error('Error creating profile and publications:', error);
-    throw error;
-  }
   };
 
   const signUp = async (data: SignUpData) => {
@@ -120,15 +121,15 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       try {
         const serpApiResponse = await fetchAuthorData(data.scholarId);
         const { author, articles } = serpApiResponse;
-      
+
         await createProfile(authData.user.id, data, author, articles);
       } catch (profileError) {
         console.error('Error setting up profile and publications:', profileError);
         throw new Error(
-        typeof profileError === 'object' && profileError !== null
-          ? (profileError as any).message
-          : 'Failed to set up profile and publications'
-      );
+          typeof profileError === 'object' && profileError !== null
+            ? (profileError as any).message
+            : 'Failed to set up profile and publications'
+        );
       }
     }
   };
