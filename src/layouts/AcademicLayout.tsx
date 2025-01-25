@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { BookOpen, Briefcase, FileText, Mail, Linkedin, Github, Twitter, Menu, X, ExternalLink } from 'lucide-react';
 import { TabProps } from '../types/common';
-import { EditableWrapper } from '../components/EditableWrapper';
+import { EditableField } from '../components/EditableField';
 
 interface AcademicLayoutProps {
   profile: any;
@@ -14,6 +14,7 @@ interface AcademicLayoutProps {
   getFileUrl: (path: string, bucket: string) => string;
   isEditing: boolean;
   onUpdateField: (field: string, value: string) => void;
+  getCurrentValue: (field: string) => string;
 }
 
 export default function AcademicLayout({
@@ -104,13 +105,12 @@ export default function AcademicLayout({
             {activeTab === 'about' && (
             <aside className="mb-8 lg:mb-0">
               {/* Profile Photo */}
-              <EditableWrapper
-                isEditing={isEditing}
+              <EditableField
                 type="image"
                 value={profile.profile_image_url}
-                onEdit={(value) => onUpdateField('profile_image_url', value)}
+                isEditing={isEditing}
+                onChange={(value) => onUpdateField('profile_image_url', value)}
                 label="Profile Image"
-                getFileUrl={getFileUrl}
               >
                 <div className="aspect-square relative rounded-lg overflow-hidden mb-6 max-w-xs mx-auto">
                   {profile.profile_image_url ? (
@@ -127,7 +127,7 @@ export default function AcademicLayout({
                     </div>
                   )}
                 </div>
-              </EditableWrapper>
+              </EditableField>
 
               {/* Profile Info */}
               <div className="space-y-4 text-center lg:text-left">
@@ -188,17 +188,17 @@ export default function AcademicLayout({
                 <div className="space-y-8">
                   <div className="bg-[rgb(var(--color-bg-secondary))] rounded-lg p-6 border border-[rgb(var(--color-border-primary))]">
                     <h2 className="text-xl font-semibold">About Me</h2>
-                    <EditableWrapper
-                      isEditing={isEditing}
+                    <EditableField
                       type="textarea"
+                      isEditing={isEditing}
                       value={profile.bio}
-                      onEdit={(value) => onUpdateField('bio', value)}
+                      onChange={(value) => onUpdateField('bio', value)}
                       label="Bio"
                     >
                       <p className="text-[rgb(var(--color-text-secondary))]">
                         {profile.bio}
                       </p>
-                    </EditableWrapper>
+                    </EditableField>
                   </div>
 
                   {/* Education & Interests */}

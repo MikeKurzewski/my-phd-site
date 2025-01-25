@@ -138,6 +138,10 @@ export default function Website() {
     }));
   };
 
+  const getCurrentValue = (fieldName: string) => {
+    return pendingChanges[fieldName] ?? profile[fieldName];
+  };
+
   const handleSave = async () => {
     try {
       const { error } = await supabase
@@ -235,9 +239,11 @@ export default function Website() {
           Tab={Tab}
           getFileUrl={getFileUrl}
           isEditing={isEditing}
+          getCurrentValue={getCurrentValue}
           onUpdateField={handleFieldUpdate}
         />
       ) : (
+          // TODO: unify the props passed to both layouts
         <DefaultLayout
           profile={profile}
           qualifications={qualifications}
