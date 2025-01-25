@@ -90,7 +90,7 @@ export const EditableField: React.FC<EditableFieldProps> = ({
             rows={4}
           />
         ) : (
-          <div>{isEditing ? localValue : value}</div>
+          <div className="whitespace-pre-wrap">{isEditing ? localValue : value}</div>
         )}
       </div>
     );
