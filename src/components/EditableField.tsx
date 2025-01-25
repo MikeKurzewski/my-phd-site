@@ -7,7 +7,7 @@ interface EditableFieldProps {
   isEditing: boolean;
   onChange: (value: string) => void;
   label?: string;
-  getFileUrl?: (path: string) => string;
+  getFileUrl?: (path: string, bucket: string) => string;
 }
 
 export const EditableField: React.FC<EditableFieldProps> = ({
@@ -26,6 +26,14 @@ export const EditableField: React.FC<EditableFieldProps> = ({
     setLocalValue(value);
   }, [value]);
 
+  const handleFileChange = async (file: File) => {
+    if (!getFileUrl) return;
+
+    // TODO: Upload the file
+    // for now just pass the path
+    onChange(file.name);
+  };
+
   if (type === 'image') {
     return (
       <div
@@ -33,10 +41,10 @@ export const EditableField: React.FC<EditableFieldProps> = ({
         onMouseEnter={() => setIsHovered(true)}
         onMouseLeave={() => setIsHovered(false)}
       >
-        <div className="aspect-square relative rounded-lg overflow-hidden">
+        <div className="aspect-square relative overflow-hidden">
           {value && getFileUrl ? (
             <img
-              src={getFileUrl(value)}
+              src={getFileUrl(value, 'profile-images')}
               alt={label}
               className="w-full h-full object-cover"
             />
@@ -59,7 +67,7 @@ export const EditableField: React.FC<EditableFieldProps> = ({
                   onChange={(e) => {
                     const file = e.target.files?.[0];
                     if (file) {
-                      onChange(URL.createObjectURL(file));
+                      handleFileChange(file);
                     }
                   }}
                 />

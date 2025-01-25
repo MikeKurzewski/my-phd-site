@@ -7,6 +7,7 @@ interface EditableWrapperProps {
   type: 'text' | 'textarea' | 'image';
   value: string;
   label?: string;
+  getFileUrl?: (path: string, bucket: string) => string;
 }
 
 export const EditableWrapper = ({
@@ -15,7 +16,8 @@ export const EditableWrapper = ({
   onEdit,
   type,
   value,
-  label
+  label,
+  getFileUrl
 }: EditableWrapperProps) => {
   if (!isEditing) {
     return <>{children}</>;
@@ -28,6 +30,7 @@ export const EditableWrapper = ({
       isEditing={isEditing}
       onChange={onEdit}
       label={label}
+      getFileUrl={getFileUrl}
     />
   );
 }

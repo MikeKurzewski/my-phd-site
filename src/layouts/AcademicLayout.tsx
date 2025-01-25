@@ -110,6 +110,7 @@ export default function AcademicLayout({
                 value={profile.profile_image_url}
                 onEdit={(value) => onUpdateField('profile_image_url', value)}
                 label="Profile Image"
+                getFileUrl={getFileUrl}
               >
                 <div className="aspect-square relative rounded-lg overflow-hidden mb-6 max-w-xs mx-auto">
                   {profile.profile_image_url ? (
