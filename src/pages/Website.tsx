@@ -33,7 +33,7 @@ export default function Website() {
   const [theme, setTheme] = useState<'light-teal' | 'dark-teal' | 'light-blue' | 'dark-blue'>('dark-teal');
   const [isOwner, setIsOwner] = useState(false);
   const [isEditing, setIsEditing] = useState(false);
-  const [pendingChanges, setPendingChanges] = useState({});
+  const [pendingChanges, setPendingChanges] = useState<Record<string, any>>({});
   const { user } = useAuth();
 
   useEffect(() => {
@@ -132,47 +132,43 @@ export default function Website() {
   };
 
   const handleFieldUpdate = (field: string, value: string) => {
-    console.log('Updating field:', field, value);
     setPendingChanges(prev => ({
       ...prev,
       [field]: value,
     }));
   };
 
+  const handleSave = async () => {
+    try {
+      const { error } = await supabase
+        .from('profiles')
+        .update(pendingChanges)
+        .eq('id', profile.id);
+
+      if (error) throw error;
+
+      setProfile(prev => ({
+        ...prev,
+        ...pendingChanges
+      }));
+      setPendingChanges({});
+      setIsEditing(false);
+    } catch (error) {
+      console.error('Error saving changes:', error);
+    }
+  };
+
+  const handleExit = () => {
+    console.log('Exiting edit mode');
+    setIsEditing(false);
+    // TODO: Probably should add a discard changes confirmation here.
+  };
 
   const EditControls = () => {
     const handleEdit = () => {
       console.log('Entering edit mode');
       setIsEditing(true);
     };
-
-
-    const handleSave = async () => {
-      try {
-        console.log('Saving changes:', pendingChanges);
-        const { error } = await supabase
-          .from('profiles')
-          .update(pendingChanges)
-          .eq('id', profile.id);
-
-        if (error) throw error;
-
-        setProfile(prev => ({
-          ...prev,
-          ...pendingChanges
-        }));
-        setPendingChanges({});
-        setIsEditing(false);
-      } catch (error) {
-        console.error('Error saving changes:', error);
-      }
-    };
-    const handleExit = () => {
-      console.log('Exiting edit mode');
-      setIsEditing(false);
-      // Probably should add a discard changes confirmation here.
-    };
-
     if (isEditing) {
       return (
         <div className="fixed top-4 right-4 z-50 flex gap-2">
