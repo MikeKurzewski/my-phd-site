@@ -4,7 +4,7 @@ import { useAuth } from '../lib/auth';
 import { supabase } from '../lib/supabase';
 import TagInput from '../components/TagInput';
 
-interface Profile {
+export interface Profile {
   id: string;
   name: string | null;
   title: string | null;
@@ -94,13 +94,13 @@ export default function Profile() {
     try {
       setUploadingImage(type);
       setError(null);
-      
+
       if (!user?.id) return;
 
       const fileExt = file.name.split('.').pop();
       const fileName = `${user.id}/${type}-${Date.now()}.${fileExt}`;
       const bucket = type === 'cv' ? 'profile-files' : 'profile-images';
-      
+
       const { error: uploadError, data } = await supabase.storage
         .from(bucket)
         .upload(fileName, file, {
@@ -111,7 +111,7 @@ export default function Profile() {
       if (uploadError) throw uploadError;
 
       if (data) {
-        const updateData = type === 'cv' 
+        const updateData = type === 'cv'
           ? { cv_url: data.path }
           : type === 'profile'
           ? { profile_image_url: data.path }
@@ -123,7 +123,7 @@ export default function Profile() {
           .eq('id', user.id);
 
         if (updateError) throw updateError;
-        
+
         setProfile(prev => ({
           ...prev,
           ...updateData
@@ -186,7 +186,7 @@ export default function Profile() {
         .single();
 
       if (error) throw error;
-      
+
       if (data) {
         setProfile({
           ...defaultProfile,
@@ -274,21 +274,21 @@ export default function Profile() {
 
   const autoCompleteProfile = async () => {
       if (!user?.id) return;
-  
+
       try {
         // setSearching(true);
-  
+
         // Get user's full name from profile
         const { data: profileData, error: profileError } = await supabase
           .from('profiles')
           .select('social_links')
           .eq('id', user.id)
           .single();
-  
+
         if (profileError) throw profileError;
 
         const linkedinUrl = profileData?.social_links?.linkedin;
-  
+
         const response = await fetch('https://hook.eu2.make.com/ggjxotdvke95ig31ui8lu43kia58pn54', {
           method: 'POST',
           headers: {
@@ -298,9 +298,9 @@ export default function Profile() {
             linkedin: linkedinUrl,
           }),
         });
-  
+
         const data: LinkedinWebhookResponse = await response.json();
-  
+
         if (data) {
           const interestsArray = data.interests
           .split(',')
@@ -314,7 +314,7 @@ export default function Profile() {
                 research_interests: interestsArray,
               })
               .eq('id', user.id);
-      
+
             if (error) throw error;
             alert('Profile updated successfully! Please refresh your page');
           } catch (error) {
@@ -373,7 +373,7 @@ export default function Profile() {
             )}
           </div>
           <div className="absolute inset-0 flex items-center justify-center">
-            <button 
+            <button
               onClick={() => handleFileClick('banner')}
               disabled={!!uploadingImage}
               className="p-3 bg-[rgb(var(--color-bg-secondary))] rounded-full shadow-lg hover:bg-[rgb(var(--color-bg-tertiary))] transition-colors disabled:opacity-50 disabled:cursor-not-allowed z-10"
@@ -398,7 +398,7 @@ export default function Profile() {
                   <User className="h-16 w-16 text-[rgb(var(--color-text-tertiary))]" />
                 </div>
               )}
-              <button 
+              <button
                 onClick={() => handleFileClick('profile')}
                 disabled={!!uploadingImage}
                 className="absolute bottom-0 right-0 p-2 bg-[rgb(var(--color-bg-secondary))] rounded-full shadow-sm hover:bg-[rgb(var(--color-bg-tertiary))] transition-colors disabled:opacity-50 disabled:cursor-not-allowed"

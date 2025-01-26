@@ -51,7 +51,7 @@ export const EditableField: React.FC<EditableFieldProps> = ({
                 onChange={(e) => {
                   const file = e.target.files?.[0];
                   if (file) {
-                    onChange(file.name);
+                    onChange(file.name); // Pass the file directly
                   }
                 }}
               />
@@ -128,9 +128,8 @@ export const EditableField: React.FC<EditableFieldProps> = ({
 
   return (
     <div
-      className={`relative rounded-lg transition-all duration-200 ${
-        isEditing && !isFocused ? 'hover:bg-[rgb(var(--color-bg-secondary))] cursor-text' : ''
-      }`}
+      className={`relative rounded-lg transition-all duration-200 ${isEditing && !isFocused ? 'hover:bg-[rgb(var(--color-bg-secondary))] cursor-text' : ''
+        }`}
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => !isFocused && setIsHovered(false)}
     >
