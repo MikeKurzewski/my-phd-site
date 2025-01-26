@@ -3,8 +3,9 @@ import { Camera, Linkedin, Github, Twitter, User, Plus, Trash2, Upload, FileText
 import { useAuth } from '../lib/auth';
 import { supabase } from '../lib/supabase';
 import TagInput from '../components/TagInput';
+import { getFileUrl, uploadFileToStorage } from '../lib/fileUtils';
 
-export interface Profile {
+interface Profile {
   id: string;
   name: string | null;
   title: string | null;
@@ -82,10 +83,6 @@ export default function Profile() {
     }
   }, [user?.id]);
 
-  const getFileUrl = (path: string, bucket: string) => {
-    return supabase.storage.from(bucket).getPublicUrl(path).data.publicUrl;
-  };
-
   const getFileName = (path: string) => {
     return path.split('/').pop() || 'File';
   };
@@ -97,25 +94,15 @@ export default function Profile() {
 
       if (!user?.id) return;
 
-      const fileExt = file.name.split('.').pop();
-      const fileName = `${user.id}/${type}-${Date.now()}.${fileExt}`;
-      const bucket = type === 'cv' ? 'profile-files' : 'profile-images';
+      const { path, error } = await uploadFileToStorage(file, type, user.id);
+      if (error) throw error;
 
-      const { error: uploadError, data } = await supabase.storage
-        .from(bucket)
-        .upload(fileName, file, {
-          cacheControl: '3600',
-          upsert: true
-        });
-
-      if (uploadError) throw uploadError;
-
-      if (data) {
+      if (path) {
         const updateData = type === 'cv'
-          ? { cv_url: data.path }
+          ? { cv_url: path }
           : type === 'profile'
-          ? { profile_image_url: data.path }
-          : { banner_image_url: data.path };
+            ? { profile_image_url: path }
+            : { banner_image_url: path };
 
         const { error: updateError } = await supabase
           .from('profiles')
@@ -273,62 +260,62 @@ export default function Profile() {
   };
 
   const autoCompleteProfile = async () => {
-      if (!user?.id) return;
+    if (!user?.id) return;
 
-      try {
-        // setSearching(true);
+    try {
+      // setSearching(true);
 
-        // Get user's full name from profile
-        const { data: profileData, error: profileError } = await supabase
-          .from('profiles')
-          .select('social_links')
-          .eq('id', user.id)
-          .single();
+      // Get user's full name from profile
+      const { data: profileData, error: profileError } = await supabase
+        .from('profiles')
+        .select('social_links')
+        .eq('id', user.id)
+        .single();
 
-        if (profileError) throw profileError;
+      if (profileError) throw profileError;
 
-        const linkedinUrl = profileData?.social_links?.linkedin;
+      const linkedinUrl = profileData?.social_links?.linkedin;
 
-        const response = await fetch('https://hook.eu2.make.com/ggjxotdvke95ig31ui8lu43kia58pn54', {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify({
-            linkedin: linkedinUrl,
-          }),
-        });
+      const response = await fetch('https://hook.eu2.make.com/ggjxotdvke95ig31ui8lu43kia58pn54', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          linkedin: linkedinUrl,
+        }),
+      });
 
-        const data: LinkedinWebhookResponse = await response.json();
+      const data: LinkedinWebhookResponse = await response.json();
 
-        if (data) {
-          const interestsArray = data.interests
+      if (data) {
+        const interestsArray = data.interests
           .split(',')
           .map((interest) => interest.trim());
-          try {
-            setError(null);
-            const { error } = await supabase
-              .from('profiles')
-              .update({
-                bio: data.bio,
-                research_interests: interestsArray,
-              })
-              .eq('id', user.id);
+        try {
+          setError(null);
+          const { error } = await supabase
+            .from('profiles')
+            .update({
+              bio: data.bio,
+              research_interests: interestsArray,
+            })
+            .eq('id', user.id);
 
-            if (error) throw error;
-            alert('Profile updated successfully! Please refresh your page');
-          } catch (error) {
-            console.error('Error updating profile:', error);
-            setError('Failed to update profile. Please try again.');
-          }
+          if (error) throw error;
+          alert('Profile updated successfully! Please refresh your page');
+        } catch (error) {
+          console.error('Error updating profile:', error);
+          setError('Failed to update profile. Please try again.');
         }
-        // setShowFullForm(true);
-      } catch (error) {
-        console.error('Error finding publication:', error);
-      } finally {
-        // setSearching(false);
       }
-    };
+      // setShowFullForm(true);
+    } catch (error) {
+      console.error('Error finding publication:', error);
+    } finally {
+      // setSearching(false);
+    }
+  };
 
   const handleDeleteQualification = async (id: string) => {
     try {
@@ -415,16 +402,16 @@ export default function Profile() {
           </div>
 
           <div className="flex justify-between items-center pb-6">
-          <h2 className="text-2xl font-semibold text-[rgb(var(--color-text-primary))]">Profile</h2>
-          {profile.social_links?.linkedin && (
-          <button
-            onClick={autoCompleteProfile}
-            className="btn-primary"
-        >
-            {/* <Search className="h-5 w-5 mr-2" /> */}
-            Use my LinkedIn Profile
-          </button>
-          )}
+            <h2 className="text-2xl font-semibold text-[rgb(var(--color-text-primary))]">Profile</h2>
+            {profile.social_links?.linkedin && (
+              <button
+                onClick={autoCompleteProfile}
+                className="btn-primary"
+              >
+                {/* <Search className="h-5 w-5 mr-2" /> */}
+                Use my LinkedIn Profile
+              </button>
+            )}
           </div>
 
           <div className="pb-6"><hr /></div>
