@@ -44,6 +44,7 @@ export default function Website() {
   const [isEditing, setIsEditing] = useState(false);
   const [pendingChanges, setPendingChanges] = useState<PendingChanges>({});
   const [saveStatus, setSaveStatus] = useState<'idle' | 'saving' | 'error'>('idle');
+  const [uploadingFile, setUploadingFile] = useState(false);
   const { user } = useAuth();
 
   useEffect(() => {
@@ -77,36 +78,39 @@ export default function Website() {
 
   useTheme(theme);
 
-  const handleFieldChange = async (section: 'profile' | 'publications' | 'projects', id: string, field: string, value: string | File) => {
-    console.log('Website: handleFieldChange received', { section, id, field, value });
-
-    const [uploadingFile, setUploadingFile] = useState(false);
-
+  const handleFieldChange = async (
+    section: 'profile' | 'publications' | 'projects',
+    id: string,
+    field: string,
+    value: string | File
+  ) => {
     try {
       if (value instanceof File) {
-        console.log('Website: Handling file upload');
-
         setUploadingFile(true);
         const type = field === 'cv_url' ? 'cv' :
           field === 'profile_image_url' ? 'profile' :
             'banner';
 
-        const { path, error } = await uploadFileToStorage(value, type, profile.id);
+        const { path, error } = await uploadFileToStorage(value, type, id);
         if (error) throw error;
 
-        console.log('Website: Setting pending changes', pendingChanges);
-
         if (path) {
-          setPendingChanges(prev => ({
+          // Update Supabase profile
+          const { error: updateError } = await supabase
+            .from('profiles')
+            .update({ [field]: path })
+            .eq('id', id);
+
+          if (updateError) throw updateError;
+
+          // Update local state
+          setProfile(prev => ({
             ...prev,
-            profile: {
-              ...prev.profile,
-              [field]: path
-            }
+            [field]: path
           }));
         }
       } else {
-        // Handle regular text changes
+        // Handle non-file updates...
         setPendingChanges(prev => ({
           ...prev,
           profile: {
@@ -117,7 +121,6 @@ export default function Website() {
       }
     } catch (error) {
       console.error('Error handling field change:', error);
-      // Add error handling UI
     } finally {
       setUploadingFile(false);
     }

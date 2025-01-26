@@ -24,6 +24,7 @@ export const EditableField: React.FC<EditableFieldProps> = ({
   const [isFocused, setIsFocused] = useState(false);
   const [localValue, setLocalValue] = useState(value);
   const textareaRef = useRef<HTMLTextAreaElement>(null);
+  const fileInputRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
     setLocalValue(value || '');
@@ -40,31 +41,30 @@ export const EditableField: React.FC<EditableFieldProps> = ({
 
     switch (type) {
       case 'image':
+        const handleFileClick = () => {
+          const input = document.createElement('input');
+          input.type = 'file';
+          input.accept = 'image/*';
+          input.onchange = (e) => {
+            console.log('File input change event triggered');
+            const file = (e.target as HTMLInputElement).files?.[0];
+            if (file) {
+              console.log('File selected:', file);
+              onChange(file);
+            }
+          };
+          input.click();
+        };
+
         return isHovered ? (
           <div className="absolute inset-0 bg-black bg-opacity-50 flex items-center justify-center">
-            {isLoading ? (
-              // Loading spinner
-              <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-white" />
-            ) : (
-              // Upload button
-              <label className="cursor-pointer text-white flex items-center gap-2">
-                <Upload className="h-4 w-4" />
-                Change {label}
-                <input
-                  type="file"
-                  className="hidden"
-                  accept="image/*"
-                  onChange={(e) => {
-                    const file = e.target.files?.[0];
-                    console.log('EditableField: File selected', file);
-                    if (file) {
-                      console.log('EditableField: Calling onChange with file', file);
-                      onChange(file);
-                    }
-                  }}
-                />
-              </label>
-            )}
+            <button
+              onClick={handleFileClick}
+              className="cursor-pointer text-white flex items-center gap-2"
+            >
+              <Upload className="h-4 w-4" />
+              Change {label}
+            </button>
           </div>
         ) : null;
 
