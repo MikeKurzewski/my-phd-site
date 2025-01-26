@@ -195,7 +195,7 @@ export default function AcademicLayout({
                       onChange={(value) => onUpdateField('bio', value)}
                       label="Bio"
                     >
-                      <p className="text-[rgb(var(--color-text-secondary))]">
+                      <p className="whitespace-pre-wrap text-[rgb(var(--color-text-secondary))]">
                         {profile.bio}
                       </p>
                     </EditableField>
