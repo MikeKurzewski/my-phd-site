@@ -5,7 +5,7 @@ import { supabase } from '../lib/supabase';
 import TagInput from '../components/TagInput';
 import { getFileUrl, uploadFileToStorage } from '../lib/fileUtils';
 
-interface Profile {
+export interface Profile {
   id: string;
   name: string | null;
   title: string | null;

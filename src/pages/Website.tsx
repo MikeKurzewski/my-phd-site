@@ -8,7 +8,8 @@ import { TabProps } from '../types/common';
 import { useAuth } from '../lib/auth';
 import { Edit2, Save, X } from 'lucide-react';
 import { Project, Publication } from '../types';
-import { Profile } from '../pages/Profile';
+import { Profile } from './Profile';
+import { uploadFileToStorage } from '../lib/fileUtils';
 
 const Tab: React.FC<TabProps> = ({ label, icon, isActive, onClick }) => (
   <button
@@ -76,83 +77,49 @@ export default function Website() {
 
   useTheme(theme);
 
-  const handleFileUpload = async (file: File, type: 'profile' | 'banner' | 'cv') => {
-    if (!profile?.id) return;
+  const handleFieldChange = async (section: 'profile' | 'publications' | 'projects', id: string, field: string, value: string | File) => {
+    console.log('Website: handleFieldChange received', { section, id, field, value });
 
-    const fileExt = file.name.split('.').pop();
-    const fileName = `${profile.id}/${type}-${Date.now()}.${fileExt}`;
-    const bucket = type === 'cv' ? 'profile-files' : 'profile-images';
+    const [uploadingFile, setUploadingFile] = useState(false);
 
     try {
-      const { error: uploadError, data } = await supabase.storage
-        .from(bucket)
-        .upload(fileName, file, {
-          cacheControl: '3600',
-          upsert: true
-        });
+      if (value instanceof File) {
+        console.log('Website: Handling file upload');
 
-      if (uploadError) throw uploadError;
+        setUploadingFile(true);
+        const type = field === 'cv_url' ? 'cv' :
+          field === 'profile_image_url' ? 'profile' :
+            'banner';
 
-      if (data) {
-        const field = type === 'cv' ? 'cv_url' :
-          type === 'profile' ? 'profile_image_url' :
-            'banner_image_url';
+        const { path, error } = await uploadFileToStorage(value, type, profile.id);
+        if (error) throw error;
 
+        console.log('Website: Setting pending changes', pendingChanges);
+
+        if (path) {
+          setPendingChanges(prev => ({
+            ...prev,
+            profile: {
+              ...prev.profile,
+              [field]: path
+            }
+          }));
+        }
+      } else {
+        // Handle regular text changes
         setPendingChanges(prev => ({
           ...prev,
-          [field]: data.path
+          profile: {
+            ...prev.profile,
+            [field]: value
+          }
         }));
       }
     } catch (error) {
-      console.error(`Error uploading ${type}:`, error);
-    }
-  };
-
-  const handleFieldChange = (section: 'profile' | 'publications' | 'projects', id: string, field: string, value: string | File) => {
-    if (value instanceof File) {
-      const type = field === 'cv_url' ? 'cv' :
-        field === 'profile_image_url' ? 'profile' :
-          'banner';
-      handleFileUpload(value, type);
-      return;
-    }
-
-    setPendingChanges(prev => ({
-      ...prev,
-      profile: {
-        ...prev.profile,
-        [field]: value
-      }
-    }));
-  };
-
-  const handleTabChange = (tab: string) => {
-    setActiveTab(tab);
-
-    // Apply pending changes to current view
-    if (pendingChanges.profile) {
-      setProfile(prev => ({
-        ...prev,
-        ...pendingChanges.profile
-      }));
-    }
-
-    if (pendingChanges.publications) {
-      setPublications(prev =>
-        prev.map(pub => ({
-          ...pub,
-          ...pendingChanges.publications?.[pub.id]
-        }))
-      );
-    }
-
-    if (pendingChanges.projects) {
-      setProjects(prev =>
-        prev.map(proj => ({
-          ...proj,
-          ...pendingChanges.projects?.[proj.id]
-        }))
-      );
+      console.error('Error handling field change:', error);
+      // Add error handling UI
+    } finally {
+      setUploadingFile(false);
     }
   };
 

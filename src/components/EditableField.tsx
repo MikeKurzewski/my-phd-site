@@ -5,9 +5,10 @@ interface EditableFieldProps {
   type: 'text' | 'textarea' | 'image' | 'file';
   value: string;
   isEditing: boolean;
-  onChange: (value: string) => void;
+  onChange: (value: string | File) => void;
   label?: string;
   children: React.ReactNode;
+  isLoading?: boolean;
 }
 
 export const EditableField: React.FC<EditableFieldProps> = ({
@@ -17,6 +18,7 @@ export const EditableField: React.FC<EditableFieldProps> = ({
   onChange,
   label,
   children,
+  isLoading
 }) => {
   const [isHovered, setIsHovered] = useState(false);
   const [isFocused, setIsFocused] = useState(false);
@@ -28,7 +30,6 @@ export const EditableField: React.FC<EditableFieldProps> = ({
   }, [value]);
 
   const handleChange = (newValue: string) => {
-    // Preserve line breaks by replacing \n with <br> for storage
     setLocalValue(newValue);
     onChange(newValue);
   };
@@ -41,21 +42,29 @@ export const EditableField: React.FC<EditableFieldProps> = ({
       case 'image':
         return isHovered ? (
           <div className="absolute inset-0 bg-black bg-opacity-50 flex items-center justify-center">
-            <label className="cursor-pointer text-white flex items-center gap-2">
-              <Upload className="h-4 w-4" />
-              Change {label}
-              <input
-                type="file"
-                className="hidden"
-                accept="image/*"
-                onChange={(e) => {
-                  const file = e.target.files?.[0];
-                  if (file) {
-                    onChange(file.name); // Pass the file directly
-                  }
-                }}
-              />
-            </label>
+            {isLoading ? (
+              // Loading spinner
+              <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-white" />
+            ) : (
+              // Upload button
+              <label className="cursor-pointer text-white flex items-center gap-2">
+                <Upload className="h-4 w-4" />
+                Change {label}
+                <input
+                  type="file"
+                  className="hidden"
+                  accept="image/*"
+                  onChange={(e) => {
+                    const file = e.target.files?.[0];
+                    console.log('EditableField: File selected', file);
+                    if (file) {
+                      console.log('EditableField: Calling onChange with file', file);
+                      onChange(file);
+                    }
+                  }}
+                />
+              </label>
+            )}
           </div>
         ) : null;
 
@@ -107,7 +116,6 @@ export const EditableField: React.FC<EditableFieldProps> = ({
 
   const renderContent = () => {
     if (!isEditing) {
-      // Display text with preserved line breaks
       return (
         <div className="whitespace-pre-wrap">
           {children}
