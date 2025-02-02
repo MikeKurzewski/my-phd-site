@@ -64,13 +64,18 @@ export function useSubscription() {
   const handleCancel = async () => {
     if (!confirm('Are you sure you want to cancel your subscription?')) return;
 
+    
+
     try {
-      const response = await fetch('https://foyumeaalmplfvleuxgr.supabase.co/functions/v1/cancel-subscription', {
+      const response = await fetch(`https://api.stripe.com/v1/subscriptions/${subscription?.id}`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
           Authorization: `Bearer ${(await supabase.auth.getSession()).data.session?.access_token}`,
         },
+        body: JSON.stringify({
+          cancel_at_period_end: true,
+        })
       });
 
       if (!response.ok) throw new Error('Failed to cancel subscription');

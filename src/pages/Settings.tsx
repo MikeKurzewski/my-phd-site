@@ -3,7 +3,6 @@ import { Globe, Lock, Palette, Sun, Moon, ExternalLink, CreditCard, Layout} from
 import { useAuth } from '../lib/auth';
 import { supabase } from '../lib/supabase';
 import { useTheme } from '../lib/theme';
-
 interface Profile {
   id: string;
   username: string;
@@ -208,12 +207,15 @@ export default function Settings() {
     if (!confirm('Are you sure you want to cancel your subscription?')) return;
 
     try {
-      const response = await fetch('https://foyumeaalmplfvleuxgr.supabase.co/functions/v1/cancel-subscription', {
+      const response = await fetch(`https://foyumeaalmplfvleuxgr.supabase.co/functions/v1/cancel-subscription`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
           Authorization: `Bearer ${(await supabase.auth.getSession()).data.session?.access_token}`,
         },
+        body: JSON.stringify({
+          subscriptionId: `${subscription?.id}`
+        })
       });
 
       if (!response.ok) throw new Error('Failed to cancel subscription');

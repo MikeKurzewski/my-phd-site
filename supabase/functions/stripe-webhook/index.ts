@@ -12,8 +12,6 @@ const stripe = new Stripe(Deno.env.get('STRIPE_API_KEY') as string, {
 // This is needed in order to use the Web Crypto API in Deno.
 const cryptoProvider = Stripe.createSubtleCryptoProvider()
 
-
-
 console.log('Hello from Stripe Webhook!')
 
 Deno.serve(async (request) => {
