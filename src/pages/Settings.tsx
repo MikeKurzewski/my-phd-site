@@ -206,6 +206,14 @@ export default function Settings() {
   const handleCancelSubscription = async () => {
     if (!confirm('Are you sure you want to cancel your subscription?')) return;
 
+    console.log(subscription);
+    console.log(subscription?.id);
+
+    await fetchSubscription();
+
+    console.log(subscription);
+    console.log(subscription?.id);
+
     try {
       const response = await fetch(`https://foyumeaalmplfvleuxgr.supabase.co/functions/v1/cancel-subscription`, {
         method: 'POST',
@@ -214,7 +222,7 @@ export default function Settings() {
           Authorization: `Bearer ${(await supabase.auth.getSession()).data.session?.access_token}`,
         },
         body: JSON.stringify({
-          subscriptionId: `${subscription?.id}`
+          subscriptionId: subscription?.id
         })
       });
 
@@ -281,13 +289,18 @@ export default function Settings() {
                   Upgrade to Pro
                 </button>
               ) : (
-                <button
-                  onClick={handleCancelSubscription}
-                  className="btn-secondary"
-                  disabled={subscription?.cancel_at_period_end}
+                //<button
+                  //onClick={handleCancelSubscription}
+                  //className="btn-secondary"
+                  //disabled={subscription?.cancel_at_period_end}>
+                  /* {subscription?.cancel_at_period_end ? 'Cancellation Scheduled' : 'Cancel Subscription'} */
+                //</button>
+                <a 
+                  href={'https://billing.stripe.com/p/login/test_7sIg06fVYgIseVa5kk'+'?prefilled_email='+user?.email}
+                  className='manageSub'
                 >
-                  {subscription?.cancel_at_period_end ? 'Cancellation Scheduled' : 'Cancel Subscription'}
-                </button>
+                  Manage Subscription
+                </a>
               )}
             </div>
             {subscription?.plan === 'free' && (

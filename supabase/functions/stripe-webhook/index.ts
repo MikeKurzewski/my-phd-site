@@ -146,8 +146,8 @@ Deno.serve(async (request) => {
 
       const { error } = await supabaseClient
         .from('subscriptions')
-        .update({ status: 'canceled', updated_at: new Date().toISOString() })
-        .eq('stripe_subscription_id', subscription.id);
+        .update({ cancel_at_period_end: true, updated_at: new Date().toISOString(), status: 'cancelled', plan: 'free', current_period_end: new Date(subscription.current_period_end * 1000).toISOString() })
+        .eq('id', subscription.id);
 
       if (error) {
         console.error('Error updating subscription status:', error.message);
