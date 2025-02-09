@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { BookOpen, Briefcase, FileText, Mail, Linkedin, Github, Twitter, Menu, X, ExternalLink } from 'lucide-react';
 import { TabProps } from '../types/common';
-import { EditableWrapper } from '../components/EditableWrapper';
+import { EditableField } from '../components/EditableField';
 
 interface AcademicLayoutProps {
   profile: any;
@@ -13,7 +13,8 @@ interface AcademicLayoutProps {
   Tab: React.FC<TabProps>;
   getFileUrl: (path: string, bucket: string) => string;
   isEditing: boolean;
-  onUpdateField: (field: string, value: string) => void;
+  onUpdateField: (section: 'profile' | 'publications' | 'projects', id: string, field: string, value: string | File) => void;
+  getCurrentValue: (field: string) => string;
 }
 
 export default function AcademicLayout({
@@ -102,83 +103,83 @@ export default function AcademicLayout({
           <div className={`${activeTab === 'about' ? 'lg:grid lg:grid-cols-[18rem_1fr]' : ''} gap-8`}>
             {/* Profile Info Section */}
             {activeTab === 'about' && (
-            <aside className="mb-8 lg:mb-0">
-              {/* Profile Photo */}
-              <EditableWrapper
-                isEditing={isEditing}
-                type="image"
-                value={profile.profile_image_url}
-                onEdit={(value) => onUpdateField('profile_image_url', value)}
-                label="Profile Image"
-              >
-                <div className="aspect-square relative rounded-lg overflow-hidden mb-6 max-w-xs mx-auto">
-                  {profile.profile_image_url ? (
-                    <img
-                      src={getFileUrl(profile.profile_image_url, 'profile-images')}
-                      alt={profile.name}
-                      className="w-full h-full object-cover"
-                    />
-                  ) : (
-                    <div className="w-full h-full bg-[rgb(var(--color-bg-tertiary))] flex items-center justify-center">
-                      <span className="text-4xl text-[rgb(var(--color-text-tertiary))]">
-                        {profile.name?.charAt(0)}
-                      </span>
-                    </div>
-                  )}
-                </div>
-              </EditableWrapper>
+              <aside className="mb-8 lg:mb-0">
+                {/* Profile Photo */}
+                <EditableField
+                  type="image"
+                  value={profile.profile_image_url}
+                  isEditing={isEditing}
+                  onChange={(value) => onUpdateField('profile', profile.id, 'profile_image_url', value)}
+                  label="Profile Image"
+                >
+                  <div className="aspect-square relative rounded-lg overflow-hidden mb-6 max-w-xs mx-auto">
+                    {profile.profile_image_url ? (
+                      <img
+                        src={getFileUrl(profile.profile_image_url, 'profile-images')}
+                        alt={profile.name}
+                        className="w-full h-full object-cover"
+                      />
+                    ) : (
+                      <div className="w-full h-full bg-[rgb(var(--color-bg-tertiary))] flex items-center justify-center">
+                        <span className="text-4xl text-[rgb(var(--color-text-tertiary))]">
+                          {profile.name?.charAt(0)}
+                        </span>
+                      </div>
+                    )}
+                  </div>
+                </EditableField>
 
-              {/* Profile Info */}
-              <div className="space-y-4 text-center lg:text-left">
-                <div className="space-y-1">
-                  <h2 className="text-lg font-medium text-[rgb(var(--color-text-primary))]">{profile.title}</h2>
-                  <p className="text-[rgb(var(--color-text-secondary))]">{profile.institution}</p>
-                  <p className="text-sm text-[rgb(var(--color-text-secondary))]">{profile.department}</p>
-                </div>
+                {/* Profile Info */}
+                <div className="space-y-4 text-center lg:text-left">
+                  <div className="space-y-1">
+                    <h2 className="text-lg font-medium text-[rgb(var(--color-text-primary))]">{profile.title}</h2>
+                    <p className="text-[rgb(var(--color-text-secondary))]">{profile.institution}</p>
+                    <p className="text-sm text-[rgb(var(--color-text-secondary))]">{profile.department}</p>
+                  </div>
 
-                {/* Social Links */}
-                <div className="flex justify-center lg:justify-start space-x-3">
-                  {profile.social_links?.email && (
-                    <a
-                      href={`mailto:${profile.social_links.email}`}
-                      className="text-[rgb(var(--color-text-tertiary))] hover:text-[rgb(var(--color-text-secondary))]"
-                    >
-                      <Mail className="h-5 w-5" />
-                    </a>
-                  )}
-                  {profile.social_links?.linkedin && (
-                    <a
-                      href={profile.social_links.linkedin}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="text-[rgb(var(--color-text-tertiary))] hover:text-[rgb(var(--color-text-secondary))]"
-                    >
-                      <Linkedin className="h-5 w-5" />
-                    </a>
-                  )}
-                  {profile.social_links?.github && (
-                    <a
-                      href={profile.social_links.github}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="text-[rgb(var(--color-text-tertiary))] hover:text-[rgb(var(--color-text-secondary))]"
-                    >
-                      <Github className="h-5 w-5" />
-                    </a>
-                  )}
-                  {profile.social_links?.twitter && (
-                    <a
-                      href={profile.social_links.twitter}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="text-[rgb(var(--color-text-tertiary))] hover:text-[rgb(var(--color-text-secondary))]"
-                    >
-                      <Twitter className="h-5 w-5" />
-                    </a>
-                  )}
+                  {/* Social Links */}
+                  <div className="flex justify-center lg:justify-start space-x-3">
+                    {profile.social_links?.email && (
+                      <a
+                        href={`mailto:${profile.social_links.email}`}
+                        className="text-[rgb(var(--color-text-tertiary))] hover:text-[rgb(var(--color-text-secondary))]"
+                      >
+                        <Mail className="h-5 w-5" />
+                      </a>
+                    )}
+                    {profile.social_links?.linkedin && (
+                      <a
+                        href={profile.social_links.linkedin}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="text-[rgb(var(--color-text-tertiary))] hover:text-[rgb(var(--color-text-secondary))]"
+                      >
+                        <Linkedin className="h-5 w-5" />
+                      </a>
+                    )}
+                    {profile.social_links?.github && (
+                      <a
+                        href={profile.social_links.github}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="text-[rgb(var(--color-text-tertiary))] hover:text-[rgb(var(--color-text-secondary))]"
+                      >
+                        <Github className="h-5 w-5" />
+                      </a>
+                    )}
+                    {profile.social_links?.twitter && (
+                      <a
+                        href={profile.social_links.twitter}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="text-[rgb(var(--color-text-tertiary))] hover:text-[rgb(var(--color-text-secondary))]"
+                      >
+                        <Twitter className="h-5 w-5" />
+                      </a>
+                    )}
+                  </div>
                 </div>
-              </div>
-            </aside>
+              </aside>
             )}
 
             {/* Content Sections */}
@@ -187,17 +188,17 @@ export default function AcademicLayout({
                 <div className="space-y-8">
                   <div className="bg-[rgb(var(--color-bg-secondary))] rounded-lg p-6 border border-[rgb(var(--color-border-primary))]">
                     <h2 className="text-xl font-semibold">About Me</h2>
-                    <EditableWrapper
-                      isEditing={isEditing}
+                    <EditableField
                       type="textarea"
+                      isEditing={isEditing}
                       value={profile.bio}
-                      onEdit={(value) => onUpdateField('bio', value)}
+                      onChange={(value) => onUpdateField('profile', profile.id, 'bio', value)}
                       label="Bio"
                     >
-                      <p className="text-[rgb(var(--color-text-secondary))]">
+                      <p className="whitespace-pre-wrap text-[rgb(var(--color-text-secondary))]">
                         {profile.bio}
                       </p>
-                    </EditableWrapper>
+                    </EditableField>
                   </div>
 
                   {/* Education & Interests */}
@@ -244,11 +245,10 @@ export default function AcademicLayout({
                       <div className="flex justify-between items-start">
                         <div>
                           <h3 className="text-lg font-medium text-[rgb(var(--color-text-primary))]">{pub.title}</h3>
-                          <span className={`inline-block px-2 py-1 text-xs font-medium rounded-full mt-2 ${
-                            pub.type === 'preprint'
-                              ? 'bg-[rgb(var(--color-warning))] bg-opacity-20 text-[rgb(var(--color-text-primary))]'
-                              : 'bg-[rgb(var(--color-success))] bg-opacity-20 text-[rgb(var(--color-text-primary))]'
-                          }`}>
+                          <span className={`inline-block px-2 py-1 text-xs font-medium rounded-full mt-2 ${pub.type === 'preprint'
+                            ? 'bg-[rgb(var(--color-warning))] bg-opacity-20 text-[rgb(var(--color-text-primary))]'
+                            : 'bg-[rgb(var(--color-success))] bg-opacity-20 text-[rgb(var(--color-text-primary))]'
+                            }`}>
                             {pub.type === 'preprint' ? 'Preprint' : 'Published'}
                           </span>
                         </div>

@@ -7,6 +7,9 @@ import AcademicLayout from '../layouts/AcademicLayout';
 import { TabProps } from '../types/common';
 import { useAuth } from '../lib/auth';
 import { Edit2, Save, X } from 'lucide-react';
+import { Project, Publication } from '../types';
+import { Profile } from './Profile';
+import { uploadFileToStorage } from '../lib/fileUtils';
 
 const Tab: React.FC<TabProps> = ({ label, icon, isActive, onClick }) => (
   <button
@@ -21,6 +24,12 @@ const Tab: React.FC<TabProps> = ({ label, icon, isActive, onClick }) => (
   </button>
 );
 
+interface PendingChanges {
+  profile?: Partial<Profile>;
+  publications?: Record<string, Partial<Publication>>;
+  projects?: Record<string, Partial<Project>>;
+}
+
 
 export default function Website() {
   const params = useParams();
@@ -33,7 +42,9 @@ export default function Website() {
   const [theme, setTheme] = useState<'light-teal' | 'dark-teal' | 'light-blue' | 'dark-blue'>('dark-teal');
   const [isOwner, setIsOwner] = useState(false);
   const [isEditing, setIsEditing] = useState(false);
-  const [pendingChanges, setPendingChanges] = useState({});
+  const [pendingChanges, setPendingChanges] = useState<PendingChanges>({});
+  const [saveStatus, setSaveStatus] = useState<'idle' | 'saving' | 'error'>('idle');
+  const [uploadingFile, setUploadingFile] = useState(false);
   const { user } = useAuth();
 
   useEffect(() => {
@@ -52,7 +63,68 @@ export default function Website() {
     }
   }, [user, profile]);
 
+  useEffect(() => {
+    const storedChanges = sessionStorage.getItem('pendingChanges-${profile?.id}');
+    if (storedChanges) {
+      setPendingChanges(JSON.parse(storedChanges));
+    }
+  }, [profile?.id]);
+
+  useEffect(() => {
+    if (profile?.id && Object.keys(pendingChanges).length > 0) {
+      sessionStorage.setItem('pendingChanges-${profile?.id}', JSON.stringify(pendingChanges));
+    }
+  }, [pendingChanges, profile?.id]);
+
   useTheme(theme);
+
+  const handleFieldChange = async (
+    section: 'profile' | 'publications' | 'projects',
+    id: string,
+    field: string,
+    value: string | File
+  ) => {
+    try {
+      if (value instanceof File) {
+        setUploadingFile(true);
+        const type = field === 'cv_url' ? 'cv' :
+          field === 'profile_image_url' ? 'profile' :
+            'banner';
+
+        const { path, error } = await uploadFileToStorage(value, type, id);
+        if (error) throw error;
+
+        if (path) {
+          // Update Supabase profile
+          const { error: updateError } = await supabase
+            .from('profiles')
+            .update({ [field]: path })
+            .eq('id', id);
+
+          if (updateError) throw updateError;
+
+          // Update local state
+          setProfile(prev => ({
+            ...prev,
+            [field]: path
+          }));
+        }
+      } else {
+        // Handle non-file updates...
+        setPendingChanges(prev => ({
+          ...prev,
+          profile: {
+            ...prev.profile,
+            [field]: value
+          }
+        }));
+      }
+    } catch (error) {
+      console.error('Error handling field change:', error);
+    } finally {
+      setUploadingFile(false);
+    }
+  };
 
   const fetchProfileData = async () => {
     try {
@@ -131,57 +203,55 @@ export default function Website() {
     return supabase.storage.from(bucket).getPublicUrl(path).data.publicUrl;
   };
 
-  const handleFieldUpdate = (field: string, value: string) => {
-    console.log('Updating field:', field, value);
-    setPendingChanges(prev => ({
-      ...prev,
-      [field]: value,
-    }));
+  const getCurrentValue = (fieldName: string) => {
+    return pendingChanges[fieldName] ?? profile[fieldName];
   };
 
-
-  const EditControls = () => {
-    const handleEdit = () => {
-      console.log('Entering edit mode');
-      setIsEditing(true);
-    };
-
-
-    const handleSave = async () => {
-      try {
-        console.log('Saving changes:', pendingChanges);
+  // Modify handleSave:
+  const handleSave = async () => {
+    try {
+      if (pendingChanges.profile) {
         const { error } = await supabase
           .from('profiles')
-          .update(pendingChanges)
+          .update(pendingChanges.profile)
           .eq('id', profile.id);
 
         if (error) throw error;
 
+        // Update local state
         setProfile(prev => ({
           ...prev,
-          ...pendingChanges
+          ...pendingChanges.profile
         }));
+
+        // Clear changes
         setPendingChanges({});
         setIsEditing(false);
-      } catch (error) {
-        console.error('Error saving changes:', error);
       }
-    };
-    const handleExit = () => {
-      console.log('Exiting edit mode');
-      setIsEditing(false);
-      // Probably should add a discard changes confirmation here.
-    };
+    } catch (error) {
+      console.error('Error saving changes:', error);
+    }
+  };
+
+  const handleExit = () => {
+    console.log('Exiting edit mode');
+    setIsEditing(false);
+    // TODO: Probably should add a discard changes confirmation here.
+  };
+
+  const EditControls = () => {
+    const handleEdit = () => setIsEditing(true);
 
     if (isEditing) {
       return (
         <div className="fixed top-4 right-4 z-50 flex gap-2">
           <button
             onClick={handleSave}
+            disabled={saveStatus === 'saving'}
             className="btn-primary flex items-center gap-2"
           >
             <Save className="h-4 w-4" />
-            Save
+            {saveStatus === 'saving' ? 'Saving...' : 'Save'}
           </button>
           <button
             onClick={handleExit}
@@ -239,9 +309,11 @@ export default function Website() {
           Tab={Tab}
           getFileUrl={getFileUrl}
           isEditing={isEditing}
-          onUpdateField={handleFieldUpdate}
+          getCurrentValue={getCurrentValue}
+          onUpdateField={handleFieldChange}
         />
       ) : (
+        // TODO: unify the props passed to both layouts
         <DefaultLayout
           profile={profile}
           qualifications={qualifications}
