@@ -109,38 +109,23 @@
   }
 
   :root[data-theme="dark-blue"] {
-    /* Primary colors (Blue) */
-    --color-primary-50: 239 246 255;
-    /* blue-50 */
-    --color-primary-100: 239 246 255;
-    /* blue-100 */
-    --color-primary-200: 239 246 255;
-    /* blue-200 */
-    --color-primary-300: 239 246 255;
-    /* blue-300 */
-    --color-primary-400: 239 246 255;
-    /* blue-400 */
-    --color-primary-500: 59 130 246;
-    /* blue-500 */
-    --color-primary-600: 37 99 235;
-    /* blue-600 */
-    --color-primary-700: 29 78 216;
-    /* blue-700 */
-    --color-primary-800: 30 64 175;
-    /* blue-800 */
-    --color-primary-900: 30 58 138;
-    /* blue-900 */
-    --color-primary-950: 23 37 84;
-    /* blue-950 */
+   /* Primary colors (Blue) - Enhanced dark blues */
+    --color-primary-50: 238 242 255;     /* Lightest blue */
+    --color-primary-100: 224 231 255;    /* Very light blue */
+    --color-primary-200: 199 210 254;    /* Light blue */
+    --color-primary-300: 165 180 252;    /* Mid-light blue */
+    --color-primary-400: 29 78 216;      /* Darker blue, closer to 600 */
+    --color-primary-500: 37 99 235;      /* Strong blue */
+    --color-primary-600: 30 64 175;      /* Deep blue */
+    --color-primary-700: 30 58 138;      /* Darker blue */
+    --color-primary-800: 23 37 84;       /* Very dark blue */
+    --color-primary-900: 17 24 39;       /* Nearly black blue */
+    --color-primary-950: 15 23 42;       /* Darkest blue */
 
-    /* Background colors */
-    --color-bg-primary: 17 24 39;
-    /* gray-900 */
-    --color-bg-secondary: 31 41 55;
-    /* gray-800 */
-    --color-bg-tertiary: 55 65 81;
-    /* gray-700 */
-
+    /* Background colors - With more blue-grey tones */
+    --color-bg-primary: 15 23 42;        /* Dark blue-grey */
+    --color-bg-secondary: 30 41 59;      /* Mid blue-grey */
+    --color-bg-tertiary: 51 65 85;       /* Light blue-grey */
     /* Text colors */
     --color-text-primary: 243 244 246;
     /* gray-100 */
