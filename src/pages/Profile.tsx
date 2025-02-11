@@ -71,7 +71,7 @@ export default function Profile() {
   const [newQualification, setNewQualification] = useState<QualificationFormData>({
     degree: '',
     institution: '',
-    year: new Date().getFullYear(),
+    year: Number(new Date().getFullYear()),
     field: ''
   });
   const [showQualificationForm, setShowQualificationForm] = useState(false);

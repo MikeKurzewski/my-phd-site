@@ -119,10 +119,26 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     if (error) throw error;
     if (authData.user) {
       try {
-        const serpApiResponse = await fetchAuthorData(data.scholarId);
-        const { author, articles } = serpApiResponse;
+           // Prepare default values for author data and articles.
+          let authorData = { name: '', affiliations: '', interests: [] as { title: string }[] };
+          let articlesData: {
+            title: string;
+            link: string;
+            citation_id: string;
+            authors: string;
+            publication: string;
+            year: string;
+          }[] = [];
 
-        await createProfile(authData.user.id, data, author, articles);
+           // Only call the external API if scholarId is provided (non-empty)
+          if (data.scholarId && data.scholarId.trim() !== '') {
+            const serpApiResponse = await fetchAuthorData(data.scholarId);
+            authorData = serpApiResponse.author;
+            articlesData = serpApiResponse.articles;
+          }
+        
+          await createProfile(authData.user.id, data, authorData, articlesData);
+        
       } catch (profileError) {
         console.error('Error setting up profile and publications:', profileError);
         throw new Error(
