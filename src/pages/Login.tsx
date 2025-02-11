@@ -121,16 +121,22 @@ export default function Login() {
                     <label htmlFor="name" className="block text-sm font-medium text-[rgb(var(--color-text-secondary))]">
                       Google Scholar ID
                     </label>
+                    <div>
+                      <p className='mt-2 text-sm text-[rgb(var(--color-text-tertiary))]'>Your scholar ID is found in your google scholar profile URL after <i>'user='</i>. For example:</p>
+                      <p className='mt-2 text-sm text-[rgb(var(--color-text-tertiary))]'>https://scholar.google.com/citations?hl=en&user=<b>_fgU9_EAAAAJ</b></p>
+                    </div>
                     <div className="mt-1">
                       <input
                         id="scholarId"
                         name="scholarId"
                         type="text"
-                        required
                         value={formData.scholarId}
                         onChange={(e) => setFormData({ ...formData, scholarId: e.target.value })}
                         className="form-input"
                       />
+                    </div>
+                    <div>
+                      <p className='mt-2 text-sm text-[rgb(var(--color-text-tertiary))]'><i>*You may set this up later</i></p>
                     </div>
                   </div>
                 </>
