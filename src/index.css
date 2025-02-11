@@ -53,8 +53,8 @@
     --color-primary-950: 4 47 46;
 
     /* Background colors - Light theme */
-    --color-bg-primary: 255 255 255;    /* white */
-    --color-bg-secondary: 249 250 251;  /* gray-50 */
+    --color-bg-secondary: 255 255 255;    /* white */
+    --color-bg-primary: 249 250 251;  /* gray-50 */
     --color-bg-tertiary: 243 244 246;   /* gray-100 */
 
     /* Text colors - Light theme */
@@ -158,6 +158,12 @@
            focus:outline-none focus:ring-2 focus:ring-[rgb(var(--color-primary-400))] focus:ring-offset-2
            focus:ring-offset-[rgb(var(--color-bg-primary))]
            disabled:opacity-50 disabled:cursor-not-allowed;
+  }
+
+  :root[data-theme="light-teal"] .btn-primary {
+    /* Use a darker teal for better contrast on a light background */
+    @apply bg-[rgb(var(--color-primary-600))] hover:bg-[rgb(var(--color-primary-800))]
+           focus:ring-[rgb(var(--color-primary-600))];
   }
 
   .btn-secondary {
@@ -285,6 +291,12 @@
     @apply border-4 border-t-[rgb(var(--color-primary-400))] border-[rgb(var(--color-border-primary))] 
            rounded-full w-10 h-10 mx-auto animate-spin;
   }
+
+  :root[data-theme="light-teal"] a {
+    /* Use a darker teal for links */
+    @apply text-[rgb(var(--color-primary-700))] hover:text-[rgb(var(--color-primary-600))];
+  }
+  
 
   @keyframes spin {
     to {
