@@ -69,9 +69,9 @@ export default function DefaultLayout({
 
                 {/* Social Links */}
                 <div className="mt-4 flex justify-center md:justify-start space-x-4">
-                  {profile.social_links?.email && (
+                  {profile.email && (
                     <a
-                      href={`mailto:${profile.social_links.email}`}
+                      href={`mailto:${profile.email}`}
                       className="text-[rgb(var(--color-text-tertiary))] hover:text-[rgb(var(--color-text-secondary))]"
                     >
                       <Mail className="h-6 w-6" />

@@ -8,6 +8,7 @@ import { getFileUrl, uploadFileToStorage } from '../lib/fileUtils';
 export interface Profile {
   id: string;
   name: string | null;
+  email: string | null;
   title: string | null;
   institution: string | null;
   department: string | null;
@@ -48,6 +49,7 @@ interface QualificationFormData {
 const defaultProfile: Profile = {
   id: '',
   name: null,
+  email: null,
   title: null,
   institution: null,
   department: null,
@@ -179,7 +181,8 @@ export default function Profile() {
           ...defaultProfile,
           ...data,
           research_interests: data.research_interests || [],
-          social_links: data.social_links || {}
+          social_links: data.social_links || {},
+          email: user.email?.toLowerCase() || null
         });
       }
     } catch (error) {

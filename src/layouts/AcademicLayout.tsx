@@ -139,9 +139,9 @@ export default function AcademicLayout({
 
                   {/* Social Links */}
                   <div className="flex justify-center lg:justify-start space-x-3">
-                    {profile.social_links?.email && (
+                    {profile.email && (
                       <a
-                        href={`mailto:${profile.social_links.email}`}
+                        href={`mailto:${profile.email}`}
                         className="text-[rgb(var(--color-text-tertiary))] hover:text-[rgb(var(--color-text-secondary))]"
                       >
                         <Mail className="h-5 w-5" />
