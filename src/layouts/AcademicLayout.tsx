@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { BookOpen, Briefcase, FileText, Mail, Linkedin, Github, Twitter, Menu, X, ExternalLink } from 'lucide-react';
+import { BookOpen, Briefcase, FileText, Mail, Linkedin, Github, Menu, X, ExternalLink } from 'lucide-react';
 import { TabProps } from '../types/common';
 import { EditableField } from '../components/EditableField';
 
@@ -167,14 +167,14 @@ export default function AcademicLayout({
                         <Github className="h-5 w-5" />
                       </a>
                     )}
-                    {profile.social_links?.twitter && (
+                    {profile.social_links?.x && (
                       <a
-                        href={profile.social_links.twitter}
+                        href={profile.social_links.x}
                         target="_blank"
                         rel="noopener noreferrer"
                         className="text-[rgb(var(--color-text-tertiary))] hover:text-[rgb(var(--color-text-secondary))]"
                       >
-                        <Twitter className="h-5 w-5" />
+                        <X className="h-5 w-5" />
                       </a>
                     )}
                   </div>
