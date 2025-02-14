@@ -109,23 +109,37 @@
   }
 
   :root[data-theme="dark-blue"] {
-   /* Primary colors (Blue) - Enhanced dark blues */
-    --color-primary-50: 238 242 255;     /* Lightest blue */
-    --color-primary-100: 224 231 255;    /* Very light blue */
-    --color-primary-200: 199 210 254;    /* Light blue */
-    --color-primary-300: 165 180 252;    /* Mid-light blue */
-    --color-primary-400: 29 78 216;      /* Darker blue, closer to 600 */
-    --color-primary-500: 37 99 235;      /* Strong blue */
-    --color-primary-600: 30 64 175;      /* Deep blue */
-    --color-primary-700: 30 58 138;      /* Darker blue */
-    --color-primary-800: 23 37 84;       /* Very dark blue */
-    --color-primary-900: 17 24 39;       /* Nearly black blue */
-    --color-primary-950: 15 23 42;       /* Darkest blue */
+    /* Primary colors (Blue) - Enhanced dark blues */
+    --color-primary-50: 238 242 255;
+    /* Lightest blue */
+    --color-primary-100: 224 231 255;
+    /* Very light blue */
+    --color-primary-200: 199 210 254;
+    /* Light blue */
+    --color-primary-300: 165 180 252;
+    /* Mid-light blue */
+    --color-primary-400: 29 78 216;
+    /* Darker blue, closer to 600 */
+    --color-primary-500: 37 99 235;
+    /* Strong blue */
+    --color-primary-600: 30 64 175;
+    /* Deep blue */
+    --color-primary-700: 30 58 138;
+    /* Darker blue */
+    --color-primary-800: 23 37 84;
+    /* Very dark blue */
+    --color-primary-900: 17 24 39;
+    /* Nearly black blue */
+    --color-primary-950: 15 23 42;
+    /* Darkest blue */
 
     /* Background colors - With more blue-grey tones */
-    --color-bg-primary: 15 23 42;        /* Dark blue-grey */
-    --color-bg-secondary: 30 41 59;      /* Mid blue-grey */
-    --color-bg-tertiary: 51 65 85;       /* Light blue-grey */
+    --color-bg-primary: 15 23 42;
+    /* Dark blue-grey */
+    --color-bg-secondary: 30 41 59;
+    /* Mid blue-grey */
+    --color-bg-tertiary: 51 65 85;
+    /* Light blue-grey */
     /* Text colors */
     --color-text-primary: 243 244 246;
     /* gray-100 */
@@ -152,7 +166,7 @@
   }
 
   :root[data-theme="light-blue"] {
-    /* Primary colors (Blue) - Adjusted for true blue tones */
+    /* Primary colors (Blue) - */
     --color-primary-50: 239 246 255;
     /* Soft blue */
     --color-primary-100: 219 234 254;
@@ -207,6 +221,68 @@
     /* yellow-600 */
     --color-info: 59 130 246;
     /* blue-500 */
+  }
+
+  :root[data-theme="minimal"] {
+    /* Primary colors (Slate) - Minimal accent colors */
+    --color-primary-50: 248 250 252;
+    /* Lightest slate */
+    --color-primary-100: 241 245 249;
+    /* Very light slate */
+    --color-primary-200: 226 232 240;
+    /* Light slate */
+    --color-primary-300: 203 213 225;
+    /* Mid-light slate */
+    --color-primary-400: 71 85 105;
+    /* Medium slate */
+    --color-primary-500: 51 65 85;
+    /* Mid-dark slate */
+    --color-primary-600: 30 41 59;
+    /* Dark slate */
+    --color-primary-700: 15 23 42;
+    /* Darker slate */
+    --color-primary-800: 12 19 35;
+    /* Very dark slate */
+    --color-primary-900: 9 14 26;
+    /* Nearly black slate */
+    --color-primary-950: 6 10 19;
+    /* Darkest slate */
+
+    /* Background colors - Clean, paper-like feel */
+    --color-bg-primary: 255 255 255;
+    /* Pure white for main content */
+    --color-bg-secondary: 250 250 250;
+    /* Subtle off-white */
+    --color-bg-tertiary: 245 245 245;
+    /* Light grey */
+
+    /* Text colors - High contrast for readability */
+    --color-text-primary: 17 17 17;
+    /* Near black */
+    --color-text-secondary: 51 51 51;
+    /* Dark grey */
+    --color-text-tertiary: 82 82 82;
+    /* Medium grey */
+
+    /* Border colors - Subtle separators */
+    --color-border-primary: 229 229 229;
+    /* Light grey */
+    --color-border-secondary: 242 242 242;
+    /* Very light grey */
+
+    /* Status colors - Muted, professional tones */
+    --color-success: 34 84 61;
+    /* Muted green */
+    --color-error: 153 27 27;
+    /* Muted red */
+    --color-warning: 120 83 3;
+    /* Muted amber */
+    --color-info: 30 41 59;
+    /* Slate */
+  }
+
+  :root {
+    color-scheme: light dark;
   }
 
   /* Set default theme */
