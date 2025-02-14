@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Camera, Linkedin, Github, Twitter, User, Plus, Trash2, Upload, FileText } from 'lucide-react';
+import { Camera, Linkedin, Github, User, Plus, Trash2, Upload, FileText, X } from 'lucide-react';
 import { useAuth } from '../lib/auth';
 import { supabase } from '../lib/supabase';
 import TagInput from '../components/TagInput';
@@ -21,7 +21,7 @@ export interface Profile {
   social_links: {
     linkedin?: string;
     github?: string;
-    twitter?: string;
+    x?: string;
   };
 }
 
@@ -572,14 +572,14 @@ export default function Profile() {
                   />
                 </div>
                 <div className="flex items-center space-x-2">
-                  <Twitter className="h-5 w-5 text-[rgb(var(--color-text-tertiary))]" />
+                  <X className="h-5 w-5 text-[rgb(var(--color-text-tertiary))]" />
                   <input
                     type="url"
-                    value={profile.social_links?.twitter || ''}
+                    value={profile.social_links?.x|| ''}
                     onChange={(e) =>
                       setProfile({
                         ...profile,
-                        social_links: { ...profile.social_links, twitter: e.target.value },
+                        social_links: { ...profile.social_links, x: e.target.value },
                       })
                     }
                     placeholder="Twitter URL"

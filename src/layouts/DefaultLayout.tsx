@@ -1,4 +1,4 @@
-import { ExternalLink, Mail, Linkedin, Github, Twitter, BookOpen, Briefcase } from 'lucide-react';
+import { ExternalLink, Mail, Linkedin, Github, X, BookOpen, Briefcase } from 'lucide-react';
 import { TabProps } from '../types/common';
 
 interface DefaultLayoutProps {
@@ -97,14 +97,14 @@ export default function DefaultLayout({
                       <Github className="h-6 w-6" />
                     </a>
                   )}
-                  {profile.social_links?.twitter && (
+                  {profile.social_links?.x && (
                     <a
-                      href={profile.social_links.twitter}
+                      href={profile.social_links.x }
                       target="_blank"
                       rel="noopener noreferrer"
                       className="text-[rgb(var(--color-text-tertiary))] hover:text-[rgb(var(--color-text-secondary))]"
                     >
-                      <Twitter className="h-6 w-6" />
+                      <X className="h-6 w-6" />
                     </a>
                   )}
                 </div>
