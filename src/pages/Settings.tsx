@@ -1,12 +1,12 @@
 import React, { useState, useEffect } from 'react';
-import { Globe, Lock, Palette, Sun, Moon, ExternalLink, CreditCard, Layout} from 'lucide-react';
+import { Globe, Lock, Palette, Sun, Moon, ExternalLink, CreditCard, Layout } from 'lucide-react';
 import { useAuth } from '../lib/auth';
 import { supabase } from '../lib/supabase';
 import { useTheme } from '../lib/theme';
 interface Profile {
   id: string;
   username: string;
-  theme: 'light-teal' | 'dark-teal' | 'light-blue' | 'dark-blue';
+  theme: 'light-teal' | 'dark-teal' | 'light-blue' | 'dark-blue' | 'minimal';
   layout: 'default' | 'academic';
 }
 
@@ -22,7 +22,7 @@ export default function Settings() {
   const { user, signOut } = useAuth();
   const [profile, setProfile] = useState<Profile | null>(null);
   const [subscription, setSubscription] = useState<Subscription | null>(null);
-  const [theme, setTheme] = useState<'light-teal' | 'dark-teal' | 'light-blue' | 'dark-blue'>('dark-teal');
+  const [theme, setTheme] = useState<'light-teal' | 'dark-teal' | 'light-blue' | 'minimal' | 'dark-blue'>('dark-teal');
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState<string | null>(null);
@@ -79,7 +79,7 @@ export default function Settings() {
     }
   };
 
-  const handleThemeChange = async (newTheme: 'light-teal' | 'dark-teal' | 'light-blue' | 'dark-blue') => {
+  const handleThemeChange = async (newTheme: 'light-teal' | 'dark-teal' | 'light-blue' | 'dark-blue' | 'minimal') => {
     try {
       setError(null);
       setSuccess(null);
@@ -184,19 +184,19 @@ export default function Settings() {
         }),
       });
 
-    const responseData = await response.json();
-    console.log('Backend response:', responseData);
+      const responseData = await response.json();
+      console.log('Backend response:', responseData);
 
-    if (!response.ok) {
-      throw new Error(responseData.error || 'Failed to create checkout session');
-    }
+      if (!response.ok) {
+        throw new Error(responseData.error || 'Failed to create checkout session');
+      }
 
-    const { session } = responseData;
-    if (!session || !session.url) {
-      throw new Error('Stripe session URL not returned by the server');
-    }
+      const { session } = responseData;
+      if (!session || !session.url) {
+        throw new Error('Stripe session URL not returned by the server');
+      }
 
-    window.location.href = session.url;
+      window.location.href = session.url;
     } catch (error) {
       console.error('Error creating checkout session:', error);
       setError('Failed to start upgrade process');
@@ -290,13 +290,13 @@ export default function Settings() {
                 </button>
               ) : (
                 //<button
-                  //onClick={handleCancelSubscription}
-                  //className="btn-secondary"
-                  //disabled={subscription?.cancel_at_period_end}>
-                  /* {subscription?.cancel_at_period_end ? 'Cancellation Scheduled' : 'Cancel Subscription'} */
+                //onClick={handleCancelSubscription}
+                //className="btn-secondary"
+                //disabled={subscription?.cancel_at_period_end}>
+                /* {subscription?.cancel_at_period_end ? 'Cancellation Scheduled' : 'Cancel Subscription'} */
                 //</button>
-                <a 
-                  href={'https://billing.stripe.com/p/login/test_7sIg06fVYgIseVa5kk'+'?prefilled_email='+user?.email}
+                <a
+                  href={'https://billing.stripe.com/p/login/test_7sIg06fVYgIseVa5kk' + '?prefilled_email=' + user?.email}
                   className='manageSub'
                 >
                   Manage Subscription
@@ -412,6 +412,16 @@ export default function Settings() {
               <Moon className="h-5 w-5" />
               Dark Blue
             </button>
+            <button
+              onClick={() => handleThemeChange('minimal')}
+              className={`flex items-center gap-2 px-4 py-2 rounded-md transition-colors ${theme === 'minimal'
+                ? 'bg-[rgb(var(--color-primary-900))] text-[rgb(var(--color-primary-400))]'
+                : 'text-[rgb(var(--color-text-secondary))] hover:bg-[rgb(var(--color-bg-tertiary))]'
+                }`}
+            >
+              <Moon className="h-5 w-5" />
+             Minimal
+            </button>
           </div>
         </div>
 
@@ -426,20 +436,18 @@ export default function Settings() {
           <div className="flex items-center gap-4">
             <button
               onClick={() => handleLayoutChange('default')}
-              className={`flex items-center gap-2 px-4 py-2 rounded-md transition-colors ${
-                profile?.layout === 'default'
-                ? 'bg-[rgb(var(--color-primary-900))] text-[rgb(var(--color-primary-400))]'
-                : 'text-[rgb(var(--color-text-secondary))] hover:bg-[rgb(var(--color-bg-tertiary))]'
+              className={`flex items-center gap-2 px-4 py-2 rounded-md transition-colors ${profile?.layout === 'default'
+                  ? 'bg-[rgb(var(--color-primary-900))] text-[rgb(var(--color-primary-400))]'
+                  : 'text-[rgb(var(--color-text-secondary))] hover:bg-[rgb(var(--color-bg-tertiary))]'
                 }`}
             >
               Default
             </button>
             <button
               onClick={() => handleLayoutChange('academic')}
-              className={`flex items-center gap-2 px-4 py-2 rounded-md transition-colors ${
-                profile?.layout === 'academic'
-                ? 'bg-[rgb(var(--color-primary-900))] text-[rgb(var(--color-primary-400))]'
-                : 'text-[rgb(var(--color-text-secondary))] hover:bg-[rgb(var(--color-bg-tertiary))]'
+              className={`flex items-center gap-2 px-4 py-2 rounded-md transition-colors ${profile?.layout === 'academic'
+                  ? 'bg-[rgb(var(--color-primary-900))] text-[rgb(var(--color-primary-400))]'
+                  : 'text-[rgb(var(--color-text-secondary))] hover:bg-[rgb(var(--color-bg-tertiary))]'
                 }`}
             >
               Academic
