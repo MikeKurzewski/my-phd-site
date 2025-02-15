@@ -240,8 +240,7 @@ export default function Profile() {
     }
   };
 
-  const handleAddQualification = async (e: React.FormEvent) => {
-    e.preventDefault();
+  const handleAddQualification = async () => {
     if (!user?.id) return;
 
     try {
@@ -607,7 +606,7 @@ export default function Profile() {
 
               {showQualificationForm && (
                 <div className="bg-[rgb(var(--color-bg-primary))] p-4 rounded-md border border-[rgb(var(--color-border-primary))]">
-                  <form onSubmit={handleAddQualification} className="space-y-4">
+                  <div className="space-y-4">
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                       <div>
                         <label className="block text-sm font-medium text-[rgb(var(--color-text-secondary))]">Degree</label>
@@ -659,13 +658,14 @@ export default function Profile() {
                         Cancel
                       </button>
                       <button
-                        type="submit"
+                        type="button"
+                        onClick={handleAddQualification}
                         className="btn-primary"
                       >
                         Add
                       </button>
                     </div>
-                  </form>
+                  </div>
                 </div>
               )}
 
