@@ -14,6 +14,7 @@ interface AuthContextType {
   signIn: (email: string, password: string) => Promise<void>;
   signUp: (data: SignUpData) => Promise<void>;
   signOut: () => Promise<void>;
+  deleteAccount: () => Promise<boolean>;
   loading: boolean;
 }
 
@@ -22,6 +23,7 @@ const AuthContext = createContext<AuthContextType>({
   signIn: async () => { },
   signUp: async () => { },
   signOut: async () => { },
+  deleteAccount: async () => false,
   loading: true,
 });
 
@@ -136,9 +138,9 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
             authorData = serpApiResponse.author;
             articlesData = serpApiResponse.articles;
           }
-        
+
           await createProfile(authData.user.id, data, authorData, articlesData);
-        
+
       } catch (profileError) {
         console.error('Error setting up profile and publications:', profileError);
         throw new Error(
@@ -159,8 +161,32 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   };
 
   const signOut = async () => {
+    // TODO: Add cleanup logic here, error handling?
     const { error } = await supabase.auth.signOut();
     if (error) throw error;
+  };
+
+  const deleteAccount = async () => {
+    try {
+      const { data: { session } } = await supabase.auth.getSession();
+      if (!session) throw new Error('User is not logged in');
+
+      const { error: funcError } = await supabase.functions.invoke('delete-account', {
+        headers: {
+          Authorization: `Bearer ${session.access_token}`,
+        }
+      });
+      if (funcError) throw funcError;
+
+      const { error: authError } = await supabase.auth.signOut();
+      if (authError) throw authError;
+
+      localStorage.clear();
+      return true;
+    } catch (error) {
+      console.error('Error in deleteAccount:', error);
+      throw error;
+    }
   };
 
   const value = {
@@ -168,6 +194,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     signIn,
     signUp,
     signOut,
+    deleteAccount,
     loading,
   };
 
