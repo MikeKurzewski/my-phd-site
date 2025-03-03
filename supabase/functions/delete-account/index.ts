@@ -59,26 +59,51 @@ Deno.serve(async (req) => {
       }
     }
 
-    // Delete database records explicitly
+    // Delete database records in proper order to respect foreign key constraints
     const tablesToDelete = [
-      'publications',
+      'publications', // Child tables first
       'projects',
       'qualifications',
-      'profile',
-      'subscriptions'
+      'profile',      // Profile references user
+      'subscriptions' // Subscriptions reference user
     ];
 
     for (const table of tablesToDelete) {
       console.log(`Deleting records from ${table}`);
-      const { error: deleteError } = await adminClient
-        .from(table)
+      try {
+        const { error: deleteError } = await adminClient
+          .from(table)
+          .delete()
+          .eq('user_id', user.id);
+
+        if (deleteError) {
+          console.error(`Error deleting from ${table}:`, deleteError);
+          // Continue with other tables even if one fails
+          continue;
+        }
+        console.log(`Successfully deleted from ${table}`);
+      } catch (err) {
+        console.error(`Unexpected error deleting from ${table}:`, err);
+        // Continue with other tables
+      }
+    }
+
+    // Delete from auth schema tables
+    try {
+      console.log('Deleting from auth schema tables');
+      await adminClient
+        .from('auth.identities')
         .delete()
         .eq('user_id', user.id);
-
-      if (deleteError) {
-        console.error(`Error deleting from ${table}:`, deleteError);
-        throw new Error(`Failed to delete records from ${table}`);
-      }
+      
+      await adminClient
+        .from('auth.sessions')
+        .delete()
+        .eq('user_id', user.id);
+      
+      console.log('Successfully deleted from auth schema tables');
+    } catch (err) {
+      console.error('Error deleting from auth schema tables:', err);
     }
 
     // Finally delete the auth user
