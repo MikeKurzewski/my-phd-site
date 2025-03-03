@@ -64,7 +64,7 @@ Deno.serve(async (req) => {
       'publications', // Child tables first
       'projects',
       'qualifications',
-      'profile',      // Profile references user
+      'profiles',     // Correct table name is profiles
       'subscriptions' // Subscriptions reference user
     ];
 
@@ -108,8 +108,17 @@ Deno.serve(async (req) => {
 
     // Finally delete the auth user
     console.log(`Deleting auth user: ${user.id}`);
-    const { error: deleteError } = await adminClient.auth.admin.deleteUser(user.id);
-    if (deleteError) throw deleteError;
+    try {
+      const { error: deleteError } = await adminClient.auth.admin.deleteUser(user.id);
+      if (deleteError) {
+        console.error('Error deleting auth user:', deleteError);
+        throw new Error(`Failed to delete auth user: ${deleteError.message}`);
+      }
+      console.log('Successfully deleted auth user');
+    } catch (err) {
+      console.error('Unexpected error deleting auth user:', err);
+      throw new Error('Failed to delete auth user');
+    }
 
     console.log(`Successfully deleted user and all data: ${user.id}`);
 
