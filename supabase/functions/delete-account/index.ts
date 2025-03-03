@@ -61,20 +61,20 @@ Deno.serve(async (req) => {
 
     // Delete database records in proper order to respect foreign key constraints
     const tablesToDelete = [
-      'publications', // Child tables first
-      'projects',
-      'qualifications',
-      'profiles',     // Correct table name is profiles
-      'subscriptions' // Subscriptions reference user
+      { name: 'publications', column: 'user_id' }, // Child tables first
+      { name: 'projects', column: 'user_id' },
+      { name: 'qualifications', column: 'user_id' },
+      { name: 'profiles', column: 'id' },         // Profiles uses id column
+      { name: 'subscriptions', column: 'user_id' } // Subscriptions reference user
     ];
 
     for (const table of tablesToDelete) {
-      console.log(`Deleting records from ${table}`);
+      console.log(`Deleting records from ${table.name} using column ${table.column}`);
       try {
         const { error: deleteError } = await adminClient
-          .from(table)
+          .from(table.name)
           .delete()
-          .eq('user_id', user.id);
+          .eq(table.column, user.id);
 
         if (deleteError) {
           console.error(`Error deleting from ${table}:`, deleteError);
@@ -106,7 +106,9 @@ Deno.serve(async (req) => {
       console.error('Error deleting from auth schema tables:', err);
     }
 
-    // Finally delete the auth user
+    console.log(`Successfully deleted user data: ${user.id}`);
+
+    // Finally delete the auth user - must be last operation
     console.log(`Deleting auth user: ${user.id}`);
     try {
       const { error: deleteError } = await adminClient.auth.admin.deleteUser(user.id);
@@ -120,7 +122,7 @@ Deno.serve(async (req) => {
       throw new Error('Failed to delete auth user');
     }
 
-    console.log(`Successfully deleted user and all data: ${user.id}`);
+    console.log(`Successfully deleted all user data and account: ${user.id}`);
 
     return new Response(JSON.stringify({ success: true }), {
       headers: { ...corsHeaders, "Content-Type": "application/json" },
