@@ -3,6 +3,8 @@ import { Globe, Lock, Palette, Sun, Moon, ExternalLink, CreditCard, Layout } fro
 import { useAuth } from '../lib/auth';
 import { supabase } from '../lib/supabase';
 import { useTheme } from '../lib/theme';
+import { useNavigate } from 'react-router-dom';
+
 interface Profile {
   id: string;
   username: string;
@@ -20,6 +22,9 @@ interface Subscription {
 
 export default function Settings() {
   const { user, signOut } = useAuth();
+  const navigate = useNavigate();
+  const [isDeletingAcc, setIsDeleting] = useState(false);
+  const { deleteAccount } = useAuth();
   const [profile, setProfile] = useState<Profile | null>(null);
   const [subscription, setSubscription] = useState<Subscription | null>(null);
   const [theme, setTheme] = useState<'light-teal' | 'dark-teal' | 'light-blue' | 'minimal' | 'dark-blue'>('dark-teal');
@@ -45,6 +50,21 @@ export default function Settings() {
 
   // Use the theme hook
   useTheme(theme);
+
+  const handleDeleteAccount = async () => {
+    if (!confirm("Are you sure you want to delete your account?")) return;
+
+    setIsDeleting(true);
+    try {
+      const success = await deleteAccount();
+      if (success) window.location.href = '/';
+    } catch (error) {
+      console.error('Error:', error);
+      alert('Failed to delete account. Please try again later.');
+    } finally {
+      setIsDeleting(false);
+    }
+  }
 
   const fetchProfile = async () => {
     try {
@@ -479,6 +499,13 @@ export default function Settings() {
                 onClick={() => {/* TODO: Implement password reset */ }}
               >
                 Reset Password
+              </button>
+              <button
+                onClick={handleDeleteAccount}
+                disabled={isDeletingAcc}
+                className="btn-secondary"
+              >
+                {isDeletingAcc ? 'Deleting...' : 'Delete Account'}
               </button>
               <button
                 onClick={handleSignOut}
