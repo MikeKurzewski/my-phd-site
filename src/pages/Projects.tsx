@@ -14,7 +14,7 @@ interface Project {
   user_id: string;
   url: string;
   funding_source: string;
-  media_files: string[];
+  media_files?: string[];
 }
 
 interface ProjectFormData {
@@ -61,7 +61,12 @@ export default function Projects() {
         .order('created_at', { ascending: false });
 
       if (error) throw error;
-      setProjects(data || []);
+      // Ensure media_files is always an array
+      const projectsWithMedia = (data || []).map(project => ({
+        ...project,
+        media_files: project.media_files || []
+      }));
+      setProjects(projectsWithMedia);
     } catch (error) {
       console.error('Error fetching projects:', error);
     } finally {
@@ -252,7 +257,7 @@ export default function Projects() {
                 ))}
               </div>
                   
-              {project.media_files?.length > 0 && (
+              {project.media_files && project.media_files.length > 0 && (
                 <div className="grid grid-cols-2 md:grid-cols-3 gap-2 mt-4">
                   {project.media_files.map((file, index) => (
                     <div key={index} className="relative aspect-square rounded-lg overflow-hidden">
