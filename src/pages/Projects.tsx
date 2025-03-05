@@ -175,9 +175,9 @@ export default function Projects() {
       tags: project.tags.join(', '),
       start_date: project.start_date,
       end_date: project.end_date,
-      url: project.url,
-      funding_source: project.funding_source,
-
+      url: project.url || '',
+      funding_source: project.funding_source || '',
+      media_files: [],
     });
     setIsModalOpen(true);
   };
@@ -221,6 +221,7 @@ export default function Projects() {
               start_date: new Date().toISOString().split('T')[0],
               url: '',
               funding_source: '',
+              media_files: [],
             });
             setIsModalOpen(true);
           }}
@@ -270,14 +271,18 @@ export default function Projects() {
                 ))}
               </div>
                   
-              {project.media_files?.length > 0 && (
+              {project.media_files && project.media_files.length > 0 && (
                 <div className="grid grid-cols-2 md:grid-cols-3 gap-2 mt-4">
-                  {project.media_files?.map((file, index) => (
+                  {project.media_files.map((file, index) => (
                     <div key={index} className="relative aspect-square rounded-lg overflow-hidden">
                       <img
                         src={file}
                         alt={`Project media ${index + 1}`}
                         className="w-full h-full object-cover"
+                        onError={(e) => {
+                          // Handle image loading errors
+                          (e.target as HTMLImageElement).src = 'https://via.placeholder.com/150?text=Image+Error';
+                        }}
                       />
                     </div>
                   ))}
@@ -345,10 +350,9 @@ export default function Projects() {
                     <label className="block text-sm font-medium text-[rgb(var(--color-text-secondary))]">Funding Source</label>
                     <input
                       type="text"
-                      value={formData.funding_source}
+                      value={formData.funding_source || ''}
                       onChange={(e) => setFormData({ ...formData, funding_source: e.target.value })}
                       className="form-input"
-                      
                     />
                   </div>
 
