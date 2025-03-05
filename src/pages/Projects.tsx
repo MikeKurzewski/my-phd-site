@@ -103,23 +103,16 @@ export default function Projects() {
     if (!user?.id) return;
 
     try {
-      // Upload media files first
+      // Upload media files first using the helper function
       const mediaUrls: string[] = [];
       for (const file of formData.media_files || []) {
-        const filePath = `projects/${user.id}/${Date.now()}-${file.name}`;
-        const { data, error } = await supabase
-          .storage
-          .from('project-media')
-          .upload(filePath, file);
-
-        if (error) throw error;
-        
-        const { data: urlData } = supabase
-          .storage
-          .from('project-media')
-          .getPublicUrl(filePath);
-        
-        mediaUrls.push(urlData.publicUrl);
+        try {
+          const url = await uploadProjectMedia(user.id, file);
+          mediaUrls.push(url);
+        } catch (error) {
+          console.error('Error uploading file:', file.name, error);
+          throw new Error(`Failed to upload ${file.name}`);
+        }
       }
 
       const projectData = {
