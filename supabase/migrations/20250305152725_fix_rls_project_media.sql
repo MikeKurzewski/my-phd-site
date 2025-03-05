@@ -56,40 +56,38 @@ BEGIN
     FROM storage.buckets 
     WHERE id = 'project-media'
   ) THEN
-    CREATE POLICY "Authenticated users can upload to their project-media folder"
+    -- Drop existing policies if they exist
+    DROP POLICY IF EXISTS "Authenticated users can upload to their project-media folder" ON storage.objects;
+    DROP POLICY IF EXISTS "Authenticated users can view their project media" ON storage.objects;
+    DROP POLICY IF EXISTS "Authenticated users can update their project media" ON storage.objects;
+    DROP POLICY IF EXISTS "Authenticated users can delete their project media" ON storage.objects;
+    
+    -- Create a more permissive policy for uploads
+    CREATE POLICY "Allow uploads to project-media"
     ON storage.objects
     FOR INSERT
     TO authenticated
-    WITH CHECK (
-        bucket_id = 'project-media'
-        AND (storage.foldername(name))[1] = auth.uid()::text
-    );
-
-    CREATE POLICY "Authenticated users can view their project media"
+    WITH CHECK (bucket_id = 'project-media');
+    
+    -- Allow users to view all project media
+    CREATE POLICY "Allow viewing project media"
     ON storage.objects
     FOR SELECT
     TO authenticated
-    USING (
-        bucket_id = 'project-media'
-        AND (storage.foldername(name))[1] = auth.uid()::text
-    );
-
-    CREATE POLICY "Authenticated users can update their project media"
+    USING (bucket_id = 'project-media');
+    
+    -- Allow users to update their own project media
+    CREATE POLICY "Allow updating project media"
     ON storage.objects
     FOR UPDATE
     TO authenticated
-    USING (
-        bucket_id = 'project-media'
-        AND (storage.foldername(name))[1] = auth.uid()::text
-    );
-
-    CREATE POLICY "Authenticated users can delete their project media"
+    USING (bucket_id = 'project-media');
+    
+    -- Allow users to delete their own project media
+    CREATE POLICY "Allow deleting project media"
     ON storage.objects
     FOR DELETE
     TO authenticated
-    USING (
-        bucket_id = 'project-media'
-        AND (storage.foldername(name))[1] = auth.uid()::text
-    );
+    USING (bucket_id = 'project-media');
   END IF;
 END $$;

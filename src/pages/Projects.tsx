@@ -125,8 +125,7 @@ export default function Projects() {
         ...formData,
         tags: formData.tags.split(',').filter(Boolean).map(t => t.trim()),
         user_id: user.id,
-        media_files: mediaUrls,
-        links: {} // Add empty links object to match interface
+        media_files: mediaUrls
       };
 
       if (editingProject) {

@@ -47,7 +47,7 @@ export async function uploadProjectMedia(userId: string, file: File) {
       .from('project-media')
       .upload(filePath, file, {
         cacheControl: '3600',
-        upsert: false
+        upsert: true // Changed to true to overwrite if file exists
       });
 
     if (error) {
