@@ -42,6 +42,7 @@ export default function Projects() {
     start_date: new Date().toISOString().split('T')[0],
     url: '',
     funding_source: '',
+    media_files: []
   });
 
   useEffect(() => {
@@ -91,10 +92,30 @@ export default function Projects() {
     if (!user?.id) return;
 
     try {
+      // Upload media files first
+      const mediaUrls = [];
+      for (const file of formData.media_files) {
+        const filePath = `projects/${user.id}/${Date.now()}-${file.name}`;
+        const { data, error } = await supabase
+          .storage
+          .from('project-media')
+          .upload(filePath, file);
+
+        if (error) throw error;
+        
+        const { data: urlData } = supabase
+          .storage
+          .from('project-media')
+          .getPublicUrl(filePath);
+        
+        mediaUrls.push(urlData.publicUrl);
+      }
+
       const projectData = {
         ...formData,
         tags: formData.tags.split(',').filter(Boolean).map(t => t.trim()),
         user_id: user.id,
+        media_files: mediaUrls
       };
 
       if (editingProject) {
@@ -119,6 +140,7 @@ export default function Projects() {
         start_date: new Date().toISOString().split('T')[0],
         url: '',
         funding_source: '',
+        media_files: []
       });
       fetchProjects();
       fetchAllTags();
@@ -229,6 +251,20 @@ export default function Projects() {
                   </span>
                 ))}
               </div>
+                  
+              {project.media_files?.length > 0 && (
+                <div className="grid grid-cols-2 md:grid-cols-3 gap-2 mt-4">
+                  {project.media_files.map((file, index) => (
+                    <div key={index} className="relative aspect-square rounded-lg overflow-hidden">
+                      <img
+                        src={file}
+                        alt={`Project media ${index + 1}`}
+                        className="w-full h-full object-cover"
+                      />
+                    </div>
+                  ))}
+                </div>
+              )}
               <div className="text-sm text-[rgb(var(--color-text-tertiary))]">
                 {project.start_date} - {project.end_date || 'Present'}
               </div>
@@ -296,6 +332,56 @@ export default function Projects() {
                       className="form-input"
                       
                     />
+                  </div>
+
+                  <div>
+                    <label className="block text-sm font-medium text-[rgb(var(--color-text-secondary))] mb-2">
+                      Media Files
+                    </label>
+                    <div className="grid grid-cols-2 md:grid-cols-3 gap-2 mb-4">
+                      {formData.media_files.map((file, index) => (
+                        <div key={index} className="relative aspect-square rounded-lg overflow-hidden">
+                          <img
+                            src={URL.createObjectURL(file)}
+                            alt={`Preview ${index + 1}`}
+                            className="w-full h-full object-cover"
+                          />
+                          <button
+                            type="button"
+                            onClick={() => {
+                              const newFiles = [...formData.media_files];
+                              newFiles.splice(index, 1);
+                              setFormData({ ...formData, media_files: newFiles });
+                            }}
+                            className="absolute top-1 right-1 p-1 bg-red-500 rounded-full hover:bg-red-600"
+                          >
+                            <X className="h-4 w-4 text-white" />
+                          </button>
+                        </div>
+                      ))}
+                      <label
+                        htmlFor="media-upload"
+                        className="aspect-square flex items-center justify-center border-2 border-dashed border-[rgb(var(--color-border-primary))] rounded-lg cursor-pointer hover:bg-[rgb(var(--color-bg-tertiary))]"
+                      >
+                        <Plus className="h-6 w-6 text-[rgb(var(--color-text-tertiary))]" />
+                        <input
+                          id="media-upload"
+                          type="file"
+                          accept="image/*"
+                          multiple
+                          className="hidden"
+                          onChange={(e) => {
+                            if (e.target.files) {
+                              const files = Array.from(e.target.files);
+                              setFormData({
+                                ...formData,
+                                media_files: [...formData.media_files, ...files]
+                              });
+                            }
+                          }}
+                        />
+                      </label>
+                    </div>
                   </div>
 
                   <div className="grid grid-cols-2 gap-4">
