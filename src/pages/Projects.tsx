@@ -13,8 +13,8 @@ interface Project {
   end_date?: string;
   user_id: string;
   url: string;
-  funding_source: string,
-
+  funding_source: string;
+  media_files: string[];
 }
 
 interface ProjectFormData {
@@ -24,8 +24,8 @@ interface ProjectFormData {
   start_date: string;
   end_date?: string;
   url: string;
-  funding_source: string,
-
+  funding_source: string;
+  media_files: File[];
 }
 
 export default function Projects() {
