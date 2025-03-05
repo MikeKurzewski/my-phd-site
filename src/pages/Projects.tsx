@@ -31,6 +31,7 @@ interface ProjectFormData {
 export default function Projects() {
   const { user } = useAuth();
   const [projects, setProjects] = useState<Project[]>([]);
+  const [mediaFiles, setMediaFiles] = useState<string[]>([]);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editingProject, setEditingProject] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
@@ -62,10 +63,15 @@ export default function Projects() {
 
       if (error) throw error;
       // Ensure media_files is always an array
-      const projectsWithMedia = (data || []).map(project => ({
-        ...project,
-        media_files: project.media_files || []
-      }));
+      const projectsWithMedia = (data || []).map(project => {
+        // Ensure all array fields are properly initialized
+        return {
+          ...project,
+          tags: project.tags || [],
+          media_files: project.media_files || [],
+          links: project.links || {}
+        };
+      });
       setProjects(projectsWithMedia);
     } catch (error) {
       console.error('Error fetching projects:', error);
@@ -257,9 +263,9 @@ export default function Projects() {
                 ))}
               </div>
                   
-              {project.media_files && project.media_files.length > 0 && (
+              {project.media_files?.length > 0 && (
                 <div className="grid grid-cols-2 md:grid-cols-3 gap-2 mt-4">
-                  {project.media_files.map((file, index) => (
+                  {project.media_files?.map((file, index) => (
                     <div key={index} className="relative aspect-square rounded-lg overflow-hidden">
                       <img
                         src={file}
@@ -344,7 +350,7 @@ export default function Projects() {
                       Media Files
                     </label>
                     <div className="grid grid-cols-2 md:grid-cols-3 gap-2 mb-4">
-                      {formData.media_files.map((file, index) => (
+                      {formData.media_files?.map((file, index) => (
                         <div key={index} className="relative aspect-square rounded-lg overflow-hidden">
                           <img
                             src={URL.createObjectURL(file)}
