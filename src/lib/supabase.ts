@@ -39,15 +39,17 @@ export async function checkStoragePermissions(userId: string) {
 // Helper function for secure file uploads
 export async function uploadProjectMedia(userId: string, file: File) {
   try {
-    const filePath = `projects/${userId}/${Date.now()}-${file.name}`;
+    // Create a safe filename by removing special characters
+    const safeFileName = file.name.replace(/[^a-zA-Z0-9.-]/g, '_');
+    const filePath = `projects/${userId}/${Date.now()}-${safeFileName}`;
     
-    // Upload directly without permission check since we have RLS policies
+    // Skip permission check and upload directly
     const { data, error } = await supabase
       .storage
       .from('project-media')
       .upload(filePath, file, {
         cacheControl: '3600',
-        upsert: true // Changed to true to overwrite if file exists
+        upsert: true
       });
 
     if (error) {

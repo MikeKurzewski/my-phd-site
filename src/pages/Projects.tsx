@@ -69,7 +69,6 @@ export default function Projects() {
           ...project,
           tags: project.tags || [],
           media_files: project.media_files || [],
-          links: project.links || {}
         };
       });
       setProjects(projectsWithMedia);
@@ -122,8 +121,13 @@ export default function Projects() {
       }
 
       const projectData = {
-        ...formData,
+        title: formData.title,
+        description: formData.description,
         tags: formData.tags.split(',').filter(Boolean).map(t => t.trim()),
+        start_date: formData.start_date,
+        end_date: formData.end_date,
+        url: formData.url,
+        funding_source: formData.funding_source,
         user_id: user.id,
         media_files: mediaUrls
       };
@@ -150,7 +154,7 @@ export default function Projects() {
         start_date: new Date().toISOString().split('T')[0],
         url: '',
         funding_source: '',
-        media_files: [] as File[]
+        media_files: []
       });
       fetchProjects();
       fetchAllTags();

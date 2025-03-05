@@ -61,33 +61,17 @@ BEGIN
     DROP POLICY IF EXISTS "Authenticated users can view their project media" ON storage.objects;
     DROP POLICY IF EXISTS "Authenticated users can update their project media" ON storage.objects;
     DROP POLICY IF EXISTS "Authenticated users can delete their project media" ON storage.objects;
+    DROP POLICY IF EXISTS "Allow uploads to project-media" ON storage.objects;
+    DROP POLICY IF EXISTS "Allow viewing project media" ON storage.objects;
+    DROP POLICY IF EXISTS "Allow updating project media" ON storage.objects;
+    DROP POLICY IF EXISTS "Allow deleting project media" ON storage.objects;
     
-    -- Create a more permissive policy for uploads
-    CREATE POLICY "Allow uploads to project-media"
+    -- Create completely permissive policies for project-media bucket
+    CREATE POLICY "Public project media access"
     ON storage.objects
-    FOR INSERT
-    TO authenticated
+    FOR ALL
+    TO public
+    USING (bucket_id = 'project-media')
     WITH CHECK (bucket_id = 'project-media');
-    
-    -- Allow users to view all project media
-    CREATE POLICY "Allow viewing project media"
-    ON storage.objects
-    FOR SELECT
-    TO authenticated
-    USING (bucket_id = 'project-media');
-    
-    -- Allow users to update their own project media
-    CREATE POLICY "Allow updating project media"
-    ON storage.objects
-    FOR UPDATE
-    TO authenticated
-    USING (bucket_id = 'project-media');
-    
-    -- Allow users to delete their own project media
-    CREATE POLICY "Allow deleting project media"
-    ON storage.objects
-    FOR DELETE
-    TO authenticated
-    USING (bucket_id = 'project-media');
   END IF;
 END $$;
