@@ -1,5 +1,5 @@
 -- Ensure user_id column exists in projects table
-DO $$
+DO $$ 
 BEGIN
   IF NOT EXISTS (
     SELECT 1 
@@ -9,7 +9,8 @@ BEGIN
   ) THEN
     ALTER TABLE projects ADD COLUMN user_id uuid REFERENCES auth.users(id);
   END IF;
-END $$ LANGUAGE plpgsql;
+END 
+$$ LANGUAGE plpgsql;
 
 -- Create the check_storage_policy function
 CREATE OR REPLACE FUNCTION public.check_storage_policy(bucket_id text, user_id uuid)
