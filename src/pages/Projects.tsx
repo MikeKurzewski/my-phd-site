@@ -105,13 +105,19 @@ export default function Projects() {
     try {
       // Upload media files first using the helper function
       const mediaUrls: string[] = [];
-      for (const file of formData.media_files || []) {
-        try {
-          const url = await uploadProjectMedia(user.id, file);
-          mediaUrls.push(url);
-        } catch (error) {
-          console.error('Error uploading file:', file.name, error);
-          throw new Error(`Failed to upload ${file.name}`);
+      
+      // Only attempt uploads if there are files
+      if (formData.media_files && formData.media_files.length > 0) {
+        for (const file of formData.media_files) {
+          try {
+            const url = await uploadProjectMedia(user.id, file);
+            mediaUrls.push(url);
+          } catch (error) {
+            console.error('Error uploading file:', file.name, error);
+            // Continue with other files instead of failing completely
+            // Just show an error message
+            alert(`Failed to upload ${file.name}. The project will be saved without this file.`);
+          }
         }
       }
 

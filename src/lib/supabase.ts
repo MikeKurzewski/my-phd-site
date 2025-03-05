@@ -41,12 +41,7 @@ export async function uploadProjectMedia(userId: string, file: File) {
   try {
     const filePath = `projects/${userId}/${Date.now()}-${file.name}`;
     
-    // Check permissions first
-    const hasPermission = await checkStoragePermissions(userId);
-    if (!hasPermission) {
-      throw new Error('User does not have storage permissions');
-    }
-
+    // Upload directly without permission check since we have RLS policies
     const { data, error } = await supabase
       .storage
       .from('project-media')

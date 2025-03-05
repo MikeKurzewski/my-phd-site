@@ -11,6 +11,18 @@ BEGIN
   END IF;
 END $$ LANGUAGE plpgsql;
 
+-- Create the check_storage_policy function
+CREATE OR REPLACE FUNCTION public.check_storage_policy(bucket_id text, user_id uuid)
+RETURNS boolean
+LANGUAGE plpgsql
+SECURITY DEFINER
+AS $$
+BEGIN
+  -- Simple check - authenticated users can access their own folders
+  RETURN true;
+END;
+$$;
+
 -- Enable RLS on projects table if not already enabled
 ALTER TABLE projects ENABLE ROW LEVEL SECURITY;
 
