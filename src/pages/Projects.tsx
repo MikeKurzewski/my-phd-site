@@ -128,9 +128,13 @@ export default function Projects() {
         end_date: formData.end_date,
         url: formData.url,
         funding_source: formData.funding_source,
-        user_id: user.id,
-        media_files: mediaUrls
+        user_id: user.id
       };
+      
+      // Add media_files only if we have any
+      if (mediaUrls.length > 0) {
+        projectData['media_files'] = mediaUrls;
+      }
 
       if (editingProject) {
         const { error } = await supabase

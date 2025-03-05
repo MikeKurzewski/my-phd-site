@@ -41,15 +41,15 @@ export async function uploadProjectMedia(userId: string, file: File) {
   try {
     // Create a safe filename by removing special characters
     const safeFileName = file.name.replace(/[^a-zA-Z0-9.-]/g, '_');
-    const filePath = `projects/${userId}/${Date.now()}-${safeFileName}`;
+    const filePath = `${userId}/${Date.now()}-${safeFileName}`;
     
-    // Skip permission check and upload directly
+    // Upload to the project-media bucket
     const { data, error } = await supabase
       .storage
       .from('project-media')
       .upload(filePath, file, {
         cacheControl: '3600',
-        upsert: true
+        upsert: false
       });
 
     if (error) {
