@@ -9,7 +9,7 @@ BEGIN
   ) THEN
     ALTER TABLE projects ADD COLUMN user_id uuid REFERENCES auth.users(id);
   END IF;
-END $$;
+END $$ LANGUAGE plpgsql;
 
 -- Enable RLS on projects table if not already enabled
 ALTER TABLE projects ENABLE ROW LEVEL SECURITY;
