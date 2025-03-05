@@ -43,7 +43,7 @@ export default function Projects() {
     start_date: new Date().toISOString().split('T')[0],
     url: '',
     funding_source: '',
-    media_files: []
+    media_files: [] as File[] // Explicitly type as File array
   });
 
   useEffect(() => {
@@ -104,8 +104,8 @@ export default function Projects() {
 
     try {
       // Upload media files first
-      const mediaUrls = [];
-      for (const file of formData.media_files) {
+      const mediaUrls: string[] = [];
+      for (const file of formData.media_files || []) {
         const filePath = `projects/${user.id}/${Date.now()}-${file.name}`;
         const { data, error } = await supabase
           .storage
@@ -126,7 +126,8 @@ export default function Projects() {
         ...formData,
         tags: formData.tags.split(',').filter(Boolean).map(t => t.trim()),
         user_id: user.id,
-        media_files: mediaUrls
+        media_files: mediaUrls,
+        links: {} // Add empty links object to match interface
       };
 
       if (editingProject) {
@@ -151,7 +152,7 @@ export default function Projects() {
         start_date: new Date().toISOString().split('T')[0],
         url: '',
         funding_source: '',
-        media_files: []
+        media_files: [] as File[]
       });
       fetchProjects();
       fetchAllTags();
