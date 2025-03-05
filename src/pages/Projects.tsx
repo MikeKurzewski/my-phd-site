@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Plus, Edit2, Trash2, X } from 'lucide-react';
 import { useAuth } from '../lib/auth';
-import { supabase } from '../lib/supabase';
+import { supabase, uploadProjectMedia } from '../lib/supabase';
 import TagInput from '../components/TagInput';
 
 interface Project {
