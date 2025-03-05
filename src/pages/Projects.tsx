@@ -43,7 +43,7 @@ export default function Projects() {
     start_date: new Date().toISOString().split('T')[0],
     url: '',
     funding_source: '',
-    media_files: [] as File[] // Explicitly type as File array
+    media_files: [] // Initialize as empty array
   });
 
   useEffect(() => {
@@ -351,7 +351,7 @@ export default function Projects() {
                       Media Files
                     </label>
                     <div className="grid grid-cols-2 md:grid-cols-3 gap-2 mb-4">
-                      {formData.media_files?.map((file, index) => (
+                      {(formData.media_files || []).map((file, index) => (
                         <div key={index} className="relative aspect-square rounded-lg overflow-hidden">
                           <img
                             src={URL.createObjectURL(file)}
@@ -361,7 +361,7 @@ export default function Projects() {
                           <button
                             type="button"
                             onClick={() => {
-                              const newFiles = [...formData.media_files];
+                              const newFiles = [...(formData.media_files || [])];
                               newFiles.splice(index, 1);
                               setFormData({ ...formData, media_files: newFiles });
                             }}
@@ -385,10 +385,10 @@ export default function Projects() {
                           onChange={(e) => {
                             if (e.target.files) {
                               const files = Array.from(e.target.files);
-                              setFormData({
-                                ...formData,
-                                media_files: [...formData.media_files, ...files]
-                              });
+                              setFormData(prev => ({
+                                ...prev,
+                                media_files: [...(prev.media_files || []), ...files]
+                              }));
                             }
                           }}
                         />
