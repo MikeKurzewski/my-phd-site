@@ -281,7 +281,12 @@ export default function AcademicLayout({
                       key={project.id}
                       className="bg-[rgb(var(--color-bg-secondary))] rounded-lg p-6 border border-[rgb(var(--color-border-primary))]"
                     >
-                      <h3 className="text-lg font-medium text-[rgb(var(--color-text-primary))]">{project.title}</h3>
+                      <div className="flex justify-between items-start">
+                        <h3 className="text-lg font-medium text-[rgb(var(--color-text-primary))]">{project.title}</h3>
+                        <div className="text-sm text-[rgb(var(--color-text-tertiary))] ml-4 whitespace-nowrap">
+                          {project.start_date} - {project.end_date || 'Present'}
+                        </div>
+                      </div>
                       <p className="mt-2 text-[rgb(var(--color-text-secondary))]">{project.description}</p>
                       <div className="mt-4 flex flex-wrap gap-2">
                         {project.tags.map((tag: string) => (
