@@ -1,6 +1,5 @@
 -- Ensure user_id column exists in projects table
 DO $$ 
-LANGUAGE plpgsql
 BEGIN
   IF NOT EXISTS (
     SELECT 1 
