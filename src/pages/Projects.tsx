@@ -1,10 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Plus, Edit2, Trash2, X, FileText } from 'lucide-react';
-import { Document, Page, pdfjs } from 'react-pdf';
-import 'react-pdf/dist/esm/Page/AnnotationLayer.css';
-import 'react-pdf/dist/esm/Page/TextLayer.css';
-
-pdfjs.GlobalWorkerOptions.workerSrc = `//cdnjs.cloudflare.com/ajax/libs/pdf.js/${pdfjs.version}/pdf.worker.js`;
+import { Plus, Edit2, Trash2, X } from 'lucide-react';
 import { useAuth } from '../lib/auth';
 import { supabase, uploadProjectMedia } from '../lib/supabase';
 import TagInput from '../components/TagInput';
@@ -31,7 +26,6 @@ interface ProjectFormData {
   url: string;
   funding_source: string;
   media_files: File[];
-  pdf_files: File[];
 }
 
 export default function Projects() {
@@ -49,8 +43,7 @@ export default function Projects() {
     start_date: new Date().toISOString().split('T')[0],
     url: '',
     funding_source: '',
-    media_files: [],
-    pdf_files: [] // Initialize as empty array
+    media_files: [] // Initialize as empty array
   });
 
   useEffect(() => {
@@ -204,36 +197,6 @@ export default function Projects() {
     } catch (error) {
       console.error('Error deleting project:', error);
     }
-  };
-
-  const PdfPreview = ({ file }: { file: File }) => {
-    const [numPages, setNumPages] = useState<number | null>(null);
-
-    return (
-      <div className="relative aspect-square rounded-lg overflow-hidden bg-gray-100">
-        <Document 
-          file={URL.createObjectURL(file)} 
-          onLoadSuccess={({ numPages }) => setNumPages(numPages)}
-          className="w-full h-full"
-        >
-          <Page pageNumber={1} width={300} />
-        </Document>
-        <div className="absolute bottom-2 left-2 bg-black/50 text-white px-2 py-1 rounded text-xs">
-          Page 1 of {numPages}
-        </div>
-        <button
-          type="button"
-          onClick={() => {
-            const newFiles = [...formData.pdf_files];
-            newFiles.splice(formData.pdf_files.indexOf(file), 1);
-            setFormData({ ...formData, pdf_files: newFiles });
-          }}
-          className="absolute top-1 right-1 p-1 bg-red-500 rounded-full hover:bg-red-600"
-        >
-          <X className="h-4 w-4 text-white" />
-        </button>
-      </div>
-    );
   };
 
   if (loading) {
@@ -435,40 +398,6 @@ export default function Projects() {
                               setFormData(prev => ({
                                 ...prev,
                                 media_files: [...(prev.media_files || []), ...files]
-                              }));
-                            }
-                          }}
-                        />
-                      </label>
-                    </div>
-                  </div>
-
-                  {/* PDF Upload Section */}
-                  <div>
-                    <label className="block text-sm font-medium text-[rgb(var(--color-text-secondary))] mb-2">
-                      PDF Files
-                    </label>
-                    <div className="grid grid-cols-2 md:grid-cols-3 gap-2 mb-4">
-                      {formData.pdf_files.map((file, index) => (
-                        <PdfPreview key={index} file={file} />
-                      ))}
-                      <label
-                        htmlFor="pdf-upload"
-                        className="aspect-square flex items-center justify-center border-2 border-dashed border-[rgb(var(--color-border-primary))] rounded-lg cursor-pointer hover:bg-[rgb(var(--color-bg-tertiary))]"
-                      >
-                        <FileText className="h-6 w-6 text-[rgb(var(--color-text-tertiary))]" />
-                        <input
-                          id="pdf-upload"
-                          type="file"
-                          accept="application/pdf"
-                          multiple
-                          className="hidden"
-                          onChange={(e) => {
-                            if (e.target.files) {
-                              const files = Array.from(e.target.files);
-                              setFormData(prev => ({
-                                ...prev,
-                                pdf_files: [...prev.pdf_files, ...files]
                               }));
                             }
                           }}

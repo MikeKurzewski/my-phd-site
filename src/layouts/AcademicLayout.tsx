@@ -285,28 +285,6 @@ export default function AcademicLayout({
                           View Publication
                         </a>
                       )}
-
-                      {project.pdf_files && project.pdf_files.length > 0 && (
-                        <div className="mt-4 space-y-2">
-                          <h4 className="text-sm font-medium text-[rgb(var(--color-text-secondary))]">PDF Documents</h4>
-                          <div className="grid grid-cols-2 gap-2">
-                            {project.pdf_files.map((file, index) => (
-                              <a
-                                key={index}
-                                href={file}
-                                target="_blank"
-                                rel="noopener noreferrer"
-                                className="flex items-center p-2 bg-[rgb(var(--color-bg-tertiary))] rounded-lg hover:bg-[rgb(var(--color-bg-secondary))]"
-                              >
-                                <FileText className="h-4 w-4 mr-2 text-[rgb(var(--color-text-tertiary))]" />
-                                <span className="text-sm text-[rgb(var(--color-text-secondary))] truncate">
-                                  {file.split('/').pop()}
-                                </span>
-                              </a>
-                            ))}
-                          </div>
-                        </div>
-                      )}
                     </div>
                   ))}
                 </div>
@@ -337,7 +315,7 @@ export default function AcademicLayout({
                         ))}
                       </div>
                       
-                      {(project.media_files && project.media_files.length > 0) && (
+                      {project.media_files && project.media_files.length > 0 && (
                         <div className="mt-4 grid grid-cols-3 gap-2">
                           {project.media_files.map((file, index) => (
                             <button
