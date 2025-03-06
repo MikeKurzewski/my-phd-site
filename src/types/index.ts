@@ -21,9 +21,12 @@ export interface Project {
   description: string;
   tags: string[];
   mediaUrls?: string[];
+  pdfFiles?: string[];
   startDate: string;
   endDate?: string;
   userId: string;
+  url?: string;
+  fundingSource?: string;
 }
 
 export interface Publication {
