@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
-import { Plus, Edit2, Trash2 } from 'lucide-react';
+import { Plus, Edit2, Trash2, X } from 'lucide-react';
 import { useAuth } from '../lib/auth';
-import { supabase } from '../lib/supabase';
+import { supabase, uploadProjectMedia } from '../lib/supabase';
 import TagInput from '../components/TagInput';
 
 interface Project {
@@ -13,8 +13,8 @@ interface Project {
   end_date?: string;
   user_id: string;
   url: string;
-  funding_source: string,
-
+  funding_source: string;
+  media_files?: string[];
 }
 
 interface ProjectFormData {
@@ -24,13 +24,14 @@ interface ProjectFormData {
   start_date: string;
   end_date?: string;
   url: string;
-  funding_source: string,
-
+  funding_source: string;
+  media_files: File[];
 }
 
 export default function Projects() {
   const { user } = useAuth();
   const [projects, setProjects] = useState<Project[]>([]);
+  const [mediaFiles, setMediaFiles] = useState<string[]>([]);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editingProject, setEditingProject] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
@@ -42,6 +43,7 @@ export default function Projects() {
     start_date: new Date().toISOString().split('T')[0],
     url: '',
     funding_source: '',
+    media_files: [] // Initialize as empty array
   });
 
   useEffect(() => {
@@ -60,7 +62,16 @@ export default function Projects() {
         .order('created_at', { ascending: false });
 
       if (error) throw error;
-      setProjects(data || []);
+      // Ensure media_files is always an array
+      const projectsWithMedia = (data || []).map(project => {
+        // Ensure all array fields are properly initialized
+        return {
+          ...project,
+          tags: project.tags || [],
+          media_files: project.media_files || [],
+        };
+      });
+      setProjects(projectsWithMedia);
     } catch (error) {
       console.error('Error fetching projects:', error);
     } finally {
@@ -91,11 +102,39 @@ export default function Projects() {
     if (!user?.id) return;
 
     try {
+      // Upload media files first using the helper function
+      const mediaUrls: string[] = [];
+      
+      // Only attempt uploads if there are files
+      if (formData.media_files && formData.media_files.length > 0) {
+        for (const file of formData.media_files) {
+          try {
+            const url = await uploadProjectMedia(user.id, file);
+            mediaUrls.push(url);
+          } catch (error) {
+            console.error('Error uploading file:', file.name, error);
+            // Continue with other files instead of failing completely
+            // Just show an error message
+            alert(`Failed to upload ${file.name}. The project will be saved without this file.`);
+          }
+        }
+      }
+
       const projectData = {
-        ...formData,
+        title: formData.title,
+        description: formData.description,
         tags: formData.tags.split(',').filter(Boolean).map(t => t.trim()),
-        user_id: user.id,
+        start_date: formData.start_date,
+        end_date: formData.end_date,
+        url: formData.url,
+        funding_source: formData.funding_source,
+        user_id: user.id
       };
+      
+      // Add media_files only if we have any
+      if (mediaUrls.length > 0) {
+        projectData['media_files'] = mediaUrls;
+      }
 
       if (editingProject) {
         const { error } = await supabase
@@ -119,6 +158,7 @@ export default function Projects() {
         start_date: new Date().toISOString().split('T')[0],
         url: '',
         funding_source: '',
+        media_files: []
       });
       fetchProjects();
       fetchAllTags();
@@ -135,9 +175,9 @@ export default function Projects() {
       tags: project.tags.join(', '),
       start_date: project.start_date,
       end_date: project.end_date,
-      url: project.url,
-      funding_source: project.funding_source,
-
+      url: project.url || '',
+      funding_source: project.funding_source || '',
+      media_files: [],
     });
     setIsModalOpen(true);
   };
@@ -181,6 +221,7 @@ export default function Projects() {
               start_date: new Date().toISOString().split('T')[0],
               url: '',
               funding_source: '',
+              media_files: [],
             });
             setIsModalOpen(true);
           }}
@@ -229,6 +270,24 @@ export default function Projects() {
                   </span>
                 ))}
               </div>
+                  
+              {project.media_files && project.media_files.length > 0 && (
+                <div className="grid grid-cols-2 md:grid-cols-3 gap-2 mt-4">
+                  {project.media_files.map((file, index) => (
+                    <div key={index} className="relative aspect-square rounded-lg overflow-hidden">
+                      <img
+                        src={file}
+                        alt={`Project media ${index + 1}`}
+                        className="w-full h-full object-cover"
+                        onError={(e) => {
+                          // Handle image loading errors
+                          (e.target as HTMLImageElement).src = 'https://via.placeholder.com/150?text=Image+Error';
+                        }}
+                      />
+                    </div>
+                  ))}
+                </div>
+              )}
               <div className="text-sm text-[rgb(var(--color-text-tertiary))]">
                 {project.start_date} - {project.end_date || 'Present'}
               </div>
@@ -291,11 +350,60 @@ export default function Projects() {
                     <label className="block text-sm font-medium text-[rgb(var(--color-text-secondary))]">Funding Source</label>
                     <input
                       type="text"
-                      value={formData.funding_source}
+                      value={formData.funding_source || ''}
                       onChange={(e) => setFormData({ ...formData, funding_source: e.target.value })}
                       className="form-input"
-                      
                     />
+                  </div>
+
+                  <div>
+                    <label className="block text-sm font-medium text-[rgb(var(--color-text-secondary))] mb-2">
+                      Media Files
+                    </label>
+                    <div className="grid grid-cols-2 md:grid-cols-3 gap-2 mb-4">
+                      {(formData.media_files || []).map((file, index) => (
+                        <div key={index} className="relative aspect-square rounded-lg overflow-hidden">
+                          <img
+                            src={URL.createObjectURL(file)}
+                            alt={`Preview ${index + 1}`}
+                            className="w-full h-full object-cover"
+                          />
+                          <button
+                            type="button"
+                            onClick={() => {
+                              const newFiles = [...(formData.media_files || [])];
+                              newFiles.splice(index, 1);
+                              setFormData({ ...formData, media_files: newFiles });
+                            }}
+                            className="absolute top-1 right-1 p-1 bg-red-500 rounded-full hover:bg-red-600"
+                          >
+                            <X className="h-4 w-4 text-white" />
+                          </button>
+                        </div>
+                      ))}
+                      <label
+                        htmlFor="media-upload"
+                        className="aspect-square flex items-center justify-center border-2 border-dashed border-[rgb(var(--color-border-primary))] rounded-lg cursor-pointer hover:bg-[rgb(var(--color-bg-tertiary))]"
+                      >
+                        <Plus className="h-6 w-6 text-[rgb(var(--color-text-tertiary))]" />
+                        <input
+                          id="media-upload"
+                          type="file"
+                          accept="image/*"
+                          multiple
+                          className="hidden"
+                          onChange={(e) => {
+                            if (e.target.files) {
+                              const files = Array.from(e.target.files);
+                              setFormData(prev => ({
+                                ...prev,
+                                media_files: [...(prev.media_files || []), ...files]
+                              }));
+                            }
+                          }}
+                        />
+                      </label>
+                    </div>
                   </div>
 
                   <div className="grid grid-cols-2 gap-4">

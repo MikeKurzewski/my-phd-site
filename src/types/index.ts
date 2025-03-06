@@ -20,7 +20,7 @@ export interface Project {
   title: string;
   description: string;
   tags: string[];
-  mediaUrls: string[];
+  mediaUrls?: string[];
   startDate: string;
   endDate?: string;
   userId: string;
