@@ -43,7 +43,8 @@ BEGIN
     WHERE id = 'project-media'
   ) THEN
     INSERT INTO storage.buckets (id, name, public)
-    VALUES ('project-media', 'project-media', true);
+    VALUES ('project-media', 'project-media', true),
+           ('pdf-documents', 'pdf-documents', true);
   END IF;
 END $$;
 

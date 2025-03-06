@@ -31,14 +31,22 @@ export default function MediaLightbox() {
       </button>
 
       <div className="relative max-w-[90vw] max-h-[90vh]">
-        <img
-          src={currentMedia}
-          alt={`Media ${currentIndex + 1}`}
-          className="max-w-full max-h-[80vh] object-contain rounded-lg"
-          onError={(e) => {
-            (e.target as HTMLImageElement).src = 'https://via.placeholder.com/800x600?text=Image+Error';
-          }}
-        />
+        {currentMedia.endsWith('.pdf') ? (
+          <iframe
+            src={currentMedia}
+            className="w-full h-[80vh] rounded-lg"
+            title={`PDF Preview ${currentIndex + 1}`}
+          />
+        ) : (
+          <img
+            src={currentMedia}
+            alt={`Media ${currentIndex + 1}`}
+            className="max-w-full max-h-[80vh] object-contain rounded-lg"
+            onError={(e) => {
+              (e.target as HTMLImageElement).src = 'https://via.placeholder.com/800x600?text=Image+Error';
+            }}
+          />
+        )}
 
         {media.length > 1 && (
           <>

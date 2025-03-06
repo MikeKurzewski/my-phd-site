@@ -331,14 +331,23 @@ export default function AcademicLayout({
                                 }));
                               }}
                             >
-                              <img
-                                src={file}
-                                alt={`Project media ${index + 1}`}
-                                className="w-full h-full object-cover"
-                                onError={(e) => {
-                                  (e.target as HTMLImageElement).src = 'https://via.placeholder.com/200?text=Image+Error';
-                                }}
-                              />
+                              {file.endsWith('.pdf') ? (
+                                <div className="w-full h-full bg-[rgb(var(--color-bg-tertiary))] flex flex-col items-center justify-center p-2">
+                                  <FileText className="h-8 w-8 text-[rgb(var(--color-text-tertiary))]" />
+                                  <span className="text-xs text-[rgb(var(--color-text-tertiary))] text-center mt-2">
+                                    PDF Document
+                                  </span>
+                                </div>
+                              ) : (
+                                <img
+                                  src={file}
+                                  alt={`Project media ${index + 1}`}
+                                  className="w-full h-full object-cover"
+                                  onError={(e) => {
+                                    (e.target as HTMLImageElement).src = 'https://via.placeholder.com/200?text=Image+Error';
+                                  }}
+                                />
+                              )}
                             </button>
                           ))}
                         </div>
