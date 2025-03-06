@@ -1,4 +1,20 @@
 import React, { useState } from 'react';
+
+const formatDate = (dateString: string) => {
+  const date = new Date(dateString);
+  const day = date.getDate();
+  const month = date.toLocaleString('default', { month: 'long' });
+  const year = date.getFullYear();
+  
+  // Add ordinal suffix to day
+  const ordinal = (day: number) => {
+    const s = ['th', 'st', 'nd', 'rd'];
+    const v = day % 100;
+    return day + (s[(v - 20) % 10] || s[v] || s[0]);
+  };
+
+  return `${ordinal(day)} ${month} ${year}`;
+};
 import MediaLightbox from '../components/MediaLightbox';
 import { BookOpen, Briefcase, FileText, Mail, Linkedin, Github, Menu, X, ExternalLink } from 'lucide-react';
 import { TabProps } from '../types/common';
@@ -281,10 +297,10 @@ export default function AcademicLayout({
                       key={project.id}
                       className="bg-[rgb(var(--color-bg-secondary))] rounded-lg p-6 border border-[rgb(var(--color-border-primary))]"
                     >
-                      <div className="flex justify-between items-start">
+                      <div className="flex justify-between items-baseline">
                         <h3 className="text-lg font-medium text-[rgb(var(--color-text-primary))]">{project.title}</h3>
                         <div className="text-sm text-[rgb(var(--color-text-tertiary))] ml-4 whitespace-nowrap">
-                          {project.start_date} - {project.end_date || 'Present'}
+                          {formatDate(project.start_date)} - {project.end_date ? formatDate(project.end_date) : 'Present'}
                         </div>
                       </div>
                       <p className="mt-2 text-[rgb(var(--color-text-secondary))]">{project.description}</p>
@@ -297,9 +313,6 @@ export default function AcademicLayout({
                             {tag}
                           </span>
                         ))}
-                      </div>
-                      <div className="mt-4 text-sm text-[rgb(var(--color-text-tertiary))]">
-                        {project.start_date} - {project.end_date || 'Present'}
                       </div>
                       
                       {project.media_files && project.media_files.length > 0 && (
