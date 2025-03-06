@@ -295,6 +295,24 @@ export default function AcademicLayout({
                       <div className="mt-4 text-sm text-[rgb(var(--color-text-tertiary))]">
                         {project.start_date} - {project.end_date || 'Present'}
                       </div>
+                      
+                      {project.media_files && project.media_files.length > 0 && (
+                        <div className="mt-4 space-y-2">
+                          {project.media_files.map((file, index) => (
+                            <div key={index} className="w-full">
+                              <img
+                                src={file}
+                                alt={`Project media ${index + 1}`}
+                                className="w-full rounded-lg"
+                                onError={(e) => {
+                                  // Handle image loading errors
+                                  (e.target as HTMLImageElement).src = 'https://via.placeholder.com/800x400?text=Image+Error';
+                                }}
+                              />
+                            </div>
+                          ))}
+                        </div>
+                      )}
                     </div>
                   ))}
                 </div>
