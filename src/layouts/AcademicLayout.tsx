@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import MediaLightbox from '../components/MediaLightbox';
 import { BookOpen, Briefcase, FileText, Mail, Linkedin, Github, Menu, X, ExternalLink } from 'lucide-react';
 import { TabProps } from '../types/common';
 import { EditableField } from '../components/EditableField';
@@ -297,19 +298,30 @@ export default function AcademicLayout({
                       </div>
                       
                       {project.media_files && project.media_files.length > 0 && (
-                        <div className="mt-4 space-y-2">
+                        <div className="mt-4 grid grid-cols-3 gap-2">
                           {project.media_files.map((file, index) => (
-                            <div key={index} className="w-full">
+                            <button
+                              key={index}
+                              className="relative aspect-square rounded-lg overflow-hidden hover:opacity-80 transition-opacity"
+                              onClick={() => {
+                                // Open lightbox at this index
+                                window.dispatchEvent(new CustomEvent('openLightbox', {
+                                  detail: {
+                                    media: project.media_files,
+                                    startIndex: index
+                                  }
+                                }));
+                              }}
+                            >
                               <img
                                 src={file}
                                 alt={`Project media ${index + 1}`}
-                                className="w-full rounded-lg"
+                                className="w-full h-full object-cover"
                                 onError={(e) => {
-                                  // Handle image loading errors
-                                  (e.target as HTMLImageElement).src = 'https://via.placeholder.com/800x400?text=Image+Error';
+                                  (e.target as HTMLImageElement).src = 'https://via.placeholder.com/200?text=Image+Error';
                                 }}
                               />
-                            </div>
+                            </button>
                           ))}
                         </div>
                       )}
@@ -321,6 +333,9 @@ export default function AcademicLayout({
           </div>
         </div>
       </main>
+
+      {/* Media Lightbox */}
+      <MediaLightbox />
 
       {/* Mobile Sidebar Overlay */}
       {isSidebarOpen && (
