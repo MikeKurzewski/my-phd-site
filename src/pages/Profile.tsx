@@ -348,7 +348,7 @@ export default function Profile() {
         </div>
       )}
 
-      <div className="bg-[rgb(var(--color-bg-secondary))] shadow-sm rounded-lg border border-[rgb(var(--color-border-primary))]">
+      <div className="bg-[rgb(var(--color-bg-secondary))] shadow-sm rounded-lg">
         <div className="relative h-32">
           <div className="absolute inset-0 bg-gradient-to-r from-[rgb(var(--color-primary-600))] to-[rgb(var(--color-primary-400))] rounded-t-lg">
             {profile.banner_image_url && (
@@ -494,7 +494,7 @@ export default function Profile() {
                       href={getFileUrl(profile.cv_url, 'profile-files')}
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="btn-secondary"
+                      className="btn-secondary border bg-[rgb(var(--color-bg-secondary))]"
                     >
                       <FileText className="h-4 w-4 mr-2" />
                       {getFileName(profile.cv_url)}
@@ -670,7 +670,7 @@ export default function Profile() {
                 {qualifications.map((qual) => (
                   <div
                     key={qual.id}
-                    className="flex justify-between items-center p-4 bg-[rgb(var(--color-bg-tertiary))] rounded-md"
+                    className="flex justify-between items-center p-4 bg-[rgb(var(--color-bg-primary))] dark:bg-[rgb(var(--color-bg-tertiary))] rounded-md"
                   >
                     <div>
                       <h4 className="font-medium text-[rgb(var(--color-text-primary))]">{qual.degree} in {qual.field}</h4>

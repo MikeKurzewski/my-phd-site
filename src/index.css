@@ -53,9 +53,9 @@
     --color-primary-950: 4 47 46;
 
     /* Background colors - Light theme */
-    --color-bg-secondary: 255 255 255;    /* white */
+    --color-bg-secondary: 253 254 255;    /* white */
     --color-bg-primary: 249 250 251;  /* gray-50 */
-    --color-bg-tertiary: 243 244 246;   /* gray-100 */
+    --color-bg-tertiary: 223 224 226;   /* gray-100 */
 
     /* Text colors - Light theme */
     --color-text-primary: 17 24 39;     /* gray-900 */

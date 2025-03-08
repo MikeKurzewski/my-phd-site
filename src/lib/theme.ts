@@ -2,8 +2,17 @@ import { useEffect } from 'react';
 
 export function setTheme(theme: 'light-teal' | 'dark-teal' | 'light-blue' | 'dark-blue') {
   document.documentElement.setAttribute('data-theme', theme);
+  
+  // Toggle Tailwind's dark mode class based on the theme name
+  if (theme.startsWith('dark')) {
+    document.documentElement.classList.add('dark');
+  } else {
+    document.documentElement.classList.remove('dark');
+  }
+  
   localStorage.setItem('theme', theme);
 }
+
 
 export function initTheme() {
   // Check if theme is stored in localStorage

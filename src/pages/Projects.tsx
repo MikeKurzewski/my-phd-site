@@ -192,7 +192,7 @@ export default function Projects() {
       </div>
 
       {projects.length === 0 ? (
-        <div className="bg-[rgb(var(--color-bg-secondary))] shadow-sm rounded-lg p-6 text-center border border-[rgb(var(--color-border-primary))]">
+        <div className="bg-[rgb(var(--color-bg-secondary))] shadow-sm rounded-lg p-6 text-center">
           <p className="text-[rgb(var(--color-text-secondary))]">
             No projects added yet. Click "Add Project" to get started.
           </p>
@@ -200,7 +200,7 @@ export default function Projects() {
       ) : (
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           {projects.map((project) => (
-            <div key={project.id} className="bg-[rgb(var(--color-bg-secondary))] shadow-sm rounded-lg p-6 border border-[rgb(var(--color-border-primary))]">
+            <div key={project.id} className="bg-[rgb(var(--color-bg-secondary))] shadow-sm rounded-lg p-6">
               <div className="flex justify-between items-start mb-4">
                 <h3 className="text-lg font-medium text-[rgb(var(--color-text-primary))]">{project.title}</h3>
                 <div className="flex space-x-2">
@@ -223,7 +223,7 @@ export default function Projects() {
                 {project.tags.map((tag) => (
                   <span
                     key={tag}
-                    className="px-2 py-1 bg-[rgb(var(--color-primary-900))] text-[rgb(var(--color-primary-400))] text-sm rounded-md"
+                    className="px-2 py-1 dark:bg-[rgb(var(--color-primary-900))] bg-[rgb(var(--color-primary-800))] dark:text-[rgb(var(--color-primary-400))] text-[rgb(var(--color-bg-secondary))] text-sm rounded-md"
                   >
                     {tag}
                   </span>

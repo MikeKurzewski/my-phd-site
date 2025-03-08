@@ -259,12 +259,12 @@ export default function Settings() {
         </div>
       )}
 
-      <div className="bg-[rgb(var(--color-bg-secondary))] shadow-sm rounded-lg divide-y divide-[rgb(var(--color-border-primary))] border border-[rgb(var(--color-border-primary))]">
+      <div className="bg-[rgb(var(--color-bg-secondary))] shadow-sm rounded-lg divide-y divide-[rgb(var(--color-border-primary))]">
         {/* Subscription Section */}
         <div className="p-6">
           <div className="flex items-center gap-4 mb-4">
-            <div className="p-2 bg-[rgb(var(--color-primary-900))] rounded-lg">
-              <CreditCard className="h-6 w-6 text-[rgb(var(--color-primary-400))]" />
+            <div className="p-2 bg-[rgb(var(--color-bg-tertiary))] dark:bg-[rgb(var(--color-primary-900))] rounded-lg">
+              <CreditCard className="h-6 w-6 text-[rgb(var(--color-bg-primary))] dark:text-[rgb(var(--color-primary-400))]" />
             </div>
             <h3 className="text-lg font-medium text-[rgb(var(--color-text-primary))]">Subscription</h3>
           </div>
@@ -321,8 +321,8 @@ export default function Settings() {
         {/* Website URL Section */}
         <div className="p-6">
           <div className="flex items-center gap-4 mb-4">
-            <div className="p-2 bg-[rgb(var(--color-primary-900))] rounded-lg">
-              <Globe className="h-6 w-6 text-[rgb(var(--color-primary-400))]" />
+            <div className="p-2 bg-[rgb(var(--color-bg-tertiary))] dark:bg-[rgb(var(--color-primary-900))] rounded-lg">
+              <Globe className="h-6 w-6 text-[rgb(var(--color-bg-primary))] dark:text-[rgb(var(--color-primary-400))]" />
             </div>
             <h3 className="text-lg font-medium text-[rgb(var(--color-text-primary))]">Website URL</h3>
           </div>
@@ -366,8 +366,8 @@ export default function Settings() {
         {/* Theme Section */}
         <div className="p-6">
           <div className="flex items-center gap-4 mb-4">
-            <div className="p-2 bg-[rgb(var(--color-primary-900))] rounded-lg">
-              <Palette className="h-6 w-6 text-[rgb(var(--color-primary-400))]" />
+            <div className="p-2 bg-[rgb(var(--color-bg-tertiary))] dark:bg-[rgb(var(--color-primary-900))] rounded-lg">
+              <Palette className="h-6 w-6 text-[rgb(var(--color-bg-primary))] dark:text-[rgb(var(--color-primary-400))]" />
             </div>
             <h3 className="text-lg font-medium text-[rgb(var(--color-text-primary))]">Website Theme</h3>
           </div>
@@ -375,7 +375,7 @@ export default function Settings() {
             <button
               onClick={() => handleThemeChange('light-teal')}
               className={`flex items-center gap-2 px-4 py-2 rounded-md transition-colors ${theme === 'light-teal'
-                ? 'bg-[rgb(var(--color-primary-900))] text-[rgb(var(--color-primary-400))]'
+                ? 'bg-[rgb(var(--color-primary-900))] text-[rgb(var(--color-bg-primary))] dark:text-[rgb(var(--color-primary-400))]'
                 : 'text-[rgb(var(--color-text-secondary))] hover:bg-[rgb(var(--color-bg-tertiary))]'
                 }`}
             >
@@ -385,7 +385,7 @@ export default function Settings() {
             <button
               onClick={() => handleThemeChange('dark-teal')}
               className={`flex items-center gap-2 px-4 py-2 rounded-md transition-colors ${theme === 'dark-teal'
-                ? 'bg-[rgb(var(--color-primary-900))] text-[rgb(var(--color-primary-400))]'
+                ? 'bg-[rgb(var(--color-primary-900))] text-[rgb(var(--color-bg-primary))] dark:text-[rgb(var(--color-primary-400))]'
                 : 'text-[rgb(var(--color-text-secondary))] hover:bg-[rgb(var(--color-bg-tertiary))]'
                 }`}
             >
@@ -395,7 +395,7 @@ export default function Settings() {
             <button
               onClick={() => handleThemeChange('light-blue')}
               className={`flex items-center gap-2 px-4 py-2 rounded-md transition-colors ${theme === 'light-blue'
-                ? 'bg-[rgb(var(--color-primary-900))] text-[rgb(var(--color-primary-400))]'
+                ? 'bg-[rgb(var(--color-primary-900))] text-[rgb(var(--color-bg-primary))] dark:text-[rgb(var(--color-primary-400))]'
                 : 'text-[rgb(var(--color-text-secondary))] hover:bg-[rgb(var(--color-bg-tertiary))]'
                 }`}
             >
@@ -405,7 +405,7 @@ export default function Settings() {
             <button
               onClick={() => handleThemeChange('dark-blue')}
               className={`flex items-center gap-2 px-4 py-2 rounded-md transition-colors ${theme === 'dark-blue'
-                ? 'bg-[rgb(var(--color-primary-900))] text-[rgb(var(--color-primary-400))]'
+                ? 'bg-[rgb(var(--color-primary-900))] text-[rgb(var(--color-bg-primary))] dark:text-[rgb(var(--color-primary-400))]'
                 : 'text-[rgb(var(--color-text-secondary))] hover:bg-[rgb(var(--color-bg-tertiary))]'
                 }`}
             >
@@ -418,8 +418,8 @@ export default function Settings() {
         {/* Layout Selection Section */}
         <div className="p-6">
           <div className="flex items-center gap-4 mb-4">
-            <div className="p-2 bg-[rgb(var(--color-primary-900))] rounded-lg">
-              <Layout className="h-6 w-6 text-[rgb(var(--color-primary-400))]" />
+            <div className="p-2 bg-[rgb(var(--color-bg-tertiary))] dark:bg-[rgb(var(--color-primary-900))] rounded-lg">
+              <Layout className="h-6 w-6 text-[rgb(var(--color-bg-primary))] dark:text-[rgb(var(--color-primary-400))]" />
             </div>
             <h3 className="text-lg font-medium text-[rgb(var(--color-text-primary))]">Website Layout</h3>
           </div>
@@ -428,7 +428,7 @@ export default function Settings() {
               onClick={() => handleLayoutChange('default')}
               className={`flex items-center gap-2 px-4 py-2 rounded-md transition-colors ${
                 profile?.layout === 'default'
-                ? 'bg-[rgb(var(--color-primary-900))] text-[rgb(var(--color-primary-400))]'
+                ? 'bg-[rgb(var(--color-primary-900))] text-[rgb(var(--color-bg-primary))] dark:text-[rgb(var(--color-primary-400))]'
                 : 'text-[rgb(var(--color-text-secondary))] hover:bg-[rgb(var(--color-bg-tertiary))]'
                 }`}
             >
@@ -438,7 +438,7 @@ export default function Settings() {
               onClick={() => handleLayoutChange('academic')}
               className={`flex items-center gap-2 px-4 py-2 rounded-md transition-colors ${
                 profile?.layout === 'academic'
-                ? 'bg-[rgb(var(--color-primary-900))] text-[rgb(var(--color-primary-400))]'
+                ? 'bg-[rgb(var(--color-primary-900))] text-[rgb(var(--color-primary-100))] dark:text-[rgb(var(--color-primary-400))]'
                 : 'text-[rgb(var(--color-text-secondary))] hover:bg-[rgb(var(--color-bg-tertiary))]'
                 }`}
             >
@@ -450,8 +450,8 @@ export default function Settings() {
         {/* Account Settings Section */}
         <div className="p-6">
           <div className="flex items-center gap-4 mb-4">
-            <div className="p-2 bg-[rgb(var(--color-primary-900))] rounded-lg">
-              <Lock className="h-6 w-6 text-[rgb(var(--color-primary-400))]" />
+            <div className="p-2 bg-[rgb(var(--color-bg-tertiary))] dark:bg-[rgb(var(--color-primary-900))] rounded-lg">
+              <Lock className="h-6 w-6 text-[rgb(var(--color-bg-primary))] dark:text-[rgb(var(--color-primary-400))]" />
             </div>
             <h3 className="text-lg font-medium text-[rgb(var(--color-text-primary))]">Account Settings</h3>
           </div>
@@ -462,19 +462,19 @@ export default function Settings() {
                 type="email"
                 value={user?.email || ''}
                 readOnly
-                className="mt-1 block w-full rounded-md border-[rgb(var(--color-border-primary))] bg-[rgb(var(--color-bg-primary))] text-[rgb(var(--color-text-tertiary))] shadow-sm focus:border-[rgb(var(--color-primary-400))] focus:ring-[rgb(var(--color-primary-400))] sm:text-sm"
+                className="mt-1 block px-3 py-2 w-full rounded-md border-[rgb(var(--color-border-primary))] bg-[rgb(var(--color-bg-primary))] text-[rgb(var(--color-text-tertiary))] shadow-sm focus:border-[rgb(var(--color-primary-400))] focus:ring-[rgb(var(--color-primary-400))] sm:text-sm"
               />
             </div>
             <div className="flex space-x-4">
               <button
-                className="btn-secondary"
+                className="btn-secondary hover:bg-[rgb(var(--color-bg-tertiary))] bg-[rgb(var(--color-bg-primary))] dark:bg-[rgb(var(--color-bg-tertiary))]"
                 onClick={() => {/* TODO: Implement password reset */ }}
               >
                 Reset Password
               </button>
               <button
                 onClick={handleSignOut}
-                className="btn-error"
+                className="btn-error text-[rgb(var(--color-bg-tertiary))] dark:text-[rgb(var(--color-text-tertiary))] hover:text-[rgb(var(--color-text-primary))]"
               >
                 Sign Out
               </button>

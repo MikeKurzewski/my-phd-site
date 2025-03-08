@@ -71,17 +71,17 @@ export default function TagInput({ value, onChange, placeholder, existingTags = 
 
   return (
     <div className="relative">
-      <div className="min-h-[38px] flex flex-wrap gap-2 p-1 bg-[rgb(var(--color-bg-primary))] border border-[rgb(var(--color-border-primary))] rounded-md focus-within:ring-2 focus-within:ring-[rgb(var(--color-primary-400))] focus-within:border-[rgb(var(--color-primary-400))]">
+      <div className="min-h-[38px] flex flex-wrap gap-2 p-1 bg-[rgb(var(--color-bg-primary))] rounded-md focus-within:ring-2 focus-within:ring-[rgb(var(--color-primary-400))] focus-within:border-[rgb(var(--color-primary-400))]">
         {value.map((tag) => (
           <span
             key={tag}
-            className="inline-flex items-center px-2 py-1 bg-[rgb(var(--color-primary-900))] text-[rgb(var(--color-primary-400))] text-sm rounded-md"
+            className="inline-flex items-center px-2 py-1 dark:bg-[rgb(var(--color-primary-900))] bg-[rgb(var(--color-primary-800))] text-[rgb(var(--color-bg-primary))] dark:text-[rgb(var(--color-primary-400))] text-sm rounded-md"
           >
             {tag}
             <button
               type="button"
               onClick={() => removeTag(tag)}
-              className="ml-1 text-[rgb(var(--color-primary-400))] hover:text-[rgb(var(--color-primary-300))]"
+              className="ml-1 text-[rgb(var(--color-bg-secondary))] dark:text-[rgb(var(--color-primary-400))] hover:text-[rgb(var(--color-primary-300))]"
             >
               <X className="h-3 w-3" />
             </button>

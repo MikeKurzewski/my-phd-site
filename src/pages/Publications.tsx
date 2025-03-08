@@ -359,7 +359,7 @@ export default function Publications() {
             Add Publication
           </button>
       </div>
-      <div className="bg-[rgb(var(--color-bg-tertiary))] shadow-sm rounded-lg p-6 text-center border border-[rgb(var(--color-border-primary))]">
+      <div className="bg-[rgb(var(--color-bg-tertiary))] shadow-sm rounded-lg p-6 text-center">
           <p className="text-[rgb(var(--color-text-secondary))]">
             Your publications will auto update once a month. Add publications manually by clicking the button above.
           </p>
@@ -382,7 +382,7 @@ export default function Publications() {
                 Auto Find My Publications
             </button>
         
-        <div className="bg-[rgb(var(--color-bg-secondary))] shadow-sm rounded-lg p-6 text-center border border-[rgb(var(--color-border-primary))]">
+        <div className="bg-[rgb(var(--color-bg-secondary))] shadow-sm rounded-lg p-6 text-center">
           <p className="text-[rgb(var(--color-text-secondary))]">
             No publications added yet. Click "Add Publication" to get started.
           </p>
@@ -391,7 +391,7 @@ export default function Publications() {
       ) : (
         <div className="space-y-4">
           {publications.map((publication) => (
-            <div key={publication.id} className="bg-[rgb(var(--color-bg-secondary))] shadow-sm rounded-lg p-6 border border-[rgb(var(--color-border-primary))]">
+            <div key={publication.id} className="bg-[rgb(var(--color-bg-secondary))] shadow-sm rounded-lg p-6">
               <div className="flex justify-between items-start mb-4">
                 <div>
                   <h3 className="text-lg font-medium text-[rgb(var(--color-text-primary))]">{publication.title}</h3>

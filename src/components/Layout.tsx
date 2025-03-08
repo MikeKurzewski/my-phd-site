@@ -19,7 +19,7 @@ export default function Layout({ children }: LayoutProps) {
 
   return (
     <div className="min-h-screen bg-[rgb(var(--color-bg-primary))]">
-      <header className="bg-[rgb(var(--color-bg-secondary))] border-b border-[rgb(var(--color-border-primary))]">
+      <header className="bg-[rgb(var(--color-bg-secondary))] border-[rgb(var(--color-border-primary))]">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between h-16">
             <div className="flex">

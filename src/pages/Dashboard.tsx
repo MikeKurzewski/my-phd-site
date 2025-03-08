@@ -102,7 +102,7 @@ export default function Dashboard() {
 
   return (
     <div className="space-y-6">
-      <div className="bg-[rgb(var(--color-bg-secondary))] shadow-sm rounded-lg p-6 border border-[rgb(var(--color-border-primary))]">
+      <div className="bg-[rgb(var(--color-bg-secondary))] shadow-sm rounded-lg p-6">
         <h2 className="text-2xl font-semibold text-[rgb(var(--color-text-primary))] mb-4">
           Welcome{profile?.name ? `, ${profile.name}` : ''}!
         </h2>
@@ -124,7 +124,7 @@ export default function Dashboard() {
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-        <div className="bg-[rgb(var(--color-bg-secondary))] shadow-sm rounded-lg p-6 border border-[rgb(var(--color-border-primary))]">
+        <div className="bg-[rgb(var(--color-bg-secondary))] shadow-sm rounded-lg p-6">
           <h3 className="text-lg font-medium text-[rgb(var(--color-text-primary))] mb-4">Quick Actions</h3>
           <ul className="space-y-3">
             <li>
@@ -154,7 +154,7 @@ export default function Dashboard() {
           </ul>
         </div>
 
-        <div className="bg-[rgb(var(--color-bg-secondary))] shadow-sm rounded-lg p-6 border border-[rgb(var(--color-border-primary))]">
+        <div className="bg-[rgb(var(--color-bg-secondary))] shadow-sm rounded-lg p-6">
           <h3 className="text-lg font-medium text-[rgb(var(--color-text-primary))] mb-4">Website Preview</h3>
           <div className="space-y-4">
             <div className="flex items-center justify-between">

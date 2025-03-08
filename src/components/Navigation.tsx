@@ -25,7 +25,7 @@ const Navigation = ({ isOpen }: NavigationProps) => {
     <nav
       className={`${
         isOpen ? 'block' : 'hidden'
-      } md:block w-64 bg-[rgb(var(--color-bg-secondary))] shadow-sm rounded-lg h-fit border border-[rgb(var(--color-border-primary))] transform transition-transform duration-300`}
+      } md:block w-64 bg-[rgb(var(--color-bg-secondary))] shadow-sm rounded-lg h-fit transform transition-transform duration-300`}
     >
       <div className="p-4">
         <ul className="space-y-2">
@@ -37,8 +37,8 @@ const Navigation = ({ isOpen }: NavigationProps) => {
                 className={({ isActive }) =>
                   `flex items-center gap-3 px-4 py-2 rounded-md hover:bg-[rgb(var(--color-bg-tertiary))] ${
                     isActive
-                      ? 'bg-[rgb(var(--color-primary-900))] text-[rgb(var(--color-primary-400))]'
-                      : 'text-[rgb(var(--color-text-secondary))] hover:text-[rgb(var(--color-text-primary))]'
+                      ? 'bg-[rgb(var(--color-primary-900))] text-[rgb(var(--color-primary-600))] dark:text-[rgb(var(--color-primary-400))]'
+                      : 'text-[rgb(var(--color-bg-secondary))] dark:text-[rgb(var(--color-text-secondary))] hover:text-[rgb(var(--color-text-primary))]'
                   }`
                 }
               >
