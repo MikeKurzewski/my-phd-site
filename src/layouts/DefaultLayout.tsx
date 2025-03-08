@@ -1,5 +1,6 @@
 import { ExternalLink, Mail, Linkedin, Github, X, BookOpen, Briefcase } from 'lucide-react';
 import { TabProps } from '../types/common';
+import MediaLightbox from '../components/MediaLightbox';
 
 interface DefaultLayoutProps {
   profile: any;
@@ -257,12 +258,50 @@ export default function DefaultLayout({
                   <div className="mt-4 text-sm text-[rgb(var(--color-text-tertiary))]">
                     {project.start_date} - {project.end_date || 'Present'}
                   </div>
+
+                  {project.media_files && project.media_files.length > 0 && (
+                    <div className="mt-4 grid grid-cols-3 gap-2">
+                      {project.media_files.map((file, index) => (
+                        <button
+                          key={index}
+                          className="relative aspect-square rounded-lg overflow-hidden hover:opacity-80 transition-opacity"
+                          onClick={() => {
+                            window.dispatchEvent(new CustomEvent('openLightbox', {
+                              detail: {
+                                media: project.media_files,
+                                startIndex: index
+                              }
+                            }));
+                          }}
+                        >
+                          {file.endsWith('.pdf') ? (
+                            <div className="w-full h-full bg-[rgb(var(--color-bg-tertiary))] flex flex-col items-center justify-center p-2">
+                              <BookOpen className="h-8 w-8 text-[rgb(var(--color-text-tertiary))]" />
+                              <span className="text-xs text-[rgb(var(--color-text-tertiary))] text-center mt-2">
+                                PDF Document
+                              </span>
+                            </div>
+                          ) : (
+                            <img
+                              src={file}
+                              alt={`Project media ${index + 1}`}
+                              className="w-full h-full object-cover"
+                              onError={(e) => {
+                                (e.target as HTMLImageElement).src = 'https://via.placeholder.com/200?text=Image+Error';
+                              }}
+                            />
+                          )}
+                        </button>
+                      ))}
+                    </div>
+                  )}
                 </div>
               ))}
             </div>
           )}
         </div>
       </div>
+      <MediaLightbox />
     </div>
   );
 }
