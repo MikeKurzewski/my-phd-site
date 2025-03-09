@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Plus, Edit2, Trash2, ExternalLink, Search, Upload } from 'lucide-react';
 import { useAuth } from '../lib/auth';
 import { supabase } from '../lib/supabase';
+import { fetchAuthorData } from '../lib/serpapi';
 
 interface Publication {
   id: string;
@@ -92,92 +93,79 @@ export default function Publications() {
     if (!user?.id) return;
 
     try {
-        setLoading(true);
+      setLoading(true);
+      console.log('Starting handleFindPublications using serpapi');
 
-        console.log('Starting handleFindPublications');
+      // Fetch scholar_id from user's profile
+      const { data: profileData, error: profileError } = await supabase
+        .from('profiles')
+        .select('scholar_id')
+        .eq('id', user.id)
+        .single();
 
-        // Get user's full name from profile
-        const { data: profileData, error: profileError } = await supabase
-            .from('profiles')
-            .select('name')
-            .eq('id', user.id)
-            .single();
+      if (profileError) {
+        console.error('Error fetching profile:', profileError);
+        throw profileError;
+      }
+      if (!profileData.scholar_id) {
+        console.error('No scholar ID found in profile.');
+        alert('No scholar ID found in your profile. Please update your profile with your Scholar ID.');
+        return;
+      }
+      console.log('Scholar ID found:', profileData.scholar_id);
 
-        if (profileError) {
-            console.error('Error fetching profile:', profileError);
-            throw profileError;
+      // Use serpapi to fetch author data (publications only)
+      const { articles } = await fetchAuthorData(profileData.scholar_id);
+      console.log('Articles fetched from serpapi:', articles);
+
+      // Process articles as publications
+      for (const article of articles) {
+        // Check if publication already exists
+        const { data: existingPublications, error: fetchError } = await supabase
+          .from('publications')
+          .select('id')
+          .eq('title', article.title)
+          .eq('authors', article.authors)
+          .eq('venue', article.publication)
+          .eq('user_id', user.id);
+
+        if (fetchError) {
+          console.error('Error checking existing publications:', fetchError);
+          throw fetchError;
         }
 
-        console.log('User profile fetched:', profileData);
+        if (!existingPublications || existingPublications.length === 0) {
+          console.log('Inserting new publication:', article);
 
-        // Send request to the webhook
-        const response = await fetch('https://hook.eu2.make.com/jeneij84qvhhuv2db8svjnvfvj6w8nov', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ name: profileData.name }),
-        });
+          const { error: insertError } = await supabase
+            .from('publications')
+            .insert({
+              title: article.title,
+              abstract: '',
+              authors: article.authors,
+              venue: article.publication,
+              publication_url: article.link,
+              user_id: user.id,
+              year: article.year
+            });
 
-        if (!response.ok) {
-            console.error('Webhook returned an error:', response.statusText);
-            throw new Error('Failed to fetch publications from webhook.');
+          if (insertError) {
+            console.error('Error inserting publication:', insertError);
+            throw insertError;
+          }
+        } else {
+          console.log('Publication already exists:', article.title);
         }
+      }
 
-        // Directly process the response as JSON
-        const { publications }: PublicationsWebhookResponse = await response.json();
-
-        if (!publications || !Array.isArray(publications)) {
-            throw new Error('Invalid response format from webhook.');
-        }
-
-        console.log('Publications to process:', publications);
-
-        for (const publication of publications) {
-            console.log('Processing publication:', publication);
-
-            // Check if the publication already exists
-            const { data: existingPublications, error: fetchError } = await supabase
-                .from('publications')
-                .select('id')
-                .eq('title', publication.title)
-                .eq('authors', publication.authors)
-                .eq('venue', publication.venue)
-                .eq('user_id', user.id);
-
-            if (fetchError) {
-                console.error('Error checking existing publications:', fetchError);
-                throw fetchError;
-            }
-
-            if (!existingPublications || existingPublications.length === 0) {
-                console.log('Inserting new publication:', publication);
-
-                const { error: insertError } = await supabase
-                    .from('publications')
-                    .insert({
-                        title: publication.title,
-                        abstract: publication.abstract,
-                        authors: publication.authors,
-                        venue: publication.venue,
-                        publication_url: publication.publication_url,
-                        user_id: user.id,
-                    });
-
-                if (insertError) {
-                    console.error('Error inserting publication:', insertError);
-                    throw insertError;
-                }
-            } else {
-                console.log('Publication already exists:', publication.title);
-            }
-        }
-
-        fetchPublications();
+      alert('Publications successfully added.');
+      window.location.reload();
     } catch (error) {
-        console.error('Error in handleFindPublications:', error);
+      console.error('Error in handleFindPublications:', error);
     } finally {
-        setLoading(false);
+      setLoading(false);
     }
-};
+  };
 
   const findPublication = async () => {
     if (!user?.id || !searchTitle.trim()) return;
@@ -379,7 +367,7 @@ export default function Publications() {
             className="btn-primary w-full"
             >
                 <Search className="h-5 w-5 mr-2" />
-                Auto Find My Publications
+                Add My Google Scholar Publications
             </button>
         
         <div className="bg-[rgb(var(--color-bg-secondary))] shadow-sm rounded-lg p-6 text-center border border-[rgb(var(--color-border-primary))]">

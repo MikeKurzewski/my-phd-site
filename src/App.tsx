@@ -11,6 +11,11 @@ import Settings from './pages/Settings';
 import Website from './pages/Website';
 import WebsiteDemo from './pages/WebsiteDemo';
 import { AuthProvider, useAuth } from './lib/auth';
+import WelcomeModal from './components/WelcomeModal';
+import GoogleScholarModal from './components/GoogleScholarModal';
+import ConfirmationModal from './components/ConfirmationModal';
+import { fetchAuthorData } from './lib/serpapi';
+import { createProfile } from './lib/auth';
 import { initTheme } from './lib/theme';
 
 initTheme();
@@ -30,6 +35,56 @@ function PrivateRoute({ children }: { children: React.ReactNode }) {
 
 function AppRoutes() {
   const { user } = useAuth();
+  const [showWelcomeModal, setShowWelcomeModal] = React.useState(false);
+  const [showGoogleScholarModal, setShowGoogleScholarModal] = React.useState(false);
+  const [showConfirmationModal, setShowConfirmationModal] = React.useState(false);
+  const [authorData, setAuthorData] = React.useState<any>(null);
+  const [scholarId, setScholarId] = React.useState<string>("");
+
+  const handleStartSetup = () => {
+    setShowWelcomeModal(false);
+    setShowGoogleScholarModal(true);
+  };
+
+  const handleAutoPopulate = async (url: string) => {
+    const scholarMatch = url.match(/user=([^&]+)/);
+    if (scholarMatch) {
+      const scholar = scholarMatch[1];
+      setScholarId(scholar);
+      const data = await fetchAuthorData(scholar);
+      setAuthorData(data);
+      setShowGoogleScholarModal(false);
+      setShowConfirmationModal(true);
+    } else {
+      alert("Invalid Google Scholar URL. Please ensure you've entered a valid URL with a 'user' parameter.");
+    }
+  };
+
+  const handleConfirm = async () => {
+    if (authorData && user) {
+      await createProfile(user.id, authorData.author, authorData.articles);
+      setShowConfirmationModal(false);
+      sessionStorage.setItem('setupComplete', 'true');
+      alert('Profile created successfully! You can now add your own projects and fill out your profile details.');
+    }
+  };
+
+  const handleRemoveArticle = (indexToRemove: number): void => {
+    if (authorData && authorData.articles) {
+      setAuthorData({
+        ...authorData,
+        articles: authorData.articles.filter((_: any, index: number) => index !== indexToRemove),
+      });
+    }
+  };
+
+  React.useEffect(() => {
+    if (user && sessionStorage.getItem('newUser') === 'true' && !sessionStorage.getItem('setupComplete')) {
+      setShowWelcomeModal(true);
+      sessionStorage.removeItem('newUser');
+    }
+  }, [user]);
+
   const hostname = window.location.hostname;
   const isSubdomain = hostname.includes('.myphd.site');
 
@@ -41,69 +96,83 @@ function AppRoutes() {
 
   // Otherwise, render the main app routes
   return (
-    <Routes>
-      {/* Landing page route */}
-      <Route path="/" element={user ? <Navigate to="/dashboard" /> : <Landing />} />
-
-      {/* Demo route */}
-      <Route path="/demo" element={<WebsiteDemo />} />
-
-      {/* Public website route - for path-based access */}
-      <Route path="/:username" element={<Website />} />
-
-      {/* Auth & Dashboard routes */}
-      <Route path="/login" element={user ? <Navigate to="/dashboard" /> : <Login />} />
-      <Route
-        path="/dashboard"
-        element={
-          <PrivateRoute>
-            <Layout>
-              <Dashboard />
-            </Layout>
-          </PrivateRoute>
-        }
-      />
-      <Route
-        path="/profile"
-        element={
-          <PrivateRoute>
-            <Layout>
-              <Profile />
-            </Layout>
-          </PrivateRoute>
-        }
-      />
-      <Route
-        path="/projects"
-        element={
-          <PrivateRoute>
-            <Layout>
-              <Projects />
-            </Layout>
-          </PrivateRoute>
-        }
-      />
-      <Route
-        path="/publications"
-        element={
-          <PrivateRoute>
-            <Layout>
-              <Publications />
-            </Layout>
-          </PrivateRoute>
-        }
-      />
-      <Route
-        path="/settings"
-        element={
-          <PrivateRoute>
-            <Layout>
-              <Settings />
-            </Layout>
-          </PrivateRoute>
-        }
-      />
-    </Routes>
+    <>
+      <Routes>
+        {/* Landing page route */}
+        <Route path="/" element={user ? <Navigate to="/dashboard" /> : <Landing />} />
+        {/* Demo route */}
+        <Route path="/demo" element={<WebsiteDemo />} />
+        {/* Public website route - for path-based access */}
+        <Route path="/:username" element={<Website />} />
+        {/* Auth & Dashboard routes */}
+        <Route path="/login" element={user ? <Navigate to="/dashboard" /> : <Login />} />
+        <Route
+          path="/dashboard"
+          element={
+            <PrivateRoute>
+              <Layout>
+                <Dashboard />
+              </Layout>
+            </PrivateRoute>
+          }
+        />
+        <Route
+          path="/profile"
+          element={
+            <PrivateRoute>
+              <Layout>
+                <Profile />
+              </Layout>
+            </PrivateRoute>
+          }
+        />
+        <Route
+          path="/projects"
+          element={
+            <PrivateRoute>
+              <Layout>
+                <Projects />
+              </Layout>
+            </PrivateRoute>
+          }
+        />
+        <Route
+          path="/publications"
+          element={
+            <PrivateRoute>
+              <Layout>
+                <Publications />
+              </Layout>
+            </PrivateRoute>
+          }
+        />
+        <Route
+          path="/settings"
+          element={
+            <PrivateRoute>
+              <Layout>
+                <Settings />
+              </Layout>
+            </PrivateRoute>
+          }
+        />
+      </Routes>
+      {showWelcomeModal && <WelcomeModal onStartSetup={handleStartSetup} />}
+      {showGoogleScholarModal && <GoogleScholarModal onAutoPopulate={handleAutoPopulate} onClose={() => setShowGoogleScholarModal(false)} />}
+      {showConfirmationModal && (
+        <ConfirmationModal
+          onConfirm={handleConfirm}
+          publications={
+            authorData?.articles?.map((article: any, index: number) => ({
+              id: index,
+              title: article.title,
+            })) || []
+          }
+          onRemove={handleRemoveArticle}
+          onCancel={() => setShowConfirmationModal(false)}
+        />
+      )}
+    </>
   );
 }
 

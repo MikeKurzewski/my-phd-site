@@ -6,7 +6,6 @@ import { GraduationCap, Github, Mail } from 'lucide-react';
 interface SignUpFormData {
   email: string;
   password: string;
-  scholarId: string;
 }
 
 export default function Login() {
@@ -19,7 +18,6 @@ export default function Login() {
   const [formData, setFormData] = useState<SignUpFormData>({
     email: '',
     password: '',
-    scholarId: '',
   });
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -32,6 +30,7 @@ export default function Login() {
         setMessage('Setting up your profile...');
         await signUp(formData);
         setMessage('Profile created successfully! Redirecting...');
+
         setTimeout(() => navigate('/dashboard'), 5000); // Redirect after a delay
       } else {
         await signIn(formData.email, formData.password);
@@ -114,33 +113,6 @@ export default function Login() {
                   />
                 </div>
               </div>
-
-              {isSignUp && (
-                <>
-                  <div>
-                    <label htmlFor="name" className="block text-sm font-medium text-[rgb(var(--color-text-secondary))]">
-                      Google Scholar ID
-                    </label>
-                    <div>
-                      <p className='mt-2 text-sm text-[rgb(var(--color-text-tertiary))]'>Your scholar ID is found in your google scholar profile URL after <i>'user='</i>. For example:</p>
-                      <p className='mt-2 text-sm text-[rgb(var(--color-text-tertiary))]'>https://scholar.google.com/citations?hl=en&user=<b>_fgU9_EAAAAJ</b></p>
-                    </div>
-                    <div className="mt-1">
-                      <input
-                        id="scholarId"
-                        name="scholarId"
-                        type="text"
-                        value={formData.scholarId}
-                        onChange={(e) => setFormData({ ...formData, scholarId: e.target.value })}
-                        className="form-input"
-                      />
-                    </div>
-                    <div>
-                      <p className='mt-2 text-sm text-[rgb(var(--color-text-tertiary))]'><i>*You may set this up later</i></p>
-                    </div>
-                  </div>
-                </>
-              )}
 
               <div>
                 <button
