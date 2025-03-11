@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Camera, Linkedin, Github, Twitter, User, Plus, Trash2, Upload, FileText } from 'lucide-react';
+import { Camera, Linkedin, Github, User, Plus, Trash2, Upload, FileText, X } from 'lucide-react';
 import { useAuth } from '../lib/auth';
 import { supabase } from '../lib/supabase';
 import TagInput from '../components/TagInput';
@@ -8,6 +8,7 @@ import { getFileUrl, uploadFileToStorage } from '../lib/fileUtils';
 export interface Profile {
   id: string;
   name: string | null;
+  email: string | null;
   title: string | null;
   institution: string | null;
   department: string | null;
@@ -21,7 +22,7 @@ export interface Profile {
   social_links: {
     linkedin?: string;
     github?: string;
-    twitter?: string;
+    x?: string;
   };
 }
 
@@ -48,6 +49,7 @@ interface QualificationFormData {
 const defaultProfile: Profile = {
   id: '',
   name: null,
+  email: null,
   title: null,
   institution: null,
   department: null,
@@ -179,7 +181,8 @@ export default function Profile() {
           ...defaultProfile,
           ...data,
           research_interests: data.research_interests || [],
-          social_links: data.social_links || {}
+          social_links: data.social_links || {},
+          email: user.email?.toLowerCase() || null
         });
       }
     } catch (error) {
@@ -237,8 +240,7 @@ export default function Profile() {
     }
   };
 
-  const handleAddQualification = async (e: React.FormEvent) => {
-    e.preventDefault();
+  const handleAddQualification = async () => {
     if (!user?.id) return;
 
     try {
@@ -572,14 +574,14 @@ export default function Profile() {
                   />
                 </div>
                 <div className="flex items-center space-x-2">
-                  <Twitter className="h-5 w-5 text-[rgb(var(--color-text-tertiary))]" />
+                  <X className="h-5 w-5 text-[rgb(var(--color-text-tertiary))]" />
                   <input
                     type="url"
-                    value={profile.social_links?.twitter || ''}
+                    value={profile.social_links?.x|| ''}
                     onChange={(e) =>
                       setProfile({
                         ...profile,
-                        social_links: { ...profile.social_links, twitter: e.target.value },
+                        social_links: { ...profile.social_links, x: e.target.value },
                       })
                     }
                     placeholder="Twitter URL"
@@ -604,7 +606,7 @@ export default function Profile() {
 
               {showQualificationForm && (
                 <div className="bg-[rgb(var(--color-bg-primary))] p-4 rounded-md border border-[rgb(var(--color-border-primary))]">
-                  <form onSubmit={handleAddQualification} className="space-y-4">
+                  <div className="space-y-4">
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                       <div>
                         <label className="block text-sm font-medium text-[rgb(var(--color-text-secondary))]">Degree</label>
@@ -656,13 +658,14 @@ export default function Profile() {
                         Cancel
                       </button>
                       <button
-                        type="submit"
+                        type="button"
+                        onClick={handleAddQualification}
                         className="btn-primary"
                       >
                         Add
                       </button>
                     </div>
-                  </form>
+                  </div>
                 </div>
               )}
 

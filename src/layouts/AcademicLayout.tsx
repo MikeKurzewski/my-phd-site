@@ -1,5 +1,22 @@
 import React, { useState } from 'react';
-import { BookOpen, Briefcase, FileText, Mail, Linkedin, Github, Twitter, Menu, X, ExternalLink } from 'lucide-react';
+
+const formatDate = (dateString: string) => {
+  const date = new Date(dateString);
+  const day = date.getDate();
+  const month = date.toLocaleString('default', { month: 'short' });
+  const year = date.getFullYear();
+  
+  // Add ordinal suffix to day
+  const ordinal = (day: number) => {
+    const s = ['th', 'st', 'nd', 'rd'];
+    const v = day % 100;
+    return day + (s[(v - 20) % 10] || s[v] || s[0]);
+  };
+
+  return `${ordinal(day)} ${month} ${year}`;
+};
+import MediaLightbox from '../components/MediaLightbox';
+import { BookOpen, Briefcase, FileText, Mail, Linkedin, Github, Menu, X, ExternalLink } from 'lucide-react';
 import { TabProps } from '../types/common';
 import { EditableField } from '../components/EditableField';
 
@@ -139,9 +156,9 @@ export default function AcademicLayout({
 
                   {/* Social Links */}
                   <div className="flex justify-center lg:justify-start space-x-3">
-                    {profile.social_links?.email && (
+                    {profile.email && (
                       <a
-                        href={`mailto:${profile.social_links.email}`}
+                        href={`mailto:${profile.email}`}
                         className="text-[rgb(var(--color-text-tertiary))] hover:text-[rgb(var(--color-text-secondary))]"
                       >
                         <Mail className="h-5 w-5" />
@@ -167,14 +184,14 @@ export default function AcademicLayout({
                         <Github className="h-5 w-5" />
                       </a>
                     )}
-                    {profile.social_links?.twitter && (
+                    {profile.social_links?.x && (
                       <a
-                        href={profile.social_links.twitter}
+                        href={profile.social_links.x}
                         target="_blank"
                         rel="noopener noreferrer"
                         className="text-[rgb(var(--color-text-tertiary))] hover:text-[rgb(var(--color-text-secondary))]"
                       >
-                        <Twitter className="h-5 w-5" />
+                        <X className="h-5 w-5" />
                       </a>
                     )}
                   </div>
@@ -280,7 +297,12 @@ export default function AcademicLayout({
                       key={project.id}
                       className="bg-[rgb(var(--color-bg-secondary))] rounded-lg p-6 border border-[rgb(var(--color-border-primary))]"
                     >
-                      <h3 className="text-lg font-medium text-[rgb(var(--color-text-primary))]">{project.title}</h3>
+                      <div className="flex justify-between items-baseline">
+                        <h3 className="text-lg font-medium text-[rgb(var(--color-text-primary))]">{project.title}</h3>
+                        <div className="text-sm text-[rgb(var(--color-text-tertiary))] ml-4 whitespace-nowrap">
+                          {formatDate(project.start_date)} - {project.end_date ? formatDate(project.end_date) : 'Present'}
+                        </div>
+                      </div>
                       <p className="mt-2 text-[rgb(var(--color-text-secondary))]">{project.description}</p>
                       <div className="mt-4 flex flex-wrap gap-2">
                         {project.tags.map((tag: string) => (
@@ -292,9 +314,44 @@ export default function AcademicLayout({
                           </span>
                         ))}
                       </div>
-                      <div className="mt-4 text-sm text-[rgb(var(--color-text-tertiary))]">
-                        {project.start_date} - {project.end_date || 'Present'}
-                      </div>
+                      
+                      {project.media_files && project.media_files.length > 0 && (
+                        <div className="mt-4 grid grid-cols-3 gap-2">
+                          {project.media_files.map((file, index) => (
+                            <button
+                              key={index}
+                              className="relative aspect-square rounded-lg overflow-hidden hover:opacity-80 transition-opacity"
+                              onClick={() => {
+                                // Open lightbox at this index
+                                window.dispatchEvent(new CustomEvent('openLightbox', {
+                                  detail: {
+                                    media: project.media_files,
+                                    startIndex: index
+                                  }
+                                }));
+                              }}
+                            >
+                              {file.endsWith('.pdf') ? (
+                                <div className="w-full h-full bg-[rgb(var(--color-bg-tertiary))] flex flex-col items-center justify-center p-2">
+                                  <FileText className="h-8 w-8 text-[rgb(var(--color-text-tertiary))]" />
+                                  <span className="text-xs text-[rgb(var(--color-text-tertiary))] text-center mt-2">
+                                    PDF Document
+                                  </span>
+                                </div>
+                              ) : (
+                                <img
+                                  src={file}
+                                  alt={`Project media ${index + 1}`}
+                                  className="w-full h-full object-cover"
+                                  onError={(e) => {
+                                    (e.target as HTMLImageElement).src = 'https://via.placeholder.com/200?text=Image+Error';
+                                  }}
+                                />
+                              )}
+                            </button>
+                          ))}
+                        </div>
+                      )}
                     </div>
                   ))}
                 </div>
@@ -303,6 +360,9 @@ export default function AcademicLayout({
           </div>
         </div>
       </main>
+
+      {/* Media Lightbox */}
+      <MediaLightbox />
 
       {/* Mobile Sidebar Overlay */}
       {isSidebarOpen && (

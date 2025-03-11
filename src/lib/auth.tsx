@@ -13,14 +13,16 @@ interface AuthContextType {
   signIn: (email: string, password: string) => Promise<void>;
   signUp: (data: SignUpData) => Promise<void>;
   signOut: () => Promise<void>;
+  deleteAccount: () => Promise<boolean>;
   loading: boolean;
 }
 
 const AuthContext = createContext<AuthContextType>({
   user: null,
-  signIn: async () => {},
-  signUp: async () => {},
-  signOut: async () => {},
+  signIn: async () => { },
+  signUp: async () => { },
+  signOut: async () => { },
+  deleteAccount: async () => false,
   loading: true,
 });
 
@@ -113,7 +115,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }): JSX.E
     if (error) throw error;
     if (authData.user) {
       localStorage.setItem('newUser', 'true');
-    }
+      }
   };
 
   const signIn = async (email: string, password: string) => {
@@ -122,12 +124,48 @@ export function AuthProvider({ children }: { children: React.ReactNode }): JSX.E
   };
 
   const signOut = async () => {
+    // TODO: Add cleanup logic here, error handling?
     const { error } = await supabase.auth.signOut();
     if (error) throw error;
   };
 
-  const value = { user, signIn, signUp, signOut, loading };
-  return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
+  const deleteAccount = async () => {
+    try {
+      const { data: { session } } = await supabase.auth.getSession();
+      if (!session) throw new Error('User is not logged in');
+
+      const { error: funcError } = await supabase.functions.invoke('delete-account', {
+        headers: {
+          Authorization: `Bearer ${session.access_token}`,
+        }
+      });
+      if (funcError) throw funcError;
+
+      const { error: authError } = await supabase.auth.signOut();
+      if (authError) throw authError;
+
+      localStorage.clear();
+      return true;
+    } catch (error) {
+      console.error('Error in deleteAccount:', error);
+      throw error;
+    }
+  };
+
+  const value = {
+    user,
+    signIn,
+    signUp,
+    signOut,
+    deleteAccount,
+    loading,
+  };
+
+  return (
+    <AuthContext.Provider value={value}>
+      {children}
+    </AuthContext.Provider>
+  );
 }
 
 export { createProfile };

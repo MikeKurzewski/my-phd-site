@@ -89,6 +89,7 @@ export default function Website() {
         setUploadingFile(true);
         const type = field === 'cv_url' ? 'cv' :
           field === 'profile_image_url' ? 'profile' :
+            value.name.endsWith('.pdf') ? 'pdf' :
             'banner';
 
         const { path, error } = await uploadFileToStorage(value, type, id);
