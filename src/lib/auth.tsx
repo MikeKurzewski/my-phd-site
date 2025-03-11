@@ -112,7 +112,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }): JSX.E
 
     if (error) throw error;
     if (authData.user) {
-      sessionStorage.setItem('newUser', 'true');
+      localStorage.setItem('newUser', 'true');
     }
   };
 

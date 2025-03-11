@@ -13,7 +13,7 @@ const WelcomeModal: React.FC<WelcomeModalProps> = ({ onStartSetup }) => {
             Welcome to Your PhD Website Builder
           </h2>
           <p className="text-[rgb(var(--color-text-secondary))] mb-4">
-            We can use your Google Scholar profile to auto-populate your profile.
+            We can use your Google Scholar profile to auto-populate your new website.
             Click the button below to start the auto-setup process.
           </p>
           <div className="flex gap-2">

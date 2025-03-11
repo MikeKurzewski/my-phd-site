@@ -30,7 +30,7 @@ export default function Login() {
         setMessage('Setting up your profile...');
         await signUp(formData);
         setMessage('Profile created successfully! Redirecting...');
-
+        
         setTimeout(() => navigate('/dashboard'), 5000); // Redirect after a delay
       } else {
         await signIn(formData.email, formData.password);
@@ -40,6 +40,8 @@ export default function Login() {
       setError(err instanceof Error ? err.message : 'An error occurred');
     }
       finally {
+      sessionStorage.setItem('newUser', 'true');
+      sessionStorage.setItem('setupComplete', 'false');
       setLoading(false); // Stop loading
     }
   };

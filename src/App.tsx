@@ -79,9 +79,9 @@ function AppRoutes() {
   };
 
   React.useEffect(() => {
-    if (user && sessionStorage.getItem('newUser') === 'true' && !sessionStorage.getItem('setupComplete')) {
+    if (user && localStorage.getItem('newUser') === 'true' && !localStorage.getItem('setupComplete')) {
       setShowWelcomeModal(true);
-      sessionStorage.removeItem('newUser');
+      localStorage.removeItem('newUser');
     }
   }, [user]);
 
