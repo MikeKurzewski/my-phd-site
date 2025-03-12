@@ -148,6 +148,42 @@ export default function Dashboard() {
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <div className="bg-[rgb(var(--color-bg-secondary))] shadow-sm rounded-lg p-6 border border-[rgb(var(--color-border-primary))] hover:shadow-md transition-shadow">
+          <div className="flex items-center justify-between">
+            <div>
+              <h3 className="text-lg font-medium text-[rgb(var(--color-text-primary))]">Publications</h3>
+              <p className="text-3xl font-bold text-[rgb(var(--color-text-primary))] mt-2">
+                {publicationCount}
+              </p>
+            </div>
+            <a
+              href="/publications"
+              className="px-4 py-2 bg-[rgb(var(--color-primary-50))] text-[rgb(var(--color-primary-600))] rounded-md hover:bg-[rgb(var(--color-primary-100))] transition-colors"
+            >
+              Add Publication
+            </a>
+          </div>
+        </div>
+
+        <div className="bg-[rgb(var(--color-bg-secondary))] shadow-sm rounded-lg p-6 border border-[rgb(var(--color-border-primary))] hover:shadow-md transition-shadow">
+          <div className="flex items-center justify-between">
+            <div>
+              <h3 className="text-lg font-medium text-[rgb(var(--color-text-primary))]">Projects</h3>
+              <p className="text-3xl font-bold text-[rgb(var(--color-text-primary))] mt-2">
+                {projectCount}
+              </p>
+            </div>
+            <a
+              href="/projects"
+              className="px-4 py-2 bg-[rgb(var(--color-primary-50))] text-[rgb(var(--color-primary-600))] rounded-md hover:bg-[rgb(var(--color-primary-100))] transition-colors"
+            >
+              Add Project
+            </a>
+          </div>
+        </div>
+      </div>
+
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
         <div className="bg-[rgb(var(--color-bg-secondary))] shadow-sm rounded-lg p-6 border border-[rgb(var(--color-border-primary))]">
           <h3 className="text-lg font-medium text-[rgb(var(--color-text-primary))] mb-4">Quick Actions</h3>
           <ul className="space-y-3">
@@ -161,18 +197,18 @@ export default function Dashboard() {
             </li>
             <li>
               <a
-                href="/projects"
+                href="/settings"
                 className="text-[rgb(var(--color-primary-400))] hover:text-[rgb(var(--color-primary-300))] font-medium"
               >
-                Add a new project
+                Update account settings
               </a>
             </li>
             <li>
               <a
-                href="/publications"
+                href="/qualifications"
                 className="text-[rgb(var(--color-primary-400))] hover:text-[rgb(var(--color-primary-300))] font-medium"
               >
-                Add a publication
+                Add qualifications
               </a>
             </li>
           </ul>
