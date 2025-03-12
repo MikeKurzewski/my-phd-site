@@ -57,7 +57,19 @@ export default function Settings() {
     setIsDeleting(true);
     try {
       const success = await deleteAccount();
-      if (success) window.location.href = '/';
+      if (success) {
+        // Clear local storage to prevent any residual user data from persisting
+        // This is important for privacy and security reasons when an account is deleted
+        localStorage.clear();
+        
+        // Clear session storage as well since it might contain sensitive session data
+        sessionStorage.clear();
+        
+        // Redirect to home page after clearing storage
+        // Using window.location.href ensures a full page reload which helps clear any
+        // in-memory state that might still exist in the React application
+        window.location.href = '/';
+      }
     } catch (error) {
       console.error('Error:', error);
       alert('Failed to delete account. Please try again later.');
