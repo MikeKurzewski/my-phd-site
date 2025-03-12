@@ -24,12 +24,36 @@ export default function Dashboard() {
   const { user } = useAuth();
   const [profile, setProfile] = useState<Profile | null>(null);
   const [loading, setLoading] = useState(true);
+  const [publicationCount, setPublicationCount] = useState(0);
+  const [projectCount, setProjectCount] = useState(0);
 
   useEffect(() => {
     if (user?.id) {
       fetchProfile();
+      fetchCounts();
     }
   }, [user?.id]);
+
+  const fetchCounts = async () => {
+    try {
+      // Fetch publication count
+      const { count: pubCount } = await supabase
+        .from('publications')
+        .select('*', { count: 'exact', head: true })
+        .eq('user_id', user?.id);
+
+      // Fetch project count
+      const { count: projCount } = await supabase
+        .from('projects')
+        .select('*', { count: 'exact', head: true })
+        .eq('user_id', user?.id);
+
+      setPublicationCount(pubCount || 0);
+      setProjectCount(projCount || 0);
+    } catch (error) {
+      console.error('Error fetching counts:', error);
+    }
+  };
 
   const fetchProfile = async () => {
     try {
