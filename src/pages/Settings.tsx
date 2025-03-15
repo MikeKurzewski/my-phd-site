@@ -212,7 +212,7 @@ export default function Settings() {
           Authorization: `Bearer ${(await supabase.auth.getSession()).data.session?.access_token}`,
         },
         body: JSON.stringify({
-          priceId: 'price_1QkiEMGIpe9EVtMn1py26ZaI',
+          priceId: 'price_1R2lN7GIpe9EVtMncwbxlefE',
         }),
       });
 
@@ -404,7 +404,7 @@ export default function Settings() {
             <h3 className="text-lg font-medium text-[rgb(var(--color-text-primary))]">Website Theme</h3>
           </div>
           <div className="flex items-center gap-4">
-            <button
+            {/* <button
               onClick={() => handleThemeChange('light-teal')}
               className={`flex items-center gap-2 px-4 py-2 rounded-md transition-colors ${theme === 'light-teal'
                 ? 'bg-[rgb(var(--color-primary-900))] text-[rgb(var(--color-primary-400))]'
@@ -413,7 +413,7 @@ export default function Settings() {
             >
               <Sun className="h-5 w-5" />
               Light Teal
-            </button>
+            </button> */}
             <button
               onClick={() => handleThemeChange('dark-teal')}
               className={`flex items-center gap-2 px-4 py-2 rounded-md transition-colors ${theme === 'dark-teal'
@@ -424,7 +424,7 @@ export default function Settings() {
               <Moon className="h-5 w-5" />
               Dark Teal
             </button>
-            <button
+            {/* <button
               onClick={() => handleThemeChange('light-blue')}
               className={`flex items-center gap-2 px-4 py-2 rounded-md transition-colors ${theme === 'light-blue'
                 ? 'bg-[rgb(var(--color-primary-900))] text-[rgb(var(--color-primary-400))]'
@@ -433,8 +433,8 @@ export default function Settings() {
             >
               <Moon className="h-5 w-5" />
               Light Blue
-            </button>
-            <button
+            </button> */}
+            {/* <button
               onClick={() => handleThemeChange('dark-blue')}
               className={`flex items-center gap-2 px-4 py-2 rounded-md transition-colors ${theme === 'dark-blue'
                 ? 'bg-[rgb(var(--color-primary-900))] text-[rgb(var(--color-primary-400))]'
@@ -443,7 +443,7 @@ export default function Settings() {
             >
               <Moon className="h-5 w-5" />
               Dark Blue
-            </button>
+            </button> */}
             <button
               onClick={() => handleThemeChange('minimal')}
               className={`flex items-center gap-2 px-4 py-2 rounded-md transition-colors ${theme === 'minimal'
@@ -502,7 +502,7 @@ export default function Settings() {
                 type="email"
                 value={user?.email || ''}
                 readOnly
-                className="mt-1 block w-full rounded-md border-[rgb(var(--color-border-primary))] bg-[rgb(var(--color-bg-primary))] text-[rgb(var(--color-text-tertiary))] shadow-sm focus:border-[rgb(var(--color-primary-400))] focus:ring-[rgb(var(--color-primary-400))] sm:text-sm"
+                className="mt-1 block w-full rounded-md border-[rgb(var(--color-border-primary))] p-2 bg-[rgb(var(--color-bg-primary))] text-[rgb(var(--color-text-tertiary))] shadow-sm focus:border-[rgb(var(--color-primary-400))] focus:ring-[rgb(var(--color-primary-400))] sm:text-sm"
               />
             </div>
             <div className="flex space-x-4">

@@ -43,7 +43,7 @@ export default function Landing() {
             <div className="sm:text-center md:max-w-2xl md:mx-auto lg:col-span-6 lg:text-left">
               <h1>
                 <span className="block text-base font-semibold text-[rgb(var(--color-primary-400))]">
-                  Introducing
+                  MyPhD Site
                 </span>
                 <span className="mt-1 block text-4xl tracking-tight font-extrabold sm:text-5xl xl:text-6xl">
                   <span className="block text-[rgb(var(--color-text-primary))]">Your Academic</span>
@@ -51,7 +51,7 @@ export default function Landing() {
                 </span>
               </h1>
               <p className="mt-3 text-base text-[rgb(var(--color-text-secondary))] sm:mt-5 sm:text-xl lg:text-lg xl:text-xl">
-                Create a professional academic website in minutes. Showcase your research, publications, and achievements to the world.
+                Effortlessly create a professional personal website to showcase your projects, publications, and profile.
               </p>
               <div className="mt-8 sm:max-w-lg sm:mx-auto sm:text-center lg:text-left">
                 <Link
@@ -122,10 +122,10 @@ export default function Landing() {
                       </span>
                     </div>
                     <h3 className="mt-8 text-lg font-medium text-[rgb(var(--color-text-primary))]">
-                      Beautiful Design
+                    Integration with Google Scholar
                     </h3>
                     <p className="mt-5 text-base text-[rgb(var(--color-text-secondary))]">
-                      Professional and modern design that puts your work in the spotlight.
+                    Automatically import and display your publications, ensuring your website stays current with your latest research.
                     </p>
                   </div>
                 </div>
@@ -140,10 +140,10 @@ export default function Landing() {
                       </span>
                     </div>
                     <h3 className="mt-8 text-lg font-medium text-[rgb(var(--color-text-primary))]">
-                      Publications & Projects
+                    Customizable Design
                     </h3>
                     <p className="mt-5 text-base text-[rgb(var(--color-text-secondary))]">
-                      Showcase your research publications and academic projects.
+                    Choose from a variety of color schemes and layouts to reflect your personal brand and aesthetic preferences.​
                     </p>
                   </div>
                 </div>
@@ -158,10 +158,10 @@ export default function Landing() {
                       </span>
                     </div>
                     <h3 className="mt-8 text-lg font-medium text-[rgb(var(--color-text-primary))]">
-                      Customizable
+                    Professional Presentation
                     </h3>
                     <p className="mt-5 text-base text-[rgb(var(--color-text-secondary))]">
-                      Personalize your website with custom themes and layouts.
+                    Highlight your academic achievements, projects, and publications in a clean, organized, and visually appealing manner.
                     </p>
                   </div>
                 </div>
@@ -180,7 +180,7 @@ export default function Landing() {
                 <h2 className="text-3xl font-extrabold text-[rgb(var(--color-text-primary))] sm:text-4xl">
                   <span className="block">Ready to dive in?</span>
                   <span className="block text-[rgb(var(--color-primary-400))]">
-                    Start building your website today.
+                    Build your website in a few clicks, for free, today.
                   </span>
                 </h2>
                 <p className="mt-4 text-lg leading-6 text-[rgb(var(--color-text-secondary))]">
@@ -200,7 +200,7 @@ export default function Landing() {
             <div className="aspect-w-5 aspect-h-3 -mt-6 md:aspect-w-2 md:aspect-h-1">
               <div className="translate-x-6 translate-y-6 transform rounded-md object-cover object-left-top sm:translate-x-16 lg:translate-y-20">
                 <div className="flex items-center justify-center h-full">
-                  <Lock className="h-24 w-24 text-[rgb(var(--color-primary-400))]" />
+                  <GraduationCap className="h-24 w-24 text-[rgb(var(--color-primary-400))]" />
                 </div>
               </div>
             </div>
