@@ -20,6 +20,8 @@ Deno.serve(async (request) => {
   // First step is to verify the event. The .text() method must be used as the
   // verification relies on the raw request body rather than the parsed JSON.
   const body = await request.text()
+  
+
   let receivedEvent
   try {
     receivedEvent = await stripe.webhooks.constructEventAsync(
@@ -34,6 +36,10 @@ Deno.serve(async (request) => {
   }
   console.log(`🔔 Event received: ${receivedEvent.id}`)
   console.log(receivedEvent)
+
+  console.log("Received Webhook Signature:", signature);
+  console.log("Expected Signing Secret:", Deno.env.get('STRIPE_WEBHOOK_SIGNING_SECRET'));
+  console.log("Raw Webhook Body:", body);
 
   try {
 
