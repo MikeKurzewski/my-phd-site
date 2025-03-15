@@ -314,12 +314,20 @@ export default function Settings() {
                 </p>
               </div>
               {subscription?.plan === 'free' ? (
+                <div>
                 <button
-                  onClick={handleUpgrade}
+                  //onClick={handleUpgrade}
                   className="btn-primary"
                 >
-                  Upgrade to Pro
+                  <a
+                href={'https://buy.stripe.com/6oE5od5bw4ZQ4Q88ww' + '?prefilled_email=' + user?.email}
+                className='pay'
+              >
+                pay link
+              </a>
                 </button>
+                
+              </div>
               ) : (
                 //<button
                 //onClick={handleCancelSubscription}
