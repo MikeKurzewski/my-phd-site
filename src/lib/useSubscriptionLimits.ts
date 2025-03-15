@@ -19,7 +19,7 @@ const FREE_LIMITS: SubscriptionLimits = {
 
 const PRO_LIMITS: SubscriptionLimits = {
   maxProjects: Infinity,
-  availableLayouts: ['default', 'academic', 'modern'],
+  availableLayouts: ['default', 'academic'],
   availableThemes: ['dark-teal', 'light-teal', 'dark-blue', 'light-blue', 'minimal'],
   canCustomize: true,
   canHaveProjectPages: true,
