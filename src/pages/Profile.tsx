@@ -521,11 +521,12 @@ export default function Profile() {
                 />
               </div>
               <div>
-                <label className="block text-sm font-medium text-[rgb(var(--color-text-secondary))]">Google Scholar ID</label>
+                <label className="block text-sm font-medium text-[rgb(var(--color-text-secondary))]">Google Scholar Profile URL</label>
                 <input
                   type="text"
                   value={profile.scholar_id || ''}
                   onChange={(e) => setProfile({ ...profile, scholar_id: e.target.value })}
+                  placeholder="https://scholar.google.com/citations?user=..."
                   className="form-input"
                 />
               </div>
