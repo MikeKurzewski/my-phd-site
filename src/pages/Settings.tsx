@@ -204,6 +204,7 @@ export default function Settings() {
   };
 
   const handleUpgrade = async () => {
+    setLoading(true);
     try {
       const response = await fetch('https://foyumeaalmplfvleuxgr.supabase.co/functions/v1/create-checkout-session', {
         method: 'POST',
@@ -232,6 +233,9 @@ export default function Settings() {
     } catch (error) {
       console.error('Error creating checkout session:', error);
       setError('Failed to start upgrade process');
+    } finally {
+      setLoading(false);
+
     }
   };
 
