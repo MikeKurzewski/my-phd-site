@@ -335,7 +335,7 @@ export default function Settings() {
                 /* {subscription?.cancel_at_period_end ? 'Cancellation Scheduled' : 'Cancel Subscription'} */
                 //</button>
                 <a
-                  href={'https://billing.stripe.com/p/login/test_7sIg06fVYgIseVa5kk' + '?prefilled_email=' + user?.email}
+                  href={'https://billing.stripe.com/p/login/5kAbIZ7dnbHR87K3cc' + '?prefilled_email=' + user?.email}
                   className='manageSub'
                 >
                   Manage Subscription
