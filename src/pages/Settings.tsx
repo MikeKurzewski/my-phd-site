@@ -63,10 +63,10 @@ export default function Settings() {
         // Clear local storage to prevent any residual user data from persisting
         // This is important for privacy and security reasons when an account is deleted
         localStorage.clear();
-        
+
         // Clear session storage as well since it might contain sensitive session data
         sessionStorage.clear();
-        
+
         // Redirect to home page after clearing storage
         // Using window.location.href ensures a full page reload which helps clear any
         // in-memory state that might still exist in the React application
@@ -341,9 +341,9 @@ export default function Settings() {
               <div className="bg-[rgb(var(--color-bg-primary))] p-4 rounded-md space-y-2">
                 <h4 className="font-medium text-[rgb(var(--color-text-primary))]">Pro Plan Benefits</h4>
                 <ul className="space-y-2 text-sm text-[rgb(var(--color-text-secondary))]">
-                  <li>• Custom domain support</li>
                   <li>• Unlimited projects</li>
-                  <li>• Unlimited publications</li>
+                  <li>• More themes</li>
+                  <li>• More Layouts</li>
                   <li>• Advanced analytics</li>
                   <li>• Priority support</li>
                 </ul>
@@ -405,9 +405,9 @@ export default function Settings() {
             </div>
             <h3 className="text-lg font-medium text-[rgb(var(--color-text-primary))]">Website Theme</h3>
           </div>
-          <ThemeSelector 
-            currentTheme={theme} 
-            onChange={handleThemeChange} 
+          <ThemeSelector
+            currentTheme={theme}
+            onChange={handleThemeChange}
           />
         </div>
 
@@ -419,9 +419,9 @@ export default function Settings() {
             </div>
             <h3 className="text-lg font-medium text-[rgb(var(--color-text-primary))]">Website Layout</h3>
           </div>
-          <LayoutSelector 
-            currentLayout={profile?.layout || 'default'} 
-            onChange={handleLayoutChange} 
+          <LayoutSelector
+            currentLayout={profile?.layout || 'default'}
+            onChange={handleLayoutChange}
           />
         </div>
 
