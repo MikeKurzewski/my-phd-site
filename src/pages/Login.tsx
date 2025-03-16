@@ -6,6 +6,7 @@ import { GraduationCap, Github, Mail, Eye, EyeOff } from 'lucide-react';
 interface SignUpFormData {
   email: string;
   password: string;
+  confirmPassword: string;
 }
 
 export default function Login() {
@@ -19,11 +20,18 @@ export default function Login() {
   const [formData, setFormData] = useState<SignUpFormData>({
     email: '',
     password: '',
+    confirmPassword: '',
   });
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError('');
+    
+    if (isSignUp && formData.password !== formData.confirmPassword) {
+      setError('Passwords do not match');
+      return;
+    }
+
     setLoading(true); // Start loading
 
     try {
@@ -98,6 +106,34 @@ export default function Login() {
                   />
                 </div>
               </div>
+
+              {isSignUp && (
+              <div>
+                <label htmlFor="confirmPassword" className="block text-sm font-medium text-[rgb(var(--color-text-secondary))]">
+                  Confirm Password
+                </label>
+                <div className="mt-1 relative">
+                  <input
+                    id="confirmPassword"
+                    name="confirmPassword"
+                    type={showPassword ? 'text' : 'password'}
+                    autoComplete="new-password"
+                    required
+                    value={formData.confirmPassword}
+                    onChange={(e) => setFormData({ ...formData, confirmPassword: e.target.value })}
+                    className="form-input pr-10"
+                  />
+                  <button
+                    type="button"
+                    onClick={() => setShowPassword(!showPassword)}
+                    className="absolute right-3 top-1/2 -translate-y-1/2 text-[rgb(var(--color-text-tertiary))] hover:text-[rgb(var(--color-text-secondary))]"
+                    aria-label={showPassword ? 'Hide password' : 'Show password'}
+                  >
+                    {showPassword ? <EyeOff className="h-5 w-5" /> : <Eye className="h-5 w-5" />}
+                  </button>
+                </div>
+              </div>
+              )}
 
               <div>
                 <label htmlFor="password" className="block text-sm font-medium text-[rgb(var(--color-text-secondary))]">
