@@ -444,8 +444,8 @@ export default function Publications() {
       )}
 
       {isModalOpen && (
-        <div className="modal-overlay">
-          <div className="modal">
+        <div className="modal-overlay" onClick={() => setIsModalOpen(false)}>
+          <div className="modal" onClick={(e) => e.stopPropagation()}>
             <div className="modal-content p-6">
               <h3 className="text-lg font-medium text-[rgb(var(--color-text-primary))] mb-4">
                 {editingPublication ? 'Edit Publication' : 'Add New Publication'}
