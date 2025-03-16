@@ -242,7 +242,7 @@ export default function Publications() {
           const file = selectedFiles[i];
           const fileExt = file.name.split('.').pop();
           const fileName = `${user.id}/${Date.now()}-${Math.random().toString(36).substring(7)}.${fileExt}`;
-          
+
           const { error: uploadError, data } = await supabase.storage
             .from('publication-files')
             .upload(fileName, file);
@@ -328,7 +328,7 @@ export default function Publications() {
     <div className="space-y-6">
       <div className="flex justify-between items-center">
         <h2 className="text-2xl font-semibold text-[rgb(var(--color-text-primary))]">Publications</h2>
-        
+
         <button
             onClick={() => {
               setEditingPublication(null);
@@ -372,7 +372,7 @@ export default function Publications() {
                 <Search className="h-5 w-5 mr-2" />
                 Add My Google Scholar Publications
             </button>
-        
+
         <div className="bg-[rgb(var(--color-bg-secondary))] shadow-sm rounded-lg p-6 text-center border border-[rgb(var(--color-border-primary))]">
           <p className="text-[rgb(var(--color-text-secondary))]">
             No publications added yet. Click "Add Publication" to get started.
@@ -387,8 +387,8 @@ export default function Publications() {
                 <div>
                   <h3 className="text-lg font-medium text-[rgb(var(--color-text-primary))]">{publication.title}</h3>
                   <span className={`inline-block px-2 py-1 text-xs font-medium rounded-full mt-1 ${
-                    publication.type === 'preprint' 
-                      ? 'bg-[rgb(var(--color-warning))] bg-opacity-20 text-[rgb(var(--color-text-primary))]' 
+                    publication.type === 'preprint'
+                      ? 'bg-[rgb(var(--color-warning))] bg-opacity-20 text-[rgb(var(--color-text-primary))]'
                       : 'bg-[rgb(var(--color-success))] bg-opacity-20 text-[rgb(var(--color-text-primary))]'
                   }`}>
                     {publication.type === 'preprint' ? 'Preprint' : 'Published'}
@@ -524,7 +524,7 @@ export default function Publications() {
                             onClick={() => setFormData({ ...formData, type: 'preprint' })}
                             className={`flex-1 px-4 py-2 rounded-md text-sm font-medium transition-colors ${
                               formData.type === 'preprint'
-                                ? 'bg-[rgb(var(--color-warning))] bg-opacity-20 text-[rgb(var(--color-text-primary))] border-2 border-[rgb(var(--color-warning))] border-opacity-20'
+                                ? 'bg-[rgb(var(--color-success))] bg-opacity-20 text-[rgb(var(--color-text-primary))] border-2 border-[rgb(var(--color-success))] border-opacity-20'
                                 : 'bg-[rgb(var(--color-bg-tertiary))] text-[rgb(var(--color-text-secondary))] hover:bg-[rgb(var(--color-bg-primary))]'
                             }`}
                           >
@@ -597,9 +597,9 @@ export default function Publications() {
                             type="file"
                             onChange={handleFileChange}
                             multiple
-                            className="block w-full text-sm text-[rgb(var(--color-text-tertiary))] file:mr-4 file:py-2 file:px-4 
-                              file:rounded-md file:border-0 file:text-sm file:font-semibold 
-                              file:bg-[rgb(var(--color-primary-900))] file:text-[rgb(var(--color-primary-400))] 
+                            className="block w-full text-sm text-[rgb(var(--color-text-tertiary))] file:mr-4 file:py-2 file:px-4
+                              file:rounded-md file:border-0 file:text-sm file:font-semibold
+                              file:bg-[rgb(var(--color-primary-900))] file:text-[rgb(var(--color-primary-400))]
                               hover:file:bg-[rgb(var(--color-primary-800))]"
                           />
                         </div>
