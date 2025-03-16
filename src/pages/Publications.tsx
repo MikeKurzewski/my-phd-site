@@ -524,7 +524,7 @@ export default function Publications() {
                             onClick={() => setFormData({ ...formData, type: 'preprint' })}
                             className={`flex-1 px-4 py-2 rounded-md text-sm font-medium transition-colors ${
                               formData.type === 'preprint'
-                                ? 'bg-[rgb(var(--color-warning))] bg-opacity-20 text-[rgb(var(--color-warning))] border-2 border-[rgb(var(--color-warning))] border-opacity-20'
+                                ? 'bg-[rgb(var(--color-warning))] bg-opacity-20 text-[rgb(var(--color-text-primary))] border-2 border-[rgb(var(--color-warning))] border-opacity-20'
                                 : 'bg-[rgb(var(--color-bg-tertiary))] text-[rgb(var(--color-text-secondary))] hover:bg-[rgb(var(--color-bg-primary))]'
                             }`}
                           >
