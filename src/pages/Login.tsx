@@ -48,9 +48,7 @@ export default function Login() {
     } catch (err) {
       setError(err instanceof Error ? err.message : 'An error occurred');
     }
-    finally {
-      sessionStorage.setItem('newUser', 'true');
-      sessionStorage.setItem('setupComplete', 'false');
+    } finally {
       setLoading(false); // Stop loading
     }
   };
