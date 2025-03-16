@@ -1,9 +1,11 @@
 import React, { useState, useEffect } from 'react';
-import { Globe, Lock, Palette, Sun, Moon, ExternalLink, CreditCard, Layout } from 'lucide-react';
+import { Globe, Lock, Palette, ExternalLink, CreditCard, Layout } from 'lucide-react';
 import { useAuth } from '../lib/auth';
 import { supabase } from '../lib/supabase';
 import { useTheme } from '../lib/theme';
 import { useNavigate } from 'react-router-dom';
+import ThemeSelector from '../components/ThemeSelector';
+import LayoutSelector from '../components/LayoutSelector';
 
 interface Profile {
   id: string;
@@ -61,10 +63,10 @@ export default function Settings() {
         // Clear local storage to prevent any residual user data from persisting
         // This is important for privacy and security reasons when an account is deleted
         localStorage.clear();
-        
+
         // Clear session storage as well since it might contain sensitive session data
         sessionStorage.clear();
-        
+
         // Redirect to home page after clearing storage
         // Using window.location.href ensures a full page reload which helps clear any
         // in-memory state that might still exist in the React application
@@ -325,7 +327,7 @@ export default function Settings() {
                 >
                  Upgrade to Premium
                 </button>
-                
+
               </div>
               ) : (
                 //<button
@@ -346,9 +348,9 @@ export default function Settings() {
               <div className="bg-[rgb(var(--color-bg-primary))] p-4 rounded-md space-y-2">
                 <h4 className="font-medium text-[rgb(var(--color-text-primary))]">Pro Plan Benefits</h4>
                 <ul className="space-y-2 text-sm text-[rgb(var(--color-text-secondary))]">
-                  <li>• Custom domain support</li>
                   <li>• Unlimited projects</li>
-                  <li>• Unlimited publications</li>
+                  <li>• More themes</li>
+                  <li>• More Layouts</li>
                   <li>• Advanced analytics</li>
                   <li>• Priority support</li>
                 </ul>
@@ -410,58 +412,10 @@ export default function Settings() {
             </div>
             <h3 className="text-lg font-medium text-[rgb(var(--color-text-primary))]">Website Theme</h3>
           </div>
-          <div className="flex items-center gap-4">
-            {/* <button
-              onClick={() => handleThemeChange('light-teal')}
-              className={`flex items-center gap-2 px-4 py-2 rounded-md transition-colors ${theme === 'light-teal'
-                ? 'bg-[rgb(var(--color-primary-900))] text-[rgb(var(--color-primary-400))]'
-                : 'text-[rgb(var(--color-text-secondary))] hover:bg-[rgb(var(--color-bg-tertiary))]'
-                }`}
-            >
-              <Sun className="h-5 w-5" />
-              Light Teal
-            </button> */}
-            <button
-              onClick={() => handleThemeChange('dark-teal')}
-              className={`flex items-center gap-2 px-4 py-2 rounded-md transition-colors ${theme === 'dark-teal'
-                ? 'bg-[rgb(var(--color-primary-900))] text-[rgb(var(--color-primary-400))]'
-                : 'text-[rgb(var(--color-text-secondary))] hover:bg-[rgb(var(--color-bg-tertiary))]'
-                }`}
-            >
-              <Moon className="h-5 w-5" />
-              Dark Teal
-            </button>
-            {/* <button
-              onClick={() => handleThemeChange('light-blue')}
-              className={`flex items-center gap-2 px-4 py-2 rounded-md transition-colors ${theme === 'light-blue'
-                ? 'bg-[rgb(var(--color-primary-900))] text-[rgb(var(--color-primary-400))]'
-                : 'text-[rgb(var(--color-text-secondary))] hover:bg-[rgb(var(--color-bg-tertiary))]'
-                }`}
-            >
-              <Moon className="h-5 w-5" />
-              Light Blue
-            </button> */}
-            {/* <button
-              onClick={() => handleThemeChange('dark-blue')}
-              className={`flex items-center gap-2 px-4 py-2 rounded-md transition-colors ${theme === 'dark-blue'
-                ? 'bg-[rgb(var(--color-primary-900))] text-[rgb(var(--color-primary-400))]'
-                : 'text-[rgb(var(--color-text-secondary))] hover:bg-[rgb(var(--color-bg-tertiary))]'
-                }`}
-            >
-              <Moon className="h-5 w-5" />
-              Dark Blue
-            </button> */}
-            <button
-              onClick={() => handleThemeChange('minimal')}
-              className={`flex items-center gap-2 px-4 py-2 rounded-md transition-colors ${theme === 'minimal'
-                ? 'bg-[rgb(var(--color-primary-900))] text-[rgb(var(--color-primary-400))]'
-                : 'text-[rgb(var(--color-text-secondary))] hover:bg-[rgb(var(--color-bg-tertiary))]'
-                }`}
-            >
-              <Moon className="h-5 w-5" />
-             Minimal
-            </button>
-          </div>
+          <ThemeSelector
+            currentTheme={theme}
+            onChange={handleThemeChange}
+          />
         </div>
 
         {/* Layout Selection Section */}
@@ -472,26 +426,10 @@ export default function Settings() {
             </div>
             <h3 className="text-lg font-medium text-[rgb(var(--color-text-primary))]">Website Layout</h3>
           </div>
-          <div className="flex items-center gap-4">
-            <button
-              onClick={() => handleLayoutChange('default')}
-              className={`flex items-center gap-2 px-4 py-2 rounded-md transition-colors ${profile?.layout === 'default'
-                  ? 'bg-[rgb(var(--color-primary-900))] text-[rgb(var(--color-primary-400))]'
-                  : 'text-[rgb(var(--color-text-secondary))] hover:bg-[rgb(var(--color-bg-tertiary))]'
-                }`}
-            >
-              Default
-            </button>
-            <button
-              onClick={() => handleLayoutChange('academic')}
-              className={`flex items-center gap-2 px-4 py-2 rounded-md transition-colors ${profile?.layout === 'academic'
-                  ? 'bg-[rgb(var(--color-primary-900))] text-[rgb(var(--color-primary-400))]'
-                  : 'text-[rgb(var(--color-text-secondary))] hover:bg-[rgb(var(--color-bg-tertiary))]'
-                }`}
-            >
-              Academic
-            </button>
-          </div>
+          <LayoutSelector
+            currentLayout={profile?.layout || 'default'}
+            onChange={handleLayoutChange}
+          />
         </div>
 
         {/* Account Settings Section */}

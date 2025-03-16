@@ -1,7 +1,10 @@
 import React, { useState, useEffect } from 'react';
-import { Plus, Edit2, Trash2, X } from 'lucide-react';
+import { Plus, Edit2, Trash2, X, Lock } from 'lucide-react';
+import { Link } from 'react-router-dom';
 import { useAuth } from '../lib/auth';
 import { supabase, uploadProjectMedia } from '../lib/supabase';
+import { useSubscriptionLimits } from '../lib/useSubscriptionLimits';
+import PlanLimitModal from '../components/PlanLimitModal';
 import TagInput from '../components/TagInput';
 
 interface Project {
@@ -30,12 +33,14 @@ interface ProjectFormData {
 
 export default function Projects() {
   const { user } = useAuth();
+  const { isPro, limits, checkCanAddProject } = useSubscriptionLimits();
   const [projects, setProjects] = useState<Project[]>([]);
-  const [mediaFiles, setMediaFiles] = useState<string[]>([]);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editingProject, setEditingProject] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
   const [allTags, setAllTags] = useState<string[]>([]);
+  const [showUpgradeModal, setShowUpgradeModal] = useState(false);
+
   const [formData, setFormData] = useState<ProjectFormData>({
     title: '',
     description: '',
@@ -43,7 +48,7 @@ export default function Projects() {
     start_date: new Date().toISOString().split('T')[0],
     url: '',
     funding_source: '',
-    media_files: [] // Initialize as empty array
+    media_files: []
   });
 
   useEffect(() => {
@@ -97,9 +102,34 @@ export default function Projects() {
     }
   };
 
+  const handleAddProject = () => {
+    if (!checkCanAddProject(projects.length)) {
+      setShowUpgradeModal(true);
+      return;
+    }
+
+    setEditingProject(null);
+    setFormData({
+      title: '',
+      description: '',
+      tags: '',
+      start_date: new Date().toISOString().split('T')[0],
+      url: '',
+      funding_source: '',
+      media_files: [],
+    });
+    setIsModalOpen(true);
+  };
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!user?.id) return;
+
+    // Check if user can add a new project
+    if (!editingProject && !checkCanAddProject(projects.length)) {
+      setShowUpgradeModal(true);
+      return;
+    }
 
     try {
       // Upload media files first using the helper function
@@ -114,26 +144,29 @@ export default function Projects() {
           } catch (error) {
             console.error('Error uploading file:', file.name, error);
             // Continue with other files instead of failing completely
-            // Just show an error message
             alert(`Failed to upload ${file.name}. The project will be saved without this file.`);
           }
         }
       }
 
-      const projectData = {
+      const projectData: any = {
         title: formData.title,
         description: formData.description,
         tags: formData.tags.split(',').filter(Boolean).map(t => t.trim()),
         start_date: formData.start_date,
         end_date: formData.end_date,
         url: formData.url,
-        funding_source: formData.funding_source,
         user_id: user.id
       };
       
+      // Only add funding source for Pro users
+      if (isPro) {
+        projectData.funding_source = formData.funding_source;
+      }
+      
       // Add media_files only if we have any
       if (mediaUrls.length > 0) {
-        projectData['media_files'] = mediaUrls;
+        projectData.media_files = mediaUrls;
       }
 
       if (editingProject) {
@@ -210,22 +243,19 @@ export default function Projects() {
   return (
     <div className="space-y-6">
       <div className="flex justify-between items-center">
-        <h2 className="text-2xl font-semibold text-[rgb(var(--color-text-primary))]">Projects</h2>
+        <div>
+          <h2 className="text-2xl font-semibold text-[rgb(var(--color-text-primary))]">Projects</h2>
+          <p className="text-sm text-[rgb(var(--color-text-secondary))]">
+            {projects.length} / {limits.maxProjects === Infinity ? '∞' : limits.maxProjects} projects
+            {!isPro && projects.length >= limits.maxProjects && (
+              <span className="ml-2 text-[rgb(var(--color-error))]">Limit reached</span>
+            )}
+          </p>
+        </div>
         <button
-          onClick={() => {
-            setEditingProject(null);
-            setFormData({
-              title: '',
-              description: '',
-              tags: '',
-              start_date: new Date().toISOString().split('T')[0],
-              url: '',
-              funding_source: '',
-              media_files: [],
-            });
-            setIsModalOpen(true);
-          }}
-          className="btn-primary"
+          onClick={handleAddProject}
+          className={`btn-primary ${!checkCanAddProject(projects.length) ? 'opacity-75' : ''}`}
+          disabled={!checkCanAddProject(projects.length)}
         >
           <Plus className="h-5 w-5 mr-2" />
           Add Project
@@ -272,7 +302,7 @@ export default function Projects() {
               </div>
                   
               {project.media_files && project.media_files.length > 0 && (
-                <div className="grid grid-cols-2 md:grid-cols-3 gap-2 mt-4">
+                <div className="grid grid-cols-2 md:grid-cols-3 gap-2 mt-4 mb-4">
                   {project.media_files.map((file, index) => (
                     <div key={index} className="relative aspect-square rounded-lg overflow-hidden">
                       <img
@@ -288,14 +318,25 @@ export default function Projects() {
                   ))}
                 </div>
               )}
-              <div className="text-sm text-[rgb(var(--color-text-tertiary))]">
-                {project.start_date} - {project.end_date || 'Present'}
+              <div className="flex justify-between items-center">
+                <div className="text-sm text-[rgb(var(--color-text-tertiary))]">
+                  {project.start_date} - {project.end_date || 'Present'}
+                </div>
+                {isPro && (
+                  <Link 
+                    to={`/projects/${project.id}`}
+                    className="text-sm text-[rgb(var(--color-primary-400))] hover:text-[rgb(var(--color-primary-300))] flex items-center"
+                  >
+                    View Details
+                  </Link>
+                )}
               </div>
             </div>
           ))}
         </div>
       )}
 
+      {/* Project Modal */}
       {isModalOpen && (
         <div className="modal-overlay">
           <div className="modal">
@@ -333,7 +374,6 @@ export default function Projects() {
                       value={formData.url}
                       onChange={(e) => setFormData({ ...formData, url: e.target.value })}
                       className="form-input"
-                      
                     />
                   </div>
 
@@ -346,14 +386,29 @@ export default function Projects() {
                       existingTags={allTags}
                     />
                   </div>
-                  <div>
-                    <label className="block text-sm font-medium text-[rgb(var(--color-text-secondary))]">Funding Source</label>
+                  
+                  {/* Funding Source - Pro feature */}
+                  <div className="relative">
+                    <label className="block text-sm font-medium text-[rgb(var(--color-text-secondary))] flex items-center">
+                      Funding Source
+                      {!isPro && (
+                        <span className="ml-2 bg-[rgb(var(--color-primary-900))] text-[rgb(var(--color-primary-400))] px-2 py-0.5 text-xs rounded-full flex items-center">
+                          <Lock className="h-3 w-3 mr-1" />
+                          Pro
+                        </span>
+                      )}
+                    </label>
                     <input
                       type="text"
                       value={formData.funding_source || ''}
                       onChange={(e) => setFormData({ ...formData, funding_source: e.target.value })}
-                      className="form-input"
+                      className={`form-input ${!isPro ? 'opacity-50 cursor-not-allowed' : ''}`}
+                      disabled={!isPro}
+                      placeholder={!isPro ? 'Upgrade to Pro to add funding sources' : ''}
                     />
+                    {!isPro && (
+                      <div className="absolute inset-0 z-10" onClick={() => setShowUpgradeModal(true)}></div>
+                    )}
                   </div>
 
                   <div>
@@ -452,6 +507,13 @@ export default function Projects() {
           </div>
         </div>
       )}
+
+      {/* Upgrade Modal */}
+      <PlanLimitModal
+        isOpen={showUpgradeModal}
+        onClose={() => setShowUpgradeModal(false)}
+        feature={editingProject ? "Adding funding sources" : "Adding more projects"}
+      />
     </div>
   );
 }
