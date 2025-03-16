@@ -34,7 +34,7 @@ const layoutOptions: LayoutOption[] = [
 ];
 
 export default function LayoutSelector({ currentLayout, onChange }: LayoutSelectorProps) {
-  const { isPro, limits } = useSubscriptionLimits();
+  const { isPro, limits, loading } = useSubscriptionLimits();
   const [showModal, setShowModal] = useState(false);
   const [selectedProLayout, setSelectedProLayout] = useState<string | null>(null);
 

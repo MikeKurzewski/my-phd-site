@@ -55,7 +55,7 @@ const themeOptions: ThemeOption[] = [
 ];
 
 export default function ThemeSelector({ currentTheme, onChange }: ThemeSelectorProps) {
-  const { isPro, limits } = useSubscriptionLimits();
+  const { isPro, limits, loading } = useSubscriptionLimits();
   const [showModal, setShowModal] = useState(false);
   const [selectedProTheme, setSelectedProTheme] = useState<string | null>(null);
 

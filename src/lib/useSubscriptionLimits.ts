@@ -32,7 +32,9 @@ export function useSubscriptionLimits() {
 
   useEffect(() => {
     if (!loading) {
-      const isProPlan = subscription?.plan === 'pro' && subscription?.status === 'active';
+      // Check if the plan is the pro plan ID and status is active
+      const isProPlan = subscription?.plan === 'price_1R2lN7GIpe9EVtMncwbxlefE' && 
+                        subscription?.status === 'active';
       setIsPro(isProPlan);
       setLimits(isProPlan ? PRO_LIMITS : FREE_LIMITS);
     }
