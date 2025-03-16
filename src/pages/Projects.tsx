@@ -159,10 +159,8 @@ export default function Projects() {
         user_id: user.id
       };
       
-      // Only add funding source for Pro users
-      if (isPro) {
-        projectData.funding_source = formData.funding_source;
-      }
+      // Add funding source
+      projectData.funding_source = formData.funding_source;
       
       // Add media_files only if we have any
       if (mediaUrls.length > 0) {
@@ -338,8 +336,8 @@ export default function Projects() {
 
       {/* Project Modal */}
       {isModalOpen && (
-        <div className="modal-overlay">
-          <div className="modal">
+        <div className="modal-overlay" onClick={() => setIsModalOpen(false)}>
+          <div className="modal" onClick={(e) => e.stopPropagation()}>
             <div className="modal-content p-6">
               <h3 className="text-lg font-medium text-[rgb(var(--color-text-primary))] mb-4">
                 {editingProject ? 'Edit Project' : 'Add New Project'}
@@ -387,28 +385,18 @@ export default function Projects() {
                     />
                   </div>
                   
-                  {/* Funding Source - Pro feature */}
-                  <div className="relative">
-                    <label className="block text-sm font-medium text-[rgb(var(--color-text-secondary))] flex items-center">
+                  {/* Funding Source */}
+                  <div>
+                    <label className="block text-sm font-medium text-[rgb(var(--color-text-secondary))]">
                       Funding Source
-                      {!isPro && (
-                        <span className="ml-2 bg-[rgb(var(--color-primary-900))] text-[rgb(var(--color-primary-400))] px-2 py-0.5 text-xs rounded-full flex items-center">
-                          <Lock className="h-3 w-3 mr-1" />
-                          Pro
-                        </span>
-                      )}
                     </label>
                     <input
                       type="text"
                       value={formData.funding_source || ''}
                       onChange={(e) => setFormData({ ...formData, funding_source: e.target.value })}
-                      className={`form-input ${!isPro ? 'opacity-50 cursor-not-allowed' : ''}`}
-                      disabled={!isPro}
-                      placeholder={!isPro ? 'Upgrade to Pro to add funding sources' : ''}
+                      className="form-input"
+                      placeholder="Enter funding source if applicable"
                     />
-                    {!isPro && (
-                      <div className="absolute inset-0 z-10" onClick={() => setShowUpgradeModal(true)}></div>
-                    )}
                   </div>
 
                   <div>

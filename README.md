@@ -7,9 +7,9 @@
    - [x] Error message improvements
 
 2. **Modal & Interaction Fixes**
-   - [ ] Close modals on outside click
-   - [ ] Fix preprint button colors
-   - [ ] Align add project/publication button colors
+   - [ ] Close modals on outside click ------- AAAAH need to do this
+   - [x] Fix preprint button colors
+   - [x] Align add project/publication button colors
 
 3. **Theme Improvements**
    - [ ] Fix minimal theme contrast ratios

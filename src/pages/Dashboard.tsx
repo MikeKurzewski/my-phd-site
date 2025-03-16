@@ -158,7 +158,7 @@ export default function Dashboard() {
             </div>
             <a
               href="/publications"
-              className="px-4 py-2 bg-[rgb(var(--color-primary-50))] text-[rgb(var(--color-primary-600))] rounded-md hover:bg-[rgb(var(--color-primary-100))] transition-colors"
+              className="px-4 py-2 bg-[#4CC3B0] text-white rounded-md hover:bg-[#3FB3A0] transition-colors flex items-center"
             >
               Add Publication
             </a>
@@ -175,7 +175,7 @@ export default function Dashboard() {
             </div>
             <a
               href="/projects"
-              className="px-4 py-2 bg-[rgb(var(--color-primary-50))] text-[rgb(var(--color-primary-600))] rounded-md hover:bg-[rgb(var(--color-primary-100))] transition-colors"
+              className="px-4 py-2 bg-[#4CC3B0] text-white rounded-md hover:bg-[#3FB3A0] transition-colors flex items-center"
             >
               Add Project
             </a>

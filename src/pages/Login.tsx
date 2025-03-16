@@ -40,6 +40,10 @@ export default function Login() {
         await signUp(formData);
         setMessage('Profile created successfully! Redirecting...');
 
+        // Set session storage after successful signup
+        sessionStorage.setItem('newUser', 'true');
+        sessionStorage.setItem('setupComplete', 'false');
+
         setTimeout(() => navigate('/dashboard'), 5000); // Redirect after a delay
       } else {
         await signIn(formData.email, formData.password);
@@ -47,10 +51,7 @@ export default function Login() {
       }
     } catch (err) {
       setError(err instanceof Error ? err.message : 'An error occurred');
-    }
-    finally {
-      sessionStorage.setItem('newUser', 'true');
-      sessionStorage.setItem('setupComplete', 'false');
+    } finally {
       setLoading(false); // Stop loading
     }
   };
@@ -107,20 +108,46 @@ export default function Login() {
                 </div>
               </div>
 
+              <div>
+                <label htmlFor="password" className="block text-sm font-medium text-[rgb(var(--color-text-secondary))]">
+                  Password
+                </label>
+                <div className="mt-1 relative">
+                  <input
+                    id="password"
+                    name="password"
+                    type={showPassword ? 'text' : 'password'}
+                    autoComplete={isSignUp ? "new-password" : "current-password"}
+                    required
+                    value={formData.password}
+                    onChange={(e) => setFormData({ ...formData, password: e.target.value })}
+                    className="form-input pr-10"
+                  />
+                  <button
+                    type="button"
+                    onClick={() => setShowPassword(!showPassword)}
+                    className="absolute right-3 top-1/2 -translate-y-1/2 text-[rgb(var(--color-text-tertiary))] hover:text-[rgb(var(--color-text-secondary))]"
+                    aria-label={showPassword ? 'Hide password' : 'Show password'}
+                  >
+                    {showPassword ? <EyeOff className="h-5 w-5" /> : <Eye className="h-5 w-5" />}
+                  </button>
+                </div>
+              </div>
+
               {isSignUp && (
                 <div>
-                  <label htmlFor="password" className="block text-sm font-medium text-[rgb(var(--color-text-secondary))]">
-                    Password
+                  <label htmlFor="confirmPassword" className="block text-sm font-medium text-[rgb(var(--color-text-secondary))]">
+                    Confirm Password
                   </label>
                   <div className="mt-1 relative">
                     <input
-                      id="password"
-                      name="password"
+                      id="confirmPassword"
+                      name="confirmPassword"
                       type={showPassword ? 'text' : 'password'}
-                      autoComplete="current-password"
+                      autoComplete="new-password"
                       required
-                      value={formData.password}
-                      onChange={(e) => setFormData({ ...formData, password: e.target.value })}
+                      value={formData.confirmPassword}
+                      onChange={(e) => setFormData({ ...formData, confirmPassword: e.target.value })}
                       className="form-input pr-10"
                     />
                     <button
@@ -135,31 +162,6 @@ export default function Login() {
                 </div>
               )}
 
-              <div>
-                <label htmlFor="confirmPassword" className="block text-sm font-medium text-[rgb(var(--color-text-secondary))]">
-                  Confirm Password
-                </label>
-                <div className="mt-1 relative">
-                  <input
-                    id="confirmPassword"
-                    name="confirmPassword"
-                    type={showPassword ? 'text' : 'password'}
-                    autoComplete="new-password"
-                    required
-                    value={formData.confirmPassword}
-                    onChange={(e) => setFormData({ ...formData, confirmPassword: e.target.value })}
-                    className="form-input pr-10"
-                  />
-                  <button
-                    type="button"
-                    onClick={() => setShowPassword(!showPassword)}
-                    className="absolute right-3 top-1/2 -translate-y-1/2 text-[rgb(var(--color-text-tertiary))] hover:text-[rgb(var(--color-text-secondary))]"
-                    aria-label={showPassword ? 'Hide password' : 'Show password'}
-                  >
-                    {showPassword ? <EyeOff className="h-5 w-5" /> : <Eye className="h-5 w-5" />}
-                  </button>
-                </div>
-              </div>
               <div>
                 <button
                   type="submit"
@@ -194,6 +196,5 @@ export default function Login() {
         </div>
       )}
     </div>
-
   );
 }
