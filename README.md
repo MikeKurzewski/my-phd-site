@@ -13,15 +13,11 @@
 
 3. **Theme Improvements**
    - [ ] Fix minimal theme contrast ratios
-   - [ ] Audit button/text contrast across themes
-   - [ ] Ensure dark theme text meets WCAG AA
 
 4. **Publication Management**
    - [ ] Add "Delete All" button with confirmation
    - [ ] Bulk selection functionality
-   - [ ] Export CSV capability
 
-## Medium Priority (Key Feature Polish)
 5. **Dashboard Improvements**
    - [ ] Add stats cards framework
    - [ ] Implement dummy data/loading states
@@ -33,26 +29,14 @@
    - [ ] Add hover/focus states
    - [ ] Responsive image handling
 
-## Lower Priority (Nice-to-Haves)
 7. **Demo Project Polish**
-   - [ ] Curate sample content
    - [ ] Add onboarding tooltips
-   - [ ] Create exportable demo state
+   - [ ] Fix demo project
 
 8. **Social Logins**
    - [ ] Google OAuth integration
-   - [ ] LinkedIn profile parsing
-   - [ ] Account linking UI
+   - [ ] LinkedIn login and profile integration
 
-9. **Layout Audits**
+9. **Mobile Responsiveness**
    - [ ] Mobile-first responsive fixes
-   - [ ] Tablet breakpoint optimization
-   - [ ] Touch target sizing checks
 
-## Implementation Order Rationale:
-1. Start with authentication fixes - critical for first impressions
-2. Fix visual bugs hurting current UX
-3. Strengthen theme foundations before adding features
-4. Core content management features next
-5. Build on stable base for dashboard/projects
-6. Leave demo/social for last as they depend on core being solid
