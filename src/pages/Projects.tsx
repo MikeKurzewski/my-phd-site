@@ -338,13 +338,7 @@ export default function Projects() {
 
       {/* Project Modal */}
       {isModalOpen && (
-        <div 
-          className="modal-overlay" 
-          onClick={() => {
-            setIsModalOpen(false);
-            setEditingProject(null);
-          }}
-        >
+        <div className="modal-overlay" onClick={() => setIsModalOpen(false)}>
           <div 
             className="modal" 
             onClick={(e) => {
