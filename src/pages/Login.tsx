@@ -26,7 +26,7 @@ export default function Login() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError('');
-    
+
     if (isSignUp && formData.password !== formData.confirmPassword) {
       setError('Passwords do not match');
       return;
@@ -39,7 +39,7 @@ export default function Login() {
         setMessage('Setting up your profile...');
         await signUp(formData);
         setMessage('Profile created successfully! Redirecting...');
-        
+
         setTimeout(() => navigate('/dashboard'), 5000); // Redirect after a delay
       } else {
         await signIn(formData.email, formData.password);
@@ -48,7 +48,7 @@ export default function Login() {
     } catch (err) {
       setError(err instanceof Error ? err.message : 'An error occurred');
     }
-      finally {
+    finally {
       sessionStorage.setItem('newUser', 'true');
       sessionStorage.setItem('setupComplete', 'false');
       setLoading(false); // Stop loading
@@ -108,6 +108,33 @@ export default function Login() {
               </div>
 
               {isSignUp && (
+                <div>
+                  <label htmlFor="password" className="block text-sm font-medium text-[rgb(var(--color-text-secondary))]">
+                    Password
+                  </label>
+                  <div className="mt-1 relative">
+                    <input
+                      id="password"
+                      name="password"
+                      type={showPassword ? 'text' : 'password'}
+                      autoComplete="current-password"
+                      required
+                      value={formData.password}
+                      onChange={(e) => setFormData({ ...formData, password: e.target.value })}
+                      className="form-input pr-10"
+                    />
+                    <button
+                      type="button"
+                      onClick={() => setShowPassword(!showPassword)}
+                      className="absolute right-3 top-1/2 -translate-y-1/2 text-[rgb(var(--color-text-tertiary))] hover:text-[rgb(var(--color-text-secondary))]"
+                      aria-label={showPassword ? 'Hide password' : 'Show password'}
+                    >
+                      {showPassword ? <EyeOff className="h-5 w-5" /> : <Eye className="h-5 w-5" />}
+                    </button>
+                  </div>
+                </div>
+              )}
+
               <div>
                 <label htmlFor="confirmPassword" className="block text-sm font-medium text-[rgb(var(--color-text-secondary))]">
                   Confirm Password
@@ -133,34 +160,6 @@ export default function Login() {
                   </button>
                 </div>
               </div>
-              )}
-
-              <div>
-                <label htmlFor="password" className="block text-sm font-medium text-[rgb(var(--color-text-secondary))]">
-                  Password
-                </label>
-                <div className="mt-1 relative">
-                  <input
-                    id="password"
-                    name="password"
-                    type={showPassword ? 'text' : 'password'}
-                    autoComplete="current-password"
-                    required
-                    value={formData.password}
-                    onChange={(e) => setFormData({ ...formData, password: e.target.value })}
-                    className="form-input pr-10"
-                  />
-                  <button
-                    type="button"
-                    onClick={() => setShowPassword(!showPassword)}
-                    className="absolute right-3 top-1/2 -translate-y-1/2 text-[rgb(var(--color-text-tertiary))] hover:text-[rgb(var(--color-text-secondary))]"
-                    aria-label={showPassword ? 'Hide password' : 'Show password'}
-                  >
-                    {showPassword ? <EyeOff className="h-5 w-5" /> : <Eye className="h-5 w-5" />}
-                  </button>
-                </div>
-              </div>
-
               <div>
                 <button
                   type="submit"
@@ -185,16 +184,16 @@ export default function Login() {
         </div>
       </div>
       {loading && (
-      <div className="modal-overlay">
-        <div className="modal">
-          <div className="modal-content p-4">
-            <p className="text-center mb-4">{message}</p>
-            <div className="spinner mx-auto"></div>
+        <div className="modal-overlay">
+          <div className="modal">
+            <div className="modal-content p-4">
+              <p className="text-center mb-4">{message}</p>
+              <div className="spinner mx-auto"></div>
+            </div>
           </div>
         </div>
-      </div>
-    )}
+      )}
     </div>
-    
+
   );
 }
