@@ -31,6 +31,8 @@ const themeOptions: ThemeOption[] = [
     isPro: false,
     icon: <Moon className="h-5 w-5" />
   },
+  // These themes are temporarily disabled until they're improved
+  /*
   {
     id: 'light-teal',
     name: 'Light Teal',
@@ -52,6 +54,7 @@ const themeOptions: ThemeOption[] = [
     isPro: true,
     icon: <Sun className="h-5 w-5" />
   }
+  */
 ];
 
 export default function ThemeSelector({ currentTheme, onChange }: ThemeSelectorProps) {
