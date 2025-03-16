@@ -134,7 +134,7 @@ export default function Projects() {
     try {
       // Upload media files first using the helper function
       const mediaUrls: string[] = [];
-      
+
       // Only attempt uploads if there are files
       if (formData.media_files && formData.media_files.length > 0) {
         for (const file of formData.media_files) {
@@ -158,12 +158,12 @@ export default function Projects() {
         url: formData.url,
         user_id: user.id
       };
-      
+
       // Only add funding source for Pro users
       if (isPro) {
         projectData.funding_source = formData.funding_source;
       }
-      
+
       // Add media_files only if we have any
       if (mediaUrls.length > 0) {
         projectData.media_files = mediaUrls;
@@ -275,13 +275,13 @@ export default function Projects() {
               <div className="flex justify-between items-start mb-4">
                 <h3 className="text-lg font-medium text-[rgb(var(--color-text-primary))]">{project.title}</h3>
                 <div className="flex space-x-2">
-                  <button 
+                  <button
                     onClick={() => handleEdit(project)}
                     className="p-1 text-[rgb(var(--color-text-tertiary))] hover:text-[rgb(var(--color-text-secondary))]"
                   >
                     <Edit2 className="h-5 w-5" />
                   </button>
-                  <button 
+                  <button
                     onClick={() => handleDelete(project.id)}
                     className="p-1 text-[rgb(var(--color-text-tertiary))] hover:text-[rgb(var(--color-error))]"
                   >
@@ -300,7 +300,7 @@ export default function Projects() {
                   </span>
                 ))}
               </div>
-                  
+
               {project.media_files && project.media_files.length > 0 && (
                 <div className="grid grid-cols-2 md:grid-cols-3 gap-2 mt-4 mb-4">
                   {project.media_files.map((file, index) => (
@@ -323,7 +323,7 @@ export default function Projects() {
                   {project.start_date} - {project.end_date || 'Present'}
                 </div>
                 {isPro && (
-                  <Link 
+                  <Link
                     to={`/projects/${project.id}`}
                     className="text-sm text-[rgb(var(--color-primary-400))] hover:text-[rgb(var(--color-primary-300))] flex items-center"
                   >
@@ -338,18 +338,16 @@ export default function Projects() {
 
       {/* Project Modal */}
       {isModalOpen && (
-        <div 
-          className="modal-overlay" 
+        <div
+          className="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center"
           onClick={() => {
             setIsModalOpen(false);
             setEditingProject(null);
           }}
         >
-          <div 
-            className="modal" 
-            onClick={(e) => {
-              e.stopPropagation();
-            }}
+          <div
+            className="bg-[rgb(var(--color-bg-primary))] rounded-lg max-w-2xl w-full max-h-[90vh] overflow-hidden"
+            onClick={(e) => e.stopPropagation()}
           >
             <div className="modal-content p-6">
               <h3 className="text-lg font-medium text-[rgb(var(--color-text-primary))] mb-4">
@@ -397,7 +395,7 @@ export default function Projects() {
                       existingTags={allTags}
                     />
                   </div>
-                  
+
                   {/* Funding Source - Pro feature */}
                   <div className="relative">
                     <label className="block text-sm font-medium text-[rgb(var(--color-text-secondary))] flex items-center">
