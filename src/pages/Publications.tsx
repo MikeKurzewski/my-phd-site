@@ -114,8 +114,11 @@ export default function Publications() {
       }
       console.log('Scholar ID found:', profileData.scholar_id);
 
+      const scholarMatch = profileData.scholar_id.match(/user=([^&]+)/)[1];
+      console.log(scholarMatch);
+
       // Use serpapi to fetch author data (publications only)
-      const { articles } = await fetchAuthorData(profileData.scholar_id);
+      const { articles } = await fetchAuthorData(scholarMatch);
       console.log('Articles fetched from serpapi:', articles);
 
       // Process articles as publications

@@ -4,6 +4,7 @@ import { useAuth } from '../lib/auth';
 import { supabase } from '../lib/supabase';
 import TagInput from '../components/TagInput';
 import { getFileUrl, uploadFileToStorage } from '../lib/fileUtils';
+import { GraduationCap, ArrowRight, Sparkles, BookOpen, Palette, Lock } from 'lucide-react';
 
 export interface Profile {
   id: string;
@@ -35,6 +36,8 @@ interface Qualification {
 }
 
 interface LinkedinWebhookResponse {
+  name: string,
+  institution: string,
   bio: string;
   interests: string;
 }
@@ -48,12 +51,12 @@ interface QualificationFormData {
 
 const defaultProfile: Profile = {
   id: '',
-  name: null,
+  name: '',
   email: null,
   title: null,
-  institution: null,
+  institution: '',
   department: null,
-  bio: null,
+  bio: '',
   profile_image_url: null,
   banner_image_url: null,
   cv_url: null,
@@ -63,11 +66,20 @@ const defaultProfile: Profile = {
   social_links: {}
 };
 
+interface Subscription {
+  id: string;
+  status: string;
+  plan: string;
+  current_period_end: string;
+  cancel_at_period_end: boolean;
+}
+
 export default function Profile() {
   const { user } = useAuth();
   const [profile, setProfile] = useState<Profile>(defaultProfile);
   const [qualifications, setQualifications] = useState<Qualification[]>([]);
   const [loading, setLoading] = useState(true);
+  const [subscription, setSubscription] = useState<Subscription | null>(null);
   const [uploadingImage, setUploadingImage] = useState<'profile' | 'banner' | 'cv' | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [newQualification, setNewQualification] = useState<QualificationFormData>({
@@ -82,12 +94,29 @@ export default function Profile() {
     if (user?.id) {
       fetchProfile();
       fetchQualifications();
+      fetchSubscription();
+
     }
   }, [user?.id]);
 
   const getFileName = (path: string) => {
     return path.split('/').pop() || 'File';
   };
+
+  const fetchSubscription = async () => {
+      try {
+        const { data, error } = await supabase
+          .from('subscriptions')
+          .select('*')
+          .eq('user_id', user?.id)
+          .single();
+  
+        if (error) throw error;
+        setSubscription(data);
+      } catch (error) {
+        console.error('Error fetching subscription:', error);
+      }
+    };
 
   const uploadFile = async (file: File, type: 'profile' | 'banner' | 'cv') => {
     try {
@@ -263,9 +292,9 @@ export default function Profile() {
 
   const autoCompleteProfile = async () => {
     if (!user?.id) return;
-
+    if(subscription?.plan !== 'free'){
     try {
-      // setSearching(true);
+      setLoading(true);
 
       // Get user's full name from profile
       const { data: profileData, error: profileError } = await supabase
@@ -290,6 +319,8 @@ export default function Profile() {
 
       const data: LinkedinWebhookResponse = await response.json();
 
+      console.log("Parsed Webhook Response:", data);
+
       if (data) {
         const interestsArray = data.interests
           .split(',')
@@ -299,13 +330,19 @@ export default function Profile() {
           const { error } = await supabase
             .from('profiles')
             .update({
+              name:data.name,
+              institution: data.institution,
               bio: data.bio,
               research_interests: interestsArray,
             })
             .eq('id', user.id);
 
           if (error) throw error;
-          alert('Profile updated successfully! Please refresh your page');
+          if (!error) {
+            await fetchProfile();
+            alert('Profile updated successfully! Please refresh your page');
+          }
+          
         } catch (error) {
           console.error('Error updating profile:', error);
           setError('Failed to update profile. Please try again.');
@@ -315,9 +352,19 @@ export default function Profile() {
     } catch (error) {
       console.error('Error finding publication:', error);
     } finally {
-      // setSearching(false);
+      setLoading(false);
+
+    }}
+    else{
+      alert('You need a paid subscription to access this feature');
+
     }
   };
+
+  const alertPaymentNeeded = async () => {
+    alert('You need a paid subscription to access this feature');
+
+  }
 
   const handleDeleteQualification = async (id: string) => {
     try {
@@ -405,15 +452,22 @@ export default function Profile() {
 
           <div className="flex justify-between items-center pb-6">
             <h2 className="text-2xl font-semibold text-[rgb(var(--color-text-primary))]">Profile</h2>
-            {profile.social_links?.linkedin && (
+            {/* {profile.social_links?.linkedin && subscription?.plan!=='free' && (
               <button
                 onClick={autoCompleteProfile}
                 className="btn-primary"
               >
-                {/* <Search className="h-5 w-5 mr-2" /> */}
                 Use my LinkedIn Profile
               </button>
             )}
+            {subscription?.plan=='free' && (
+              <button
+                onClick={alertPaymentNeeded}
+                className="btn-secondary"
+              >
+                <Lock className="ml-1 h-5 w-5 mr-2" />Use my LinkedIn Profile
+              </button>
+            )} */}
           </div>
 
           <div className="pb-6"><hr /></div>
@@ -467,11 +521,12 @@ export default function Profile() {
                 />
               </div>
               <div>
-                <label className="block text-sm font-medium text-[rgb(var(--color-text-secondary))]">Google Scholar ID</label>
+                <label className="block text-sm font-medium text-[rgb(var(--color-text-secondary))]">Google Scholar Profile URL</label>
                 <input
                   type="text"
                   value={profile.scholar_id || ''}
                   onChange={(e) => setProfile({ ...profile, scholar_id: e.target.value })}
+                  placeholder="https://scholar.google.com/citations?user=..."
                   className="form-input"
                 />
               </div>

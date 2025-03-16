@@ -66,6 +66,7 @@ Deno.serve(async (req) => {
           quantity: 1,
         },
       ],
+      allow_promotion_codes: true,
       mode: 'subscription',
       success_url: `${SITE_URL}/dashboard?session_id={CHECKOUT_SESSION_ID}`,
       cancel_url: `${SITE_URL}`,

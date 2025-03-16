@@ -206,6 +206,7 @@ export default function Settings() {
   };
 
   const handleUpgrade = async () => {
+    setLoading(true);
     try {
       const response = await fetch('https://foyumeaalmplfvleuxgr.supabase.co/functions/v1/create-checkout-session', {
         method: 'POST',
@@ -214,7 +215,7 @@ export default function Settings() {
           Authorization: `Bearer ${(await supabase.auth.getSession()).data.session?.access_token}`,
         },
         body: JSON.stringify({
-          priceId: 'price_1QkiEMGIpe9EVtMn1py26ZaI',
+          priceId: 'price_1R2lN7GIpe9EVtMncwbxlefE',
         }),
       });
 
@@ -234,6 +235,9 @@ export default function Settings() {
     } catch (error) {
       console.error('Error creating checkout session:', error);
       setError('Failed to start upgrade process');
+    } finally {
+      setLoading(false);
+
     }
   };
 
@@ -316,12 +320,15 @@ export default function Settings() {
                 </p>
               </div>
               {subscription?.plan === 'free' ? (
+                <div>
                 <button
                   onClick={handleUpgrade}
                   className="btn-primary"
                 >
-                  Upgrade to Pro
+                 Upgrade to Premium
                 </button>
+
+              </div>
               ) : (
                 //<button
                 //onClick={handleCancelSubscription}
@@ -330,7 +337,7 @@ export default function Settings() {
                 /* {subscription?.cancel_at_period_end ? 'Cancellation Scheduled' : 'Cancel Subscription'} */
                 //</button>
                 <a
-                  href={'https://billing.stripe.com/p/login/test_7sIg06fVYgIseVa5kk' + '?prefilled_email=' + user?.email}
+                  href={'https://billing.stripe.com/p/login/5kAbIZ7dnbHR87K3cc' + '?prefilled_email=' + user?.email}
                   className='manageSub'
                 >
                   Manage Subscription
@@ -440,7 +447,7 @@ export default function Settings() {
                 type="email"
                 value={user?.email || ''}
                 readOnly
-                className="mt-1 block w-full rounded-md border-[rgb(var(--color-border-primary))] bg-[rgb(var(--color-bg-primary))] text-[rgb(var(--color-text-tertiary))] shadow-sm focus:border-[rgb(var(--color-primary-400))] focus:ring-[rgb(var(--color-primary-400))] sm:text-sm"
+                className="mt-1 block w-full rounded-md border-[rgb(var(--color-border-primary))] p-2 bg-[rgb(var(--color-bg-primary))] text-[rgb(var(--color-text-tertiary))] shadow-sm focus:border-[rgb(var(--color-primary-400))] focus:ring-[rgb(var(--color-primary-400))] sm:text-sm"
               />
             </div>
             <div className="flex space-x-4">
