@@ -47,7 +47,6 @@ export default function Login() {
       }
     } catch (err) {
       setError(err instanceof Error ? err.message : 'An error occurred');
-    }
     } finally {
       setLoading(false); // Stop loading
     }
