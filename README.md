@@ -2,9 +2,9 @@
 
 ## High Priority (Core UX Improvements)
 1. **Authentication Enhancements**
-   - [ ] Add confirm password field + show/hide toggle
-   - [ ] Password validation rules
-   - [ ] Error message improvements
+   - [x] Add confirm password field + show/hide toggle
+   - [x] Password validation rules
+   - [x] Error message improvements
 
 2. **Modal & Interaction Fixes**
    - [ ] Close modals on outside click
