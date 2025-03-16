@@ -8,7 +8,7 @@
 
 2. **Modal & Interaction Fixes**
    - [ ] Close modals on outside click
-   - [ ] Fix preprint button colors
+   - [x] Fix preprint button colors
    - [ ] Align add project/publication button colors
 
 3. **Theme Improvements**
