@@ -54,6 +54,7 @@ export default function Publications() {
   const [searchTitle, setSearchTitle] = useState('');
   const [showFullForm, setShowFullForm] = useState(false);
   const [selectedFiles, setSelectedFiles] = useState<FileList | null>(null);
+  const [isPrePrint, setPrePrint] = useState(false);
   const [formData, setFormData] = useState<PublicationFormData>({
     title: '',
     abstract: '',
@@ -328,10 +329,32 @@ export default function Publications() {
     <div className="space-y-6">
       <div className="flex justify-between items-center">
         <h2 className="text-2xl font-semibold text-[rgb(var(--color-text-primary))]">Publications</h2>
-
+        <div className="flex gap-3">
         <button
             onClick={() => {
               setEditingPublication(null);
+              setFormData({
+                title: '',
+                abstract: '',
+                authors: '',
+                year: '',
+                venue: '',
+                publication_url: '',
+                type: 'preprint'
+              });
+              setShowFullForm(true);
+              setPrePrint(true);
+              setIsModalOpen(true);
+            }}
+            className="btn-primary bg-[rgb(var(--color-warning))]"
+          >
+            <Plus className="h-5 w-5 mr-2" />
+            Preprint
+          </button>
+        <button
+            onClick={() => {
+              setEditingPublication(null);
+              setPrePrint(false);
               setFormData({
                 title: '',
                 abstract: '',
@@ -347,8 +370,9 @@ export default function Publications() {
             className="btn-primary"
           >
             <Plus className="h-5 w-5 mr-2" />
-            Add Publication
+            Publication
           </button>
+          </div>
       </div>
       <div className="bg-[rgb(var(--color-bg-tertiary))] shadow-sm rounded-lg p-6 text-center border border-[rgb(var(--color-border-primary))]">
           <p className="text-[rgb(var(--color-text-secondary))]">
@@ -555,7 +579,7 @@ export default function Publications() {
                         />
                       </div>
 
-                      <div>
+                      {!isPrePrint && (<div>
                         <label className="block text-sm font-medium text-[rgb(var(--color-text-secondary))]">Venue</label>
                         <input
                           type="text"
@@ -564,9 +588,9 @@ export default function Publications() {
                           placeholder="Journal or Conference name"
                           className="form-input"
                         />
-                      </div>
+                      </div>)}
 
-                      <div>
+                      {!isPrePrint && (<div>
                         <label className="block text-sm font-medium text-[rgb(var(--color-text-secondary))]">Publication Date</label>
                         <input
                           type="date"
@@ -575,9 +599,9 @@ export default function Publications() {
                           className="form-input"
                           required
                         />
-                      </div>
+                      </div>)}
 
-                      <div>
+                      {!isPrePrint ? (<div>
                         <label className="block text-sm font-medium text-[rgb(var(--color-text-secondary))]">Publication URL</label>
                         <input
                           type="url"
@@ -586,7 +610,18 @@ export default function Publications() {
                           placeholder="https://"
                           className="form-input"
                         />
+                      </div>) : (
+                        <div>
+                        <label className="block text-sm font-medium text-[rgb(var(--color-text-secondary))]">URL</label>
+                        <input
+                          type="url"
+                          value={formData.publication_url}
+                          onChange={(e) => setFormData({ ...formData, publication_url: e.target.value })}
+                          placeholder="https://"
+                          className="form-input"
+                        />
                       </div>
+                      )}
 
                       <div>
                         <label className="block text-sm font-medium text-[rgb(var(--color-text-secondary))]">
@@ -624,7 +659,7 @@ export default function Publications() {
                         type="submit"
                         className="btn-primary"
                       >
-                        {editingPublication ? 'Save Changes' : 'Create Publication'}
+                        {editingPublication ? 'Save Changes' : 'Add'}
                       </button>
                     )}
                   </div>
