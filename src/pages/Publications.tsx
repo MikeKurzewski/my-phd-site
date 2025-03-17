@@ -534,7 +534,7 @@ export default function Publications() {
                         <div className="mt-1 flex gap-3">
                           <button
                             type="button"
-                            onClick={() => setFormData({ ...formData, type: 'publication' })}
+                            onClick={() => {setPrePrint(false), setFormData({ ...formData, type: 'publication' })}}
                             className={`flex-1 px-4 py-2 rounded-md text-sm font-medium transition-colors ${
                               formData.type === 'publication'
                                 ? 'bg-[rgb(var(--color-success))] bg-opacity-20 text-[rgb(var(--color-text-primary))] border-2 border-[rgb(var(--color-success))] border-opacity-20'
@@ -545,7 +545,7 @@ export default function Publications() {
                           </button>
                           <button
                             type="button"
-                            onClick={() => setFormData({ ...formData, type: 'preprint' })}
+                            onClick={() => {setPrePrint(true), setFormData({ ...formData, type: 'preprint' })}}
                             className={`flex-1 px-4 py-2 rounded-md text-sm font-medium transition-colors ${
                               formData.type === 'preprint'
                                 ? 'bg-[rgb(var(--color-warning))] bg-opacity-20 text-[rgb(var(--color-text-primary))] border-2 border-[rgb(var(--color-warning))] border-opacity-20'
