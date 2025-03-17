@@ -10,7 +10,7 @@ import LayoutSelector from '../components/LayoutSelector';
 interface Profile {
   id: string;
   username: string;
-  theme:  'dark-teal' | 'dark-blue' | 'minimal';
+  theme:  'dark-teal' | 'dark-bronze' | 'minimal';
   layout: 'default' | 'academic';
 }
 
@@ -29,7 +29,7 @@ export default function Settings() {
   const { deleteAccount } = useAuth();
   const [profile, setProfile] = useState<Profile | null>(null);
   const [subscription, setSubscription] = useState<Subscription | null>(null);
-  const [theme, setTheme] = useState< | 'dark-teal' | 'minimal' | 'dark-blue'>('dark-teal');
+  const [theme, setTheme] = useState<'dark-teal' | 'minimal' | 'dark-bronze'>('dark-teal');
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState<string | null>(null);
@@ -111,7 +111,7 @@ export default function Settings() {
     }
   };
 
-  const handleThemeChange = async (newTheme: 'dark-teal' | 'dark-blue' | 'minimal') => {
+  const handleThemeChange = async (newTheme: 'dark-teal' | 'dark-bronze' | 'minimal') => {
     try {
       setError(null);
       setSuccess(null);

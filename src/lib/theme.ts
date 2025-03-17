@@ -1,13 +1,13 @@
 import { useEffect } from 'react';
 
-export function setTheme(theme:  'dark-teal' | 'dark-blue' | 'minimal') {
+export function setTheme(theme:  'dark-teal' | 'dark-bronze' | 'minimal') {
   document.documentElement.setAttribute('data-theme', theme);
   localStorage.setItem('theme', theme);
 }
 
 export function initTheme() {
   // Check if theme is stored in localStorage
-  const storedTheme = localStorage.getItem('theme') as 'dark-teal' | 'dark-blue' | 'minimal' | null;
+  const storedTheme = localStorage.getItem('theme') as 'dark-teal' | 'dark-bronze' | 'minimal' | null;
 
   if (storedTheme) {
     setTheme(storedTheme);
@@ -18,7 +18,7 @@ export function initTheme() {
   }
 }
 
-export function useTheme(theme: 'dark-teal' | 'dark-blue' | 'minimal') {
+export function useTheme(theme: 'dark-teal' | 'dark-bronze' | 'minimal') {
   useEffect(() => {
     setTheme(theme);
   }, [theme]);
