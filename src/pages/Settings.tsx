@@ -10,7 +10,7 @@ import LayoutSelector from '../components/LayoutSelector';
 interface Profile {
   id: string;
   username: string;
-  theme: 'light-teal' | 'dark-teal' | 'light-blue' | 'dark-blue' | 'minimal';
+  theme:  'dark-teal' | 'dark-blue' | 'minimal';
   layout: 'default' | 'academic';
 }
 
@@ -29,7 +29,7 @@ export default function Settings() {
   const { deleteAccount } = useAuth();
   const [profile, setProfile] = useState<Profile | null>(null);
   const [subscription, setSubscription] = useState<Subscription | null>(null);
-  const [theme, setTheme] = useState<'light-teal' | 'dark-teal' | 'light-blue' | 'minimal' | 'dark-blue'>('dark-teal');
+  const [theme, setTheme] = useState< | 'dark-teal' | 'minimal' | 'dark-blue'>('dark-teal');
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState<string | null>(null);
@@ -50,7 +50,6 @@ export default function Settings() {
     }
   }, [profile]);
 
-  // Use the theme hook
   useTheme(theme);
 
   const handleDeleteAccount = async () => {
@@ -91,7 +90,6 @@ export default function Settings() {
       if (error) throw error;
       setProfile(data);
     } catch (error) {
-      console.error('Error fetching profile:', error);
       setError('Failed to load profile settings');
     } finally {
       setLoading(false);
@@ -113,7 +111,7 @@ export default function Settings() {
     }
   };
 
-  const handleThemeChange = async (newTheme: 'light-teal' | 'dark-teal' | 'light-blue' | 'dark-blue' | 'minimal') => {
+  const handleThemeChange = async (newTheme: 'dark-teal' | 'dark-blue' | 'minimal') => {
     try {
       setError(null);
       setSuccess(null);
@@ -126,6 +124,7 @@ export default function Settings() {
       if (error) throw error;
 
       setTheme(newTheme);
+      setProfile(prev => prev ? { ...prev, theme: newTheme } : null);
       setSuccess('Theme updated successfully');
     } catch (error) {
       console.error('Error updating theme:', error);
