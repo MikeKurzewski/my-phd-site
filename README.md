@@ -12,7 +12,7 @@
    - [x] Align add project/publication button colors
 
 3. **Theme Improvements**
-   - [ ] Fix minimal theme contrast ratios
+   - [x] Fix minimal theme contrast ratios
 
 4. **Publication Management**
    - [ ] Add "Delete All" button with confirmation

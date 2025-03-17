@@ -1,24 +1,24 @@
 import { useEffect } from 'react';
 
-export function setTheme(theme: 'light-teal' | 'dark-teal' | 'light-blue' | 'dark-blue' | 'minimal') {
+export function setTheme(theme:  'dark-teal' | 'dark-bronze' | 'minimal') {
   document.documentElement.setAttribute('data-theme', theme);
   localStorage.setItem('theme', theme);
 }
 
 export function initTheme() {
   // Check if theme is stored in localStorage
-  const storedTheme = localStorage.getItem('theme') as 'light-teal' | 'dark-teal' | 'light-blue' | 'dark-blue' | 'minimal' | null;
+  const storedTheme = localStorage.getItem('theme') as 'dark-teal' | 'dark-bronze' | 'minimal' | null;
 
   if (storedTheme) {
     setTheme(storedTheme);
   } else {
     // Check system preference
     const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
-    setTheme(prefersDark ? 'dark-teal' : 'light-teal');
+    setTheme(prefersDark ? 'dark-teal' : 'minimal');
   }
 }
 
-export function useTheme(theme: 'light-teal' | 'dark-teal' | 'light-blue' | 'dark-blue' | 'minimal') {
+export function useTheme(theme: 'dark-teal' | 'dark-bronze' | 'minimal') {
   useEffect(() => {
     setTheme(theme);
   }, [theme]);
