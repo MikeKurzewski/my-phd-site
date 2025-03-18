@@ -39,7 +39,7 @@ export default function Website() {
   const [publications, setPublications] = useState<any[]>([]);
   const [activeTab, setActiveTab] = useState('about');
   const [loading, setLoading] = useState(true);
-  const [theme, setTheme] = useState<'light-teal' | 'dark-teal' | 'light-blue' | 'dark-blue'>('dark-teal');
+  const [theme, setTheme] = useState<'dark-teal' | 'minimal' | 'dark-bronze'>('dark-teal');
   const [isOwner, setIsOwner] = useState(false);
   const [isEditing, setIsEditing] = useState(false);
   const [pendingChanges, setPendingChanges] = useState<PendingChanges>({});

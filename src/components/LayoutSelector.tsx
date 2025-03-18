@@ -20,7 +20,7 @@ const layoutOptions: LayoutOption[] = [
   {
     id: 'default',
     name: 'Default',
-    description: 'A clean and simple layout with sidebar navigation',
+    description: 'A clean and simple layout with a minimalist design',
     icon: <Layout className="h-6 w-6" />,
     isPro: false
   },
@@ -58,7 +58,7 @@ export default function LayoutSelector({ currentLayout, onChange }: LayoutSelect
         {layoutOptions.map((layout) => {
           const isAvailable = !layout.isPro || isPro;
           const isActive = currentLayout === layout.id;
-          
+
           return (
             <div
               key={layout.id}
