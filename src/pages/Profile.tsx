@@ -472,7 +472,7 @@ export default function Profile() {
 
           <div className="flex justify-between items-center pb-6">
             <h2 className="text-2xl font-semibold text-[rgb(var(--color-text-primary))]">Profile</h2>
-            {profile.social_links?.linkedin && subscription?.plan!=='free' && (
+            {profile.social_links?.linkedin && subscription?.plan!=='free' && !profile.bio && profile.bio?.trim() == '' && (
               <button
                 onClick={autoCompleteProfile}
                 className="btn-primary"
