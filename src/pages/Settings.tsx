@@ -444,15 +444,28 @@ export default function Settings() {
           <div className="space-y-4">
             <div>
               <label className="block text-sm font-medium text-[rgb(var(--color-text-secondary))]">Email Address</label>
+              {editingEmail && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(editingEmail) && (   // Jesus who invented regex...j
+                <div className="text-sm text-[rgb(var(--color-error))] mb-1">
+                  Please enter a valid email address
+                </div>
+              )}
               <div className="mt-1 flex rounded-md shadow-sm gap-2">
                 <input
                   type="email"
-                  onChange={(e) => setEditingEmail(e.target.value)}
+                  onChange={(e) => {
+                    setEditingEmail(e.target.value);
+                    // Clear error when user starts typing
+                    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(e.target.value)) {
+                      setError('Invalid email format');
+                    } else {
+                      setError(null);
+                    }
+                  }}
                   value={editingEmail}
                   className="flex-1 block w-full rounded-md border-[rgb(var(--color-border-primary))] p-2 bg-[rgb(var(--color-bg-primary))] text-[rgb(var(--color-text-tertiary))] shadow-sm focus:border-[rgb(var(--color-primary-400))] focus:ring-[rgb(var(--color-primary-400))] sm:text-sm"
                 />
                 <button
-                  disabled={checkingEmail || !editingEmail.trim() || editingEmail === user?.email}
+                  disabled={checkingEmail || !editingEmail.trim() || editingEmail === user?.email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(editingEmail)}
                   onClick={() => {//TODO: Implement email update
                   }}
                   className="btn-primary whitespace-nowrap"
