@@ -442,12 +442,20 @@ export default function Settings() {
           <div className="space-y-4">
             <div>
               <label className="block text-sm font-medium text-[rgb(var(--color-text-secondary))]">Email Address</label>
-              <input
-                type="email"
-                value={user?.email || ''}
-                readOnly
-                className="mt-1 block w-full rounded-md border-[rgb(var(--color-border-primary))] p-2 bg-[rgb(var(--color-bg-primary))] text-[rgb(var(--color-text-tertiary))] shadow-sm focus:border-[rgb(var(--color-primary-400))] focus:ring-[rgb(var(--color-primary-400))] sm:text-sm"
-              />
+              <div className="mt-1 flex rounded-md shadow-sm gap-2">
+                <input
+                  type="email"
+                  value={user?.email || ''}
+                  readOnly
+                  className="flex-1 block w-full rounded-md border-[rgb(var(--color-border-primary))] p-2 bg-[rgb(var(--color-bg-primary))] text-[rgb(var(--color-text-tertiary))] shadow-sm focus:border-[rgb(var(--color-primary-400))] focus:ring-[rgb(var(--color-primary-400))] sm:text-sm"
+                />
+                <button
+                  onClick={() => {/* TODO: Implement email update */}}
+                  className="btn-primary whitespace-nowrap"
+                >
+                  Update Email
+                </button>
+              </div>
             </div>
             <div className="flex space-x-4">
               <button
