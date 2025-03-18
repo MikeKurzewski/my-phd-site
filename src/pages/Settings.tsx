@@ -35,6 +35,8 @@ export default function Settings() {
   const [success, setSuccess] = useState<string | null>(null);
   const [editingUsername, setEditingUsername] = useState('');
   const [checkingUsername, setCheckingUsername] = useState(false);
+  const [checkingEmail, setCheckingEmail] = useState(false);
+  const [editingEmail, setEditingEmail] = useState(user?.email || '');
 
   useEffect(() => {
     if (user?.id) {
@@ -445,12 +447,14 @@ export default function Settings() {
               <div className="mt-1 flex rounded-md shadow-sm gap-2">
                 <input
                   type="email"
-                  value={user?.email || ''}
-                  readOnly
+                  onChange={(e) => setEditingEmail(e.target.value)}
+                  value={editingEmail}
                   className="flex-1 block w-full rounded-md border-[rgb(var(--color-border-primary))] p-2 bg-[rgb(var(--color-bg-primary))] text-[rgb(var(--color-text-tertiary))] shadow-sm focus:border-[rgb(var(--color-primary-400))] focus:ring-[rgb(var(--color-primary-400))] sm:text-sm"
                 />
                 <button
-                  onClick={() => {/* TODO: Implement email update */}}
+                  disabled={checkingEmail || !editingEmail.trim() || editingEmail === user?.email}
+                  onClick={() => {//TODO: Implement email update
+                  }}
                   className="btn-primary whitespace-nowrap"
                 >
                   Update Email
