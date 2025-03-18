@@ -460,7 +460,7 @@ export default function Settings() {
                 onClick={handleDeleteAccount}
                 disabled={isDeletingAcc}
                 // Secondary Button that is error colored when not hovered, and only error outline color when hovered
-                className="btn-secondary bg-[rgb(var(--color-error))] hover:bg-[rgb(var(--color-error)]"
+                className="btn-secondary bg-[rgb(var(--color-error))] hover:bg-transparent hover:outline hover:outline-2 hover:outline-[rgb(var(--color-error))]"
               >
                 {isDeletingAcc ? 'Deleting...' : 'Delete Account'}
               </button>
