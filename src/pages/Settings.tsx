@@ -6,6 +6,7 @@ import { useTheme } from '../lib/theme';
 import { useNavigate } from 'react-router-dom';
 import ThemeSelector from '../components/ThemeSelector';
 import LayoutSelector from '../components/LayoutSelector';
+import { checkInvalidWebsiteName } from '../lib/validationUtils';
 
 interface Profile {
   id: string;
@@ -386,10 +387,10 @@ export default function Settings() {
               <div className="mt-2 flex justify-end">
                 <button
                   onClick={handleUsernameChange}
-                  disabled={checkingUsername || !editingUsername.trim() || editingUsername === profile?.username}
+                  disabled={checkingUsername || !editingUsername.trim() || editingUsername === profile?.username || checkInvalidWebsiteName(editingUsername)}
                   className="btn-primary"
                 >
-                  {checkingUsername ? 'Checking...' : 'Update Username'}
+                  {checkingUsername ? 'Checking...' : 'Update URL'}
                 </button>
               </div>
             </div>
@@ -444,7 +445,7 @@ export default function Settings() {
           <div className="space-y-4">
             <div>
               <label className="block text-sm font-medium text-[rgb(var(--color-text-secondary))]">Email Address</label>
-              {editingEmail && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(editingEmail) && (   // Jesus who invented regex...j
+              {editingEmail && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(editingEmail) && (   // Jesus who invented regex...
                 <div className="text-sm text-[rgb(var(--color-error))] mb-1">
                   Please enter a valid email address
                 </div>
