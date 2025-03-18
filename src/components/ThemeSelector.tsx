@@ -32,7 +32,7 @@ const themeOptions: ThemeOption[] = [
     icon: <Moon className="h-5 w-5" />
   },
   {
-    id: 'dark-blue',
+    id: 'dark-bronze',
     name: 'Dark Bronze',
     description: 'A dark theme with bronze accents',
     isPro: true,
@@ -61,15 +61,6 @@ const themeOptions: ThemeOption[] = [
     isPro: true,
     icon: <Sun className="h-5 w-5" />
   },
-  {
-    id: 'light-teal',
-    name: 'Light Teal',
-    description: 'A bright theme with teal accents',
-    isPro: true,
-    icon: <Sun className="h-5 w-5" />
-  },
-  
-  
   */
 ];
 
@@ -98,7 +89,7 @@ export default function ThemeSelector({ currentTheme, onChange }: ThemeSelectorP
         {themeOptions.map((theme) => {
           const isAvailable = !theme.isPro || isPro;
           const isActive = currentTheme === theme.id;
-          
+
           return (
             <button
               key={theme.id}

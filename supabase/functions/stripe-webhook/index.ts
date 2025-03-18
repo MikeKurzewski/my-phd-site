@@ -152,7 +152,7 @@ Deno.serve(async (request) => {
 
       const { error } = await supabaseClient
         .from('subscriptions')
-        .update({ cancel_at_period_end: true, updated_at: new Date().toISOString(), status: 'cancelled', plan: 'free', current_period_end: new Date(subscription.current_period_end * 1000).toISOString() })
+        .update({ cancel_at_period_end: false, updated_at: new Date().toISOString(), status: 'cancelled', plan: 'free', current_period_end: new Date(subscription.current_period_end * 1000).toISOString() })
         .eq('id', subscription.id);
 
       if (error) {
@@ -161,6 +161,64 @@ Deno.serve(async (request) => {
       }
 
       console.log('Subscription canceled successfully!');
+    }
+
+    if (receivedEvent.type === 'customer.subscription.updated') {
+      const subscription = receivedEvent.data.object as Stripe.Subscription;
+      if(subscription.cancel_at_period_end == true){
+        // Find the user in the subscriptions table by subscription ID
+        console.log('Handling subscription cancellation:', subscription.id);
+
+        const { error } = await supabaseClient
+          .from('subscriptions')
+          .update({ cancel_at_period_end: true, updated_at: new Date().toISOString(), status: 'cancelled', current_period_end: new Date(subscription.current_period_end * 1000).toISOString() })
+          .eq('id', subscription.id);
+
+        if (error) {
+          console.error('Error updating subscription status:', error.message);
+          return new Response('Failed to update subscription status', { status: 500 });
+        }
+
+        console.log('Subscription canceled successfully!');
+      } 
+      if(subscription.cancel_at_period_end == false){
+        // Find the user in the subscriptions table by subscription ID
+        console.log('Handling subscription renewal:', subscription.id);
+
+        const { data, error } = await supabaseClient
+        .from("subscriptions")
+        .select("cancel_at_period_end")
+        .eq("id", subscription.id)
+        .single();  // Ensures we only get one record instead of an array
+      
+        if (error) {
+          console.error("Database fetch error:", error);
+          return new Response("Failed to fetch subscription data", { status: 500 });
+        }
+        
+        // Ensure we have data before checking cancel_at_period_end
+        if (data && data.cancel_at_period_end) {
+          console.log("Subscription is set to cancel at period end.");
+        
+          const { error } = await supabaseClient
+          .from('subscriptions')
+          .update({ cancel_at_period_end: false, updated_at: new Date().toISOString(), status: 'active', current_period_end: new Date(subscription.current_period_end * 1000).toISOString() })
+          .eq('id', subscription.id);
+
+          if (error) {
+            console.error('Error updating subscription status:', error.message);
+            return new Response('Failed to update subscription status', { status: 500 });
+          }
+
+          console.log('Subscription renewed successfully!');
+        }
+
+        if (error) {
+          console.error('Error updating subscription status:', error.message);
+          return new Response('Failed to update subscription status', { status: 500 });
+        }
+      } 
+      
     }
 
     return new Response(JSON.stringify({ ok: true }), { status: 200 });

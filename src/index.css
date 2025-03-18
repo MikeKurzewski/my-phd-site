@@ -61,7 +61,7 @@
     /* teal-400 */
   }
 
-  :root[data-theme="dark-blue"] {
+  :root[data-theme="dark-bronze"] {
     --color-primary-50: 253 246 242;
     --color-primary-100: 247 225 212;
     --color-primary-200: 247 210 184;
@@ -338,7 +338,7 @@
     /* Use a darker teal for links */
     @apply text-[rgb(var(--color-primary-700))] hover:text-[rgb(var(--color-primary-600))];
   }
-  
+
 
   @keyframes spin {
     to {
