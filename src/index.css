@@ -76,151 +76,91 @@
 
     /* Background colors */
     --color-bg-primary: 6 6 4;
-    /* gray-900 */
     --color-bg-secondary: 18 19 16;
-    /* gray-800 */
     --color-bg-tertiary: 23 24 21;
-    /* gray-700 */
 
     /* Text colors */
     --color-text-primary: 251 251 249;
-    /* gray-100 */
     --color-text-secondary: 244 245 239;
-        /* gray-300 */
     --color-text-tertiary: 219 222 205;
-    /* gray-400 */
 
     /* Border colors */
     --color-border-primary: 66 56 47;
-    /* gray-600 */
     --color-border-secondary: 66 56 47;
-    /* gray-700 */
 
     /* Status colors */
     --color-success: 34 197 94;
-    /* green-500 */
     --color-error: 239 68 68;
-    /* red-500 */
     --color-warning: 234 179 8;
-    /* yellow-500 */
     --color-info: 219 172 140;
-    /* teal-400 */
   }
 
-  :root[data-theme="light-teal"] {
-    /* Primary colors (Teal) */
-    --color-primary-950: 160 241 222;
-    /* teal-50 */
-    --color-primary-900: 150 231 212;
-    /* teal-100 */
-    --color-primary-800: 112 231 206;
-    /* teal-200 */
-    --color-primary-700: 66 221 191;
-    /* teal-300 */
-    --color-primary-600: 40 176 154;
-    /* teal-400 */
-    --color-primary-500: 35 110 101;
-    /* teal-500 */
-    --color-primary-400: 15 76 70;
-    /* teal-600 */
-    --color-primary-300: 7 41 38;
-    /* teal-700 */
-    --color-primary-200: 4 17 16;
-    /* teal-800 */
-    --color-primary-100: 4 17 16;
-    /* teal-900 */
-    --color-primary-50: 1 4 4;
-    /* teal-950 */
+  :root[data-theme="light-bronze"] {
+    --color-primary-50: 49 32 13;
+    --color-primary-100: 55 38 22;
+    --color-primary-200: 69 45 22;
+    --color-primary-300: 90 56 23;
+    --color-primary-400: 112 68 29;
+    --color-primary-500: 146 87 38;
+    --color-primary-600: 176 111 60;
+    --color-primary-700: 210 132 77;
+    --color-primary-800: 220 156 118;
+    --color-primary-900: 231 187 163;
+    --color-primary-950: 239 208 193;
 
     /* Background colors */
-    --color-text-primary: 17 24 39;
-    /* gray-900 */
-    --color-text-secondary: 31 41 55;
-    /* gray-800 */
-    --color-text-tertiary: 55 65 81;
-    /* gray-700 */
+    --color-bg-primary: 242 241 240;
+    --color-bg-secondary: 249 248 246;
+    --color-bg-tertiary: 254 254 253;
 
     /* Text colors */
-    --color-bg-primary: 224 226 230;
-    /* gray-100 */
-    --color-bg-secondary: 240 242 244;
-    /* gray-300 */
-    --color-bg-tertiary: 250 250 250;
-    /* gray-400 */
+    --color-text-primary: 39 32 17;
+    --color-text-secondary: 55 45 31;
+    --color-text-tertiary: 81 71 55;
 
     /* Border colors */
-    --color-border-primary: 224 226 230;
-    /* gray-600 */
-    --color-border-secondary: 224 226 230;
-    /* gray-700 */
+    --color-border-primary: 242 241 240;
+    --color-border-secondary: 242 241 240;
 
     /* Status colors */
     --color-success: 34 197 94;
-    /* green-500 */
     --color-error: 239 68 68;
-    /* red-500 */
     --color-warning: 234 179 8;
-    /* yellow-500 */
-    --color-info: 15 76 70;
-    /* teal-400 */
+    --color-info: 219 172 140;
   }
 
   :root[data-theme="light-blue"] {
-    /* Primary colors (Blue) - */
-    --color-primary-50: 239 246 255;
-    /* Soft blue */
-    --color-primary-100: 219 234 254;
-    /* Light blue */
-    --color-primary-200: 191 219 254;
-    /* Pale blue */
-    --color-primary-300: 147 197 253;
-    /* Sky blue */
-    --color-primary-400: 37 99 235;
-    /* Deeper blue, closer to 600 */
-    --color-primary-500: 29 78 216;
-    /* Rich blue */
-    --color-primary-600: 30 64 175;
-    /* Classic blue */
-    --color-primary-700: 30 58 138;
-    /* Deep blue */
-    --color-primary-800: 23 37 84;
-    /* Dark blue */
-    --color-primary-900: 17 24 39;
-    /* Navy blue */
-    --color-primary-950: 15 23 42;
-    /* Deep navy */
+    --color-primary-50: 8 23 53;
+    --color-primary-100: 16 33 61;
+    --color-primary-200: 15 38 76;
+    --color-primary-300: 15 47 98;
+    --color-primary-400: 18 60 122;
+    --color-primary-500: 24 82 160;
+    --color-primary-600: 43 110 194;
+    --color-primary-700: 60 139 227;
+    --color-primary-800: 105 170 233;
+    --color-primary-900: 154 199 240;
+    --color-primary-950: 187 219 245;
 
-    /* Background colors - With more grey tones */
-    --color-bg-primary: 248 250 252;
-    /* Cool white */
-    --color-bg-secondary: 241 245 249;
-    /* Blue-grey */
-    --color-bg-tertiary: 226 232 240;
-    /* Deeper grey */
+    /* Background colors */
+    --color-bg-primary: 243 244 246;
+    --color-bg-secondary: 248 249 251;
+    --color-bg-tertiary: 254 254 255;
 
-    /* Text colors - With darker greys */
-    --color-text-primary: 15 23 42;
-    /* Near black */
-    --color-text-secondary: 51 65 85;
-    /* Dark grey */
-    --color-text-tertiary: 71 85 105;
-    /* Medium grey */
+    /* Text colors */
+    --color-text-primary: 17 22 39;
+    --color-text-secondary: 31 39 55;
+    --color-text-tertiary: 55 62 81;
 
     /* Border colors */
-    --color-border-primary: 6 41 75;
-    /* gray-500 */
-    --color-border-secondary: 0 93 165;
-    /* gray-400 */
+    --color-border-primary: 243 244 246;
+    --color-border-secondary: 240 241 243;
 
     /* Status colors */
-    --color-success: 22 163 74;
-    /* green-600 */
-    --color-error: 220 38 38;
-    /* red-600 */
-    --color-warning: 202 138 4;
-    /* yellow-600 */
-    --color-info: 59 130 246;
-    /* blue-500 */
+    --color-success: 34 197 94;
+    --color-error: 239 68 68;
+    --color-warning: 234 179 8;
+    --color-info: 219 172 140;
   }
 
   :root[data-theme="minimal"] {

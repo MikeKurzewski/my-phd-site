@@ -38,7 +38,20 @@ const themeOptions: ThemeOption[] = [
     isPro: true,
     icon: <Moon className="h-5 w-5" />
   },
-  
+  {
+    id: 'light-blue',
+    name: 'Light Blue',
+    description: 'A light theme with blue accents',
+    isPro: true,
+    icon: <Sun className="h-5 w-5" />
+  },
+  {
+    id: 'light-bronze',
+    name: 'Light Bronze',
+    description: 'A bright theme with teal accents',
+    isPro: true,
+    icon: <Sun className="h-5 w-5" />
+  },
   // These themes are temporarily disabled until they're improved
   /*
   {
@@ -56,13 +69,7 @@ const themeOptions: ThemeOption[] = [
     icon: <Sun className="h-5 w-5" />
   },
   
-  {
-    id: 'light-blue',
-    name: 'Light Blue',
-    description: 'A light theme with blue accents',
-    isPro: true,
-    icon: <Sun className="h-5 w-5" />
-  }
+  
   */
 ];
 
