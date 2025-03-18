@@ -1,6 +1,8 @@
 import { ExternalLink, Mail, Linkedin, Github, X, BookOpen, Briefcase } from 'lucide-react';
 import { TabProps } from '../types/common';
 import MediaLightbox from '../components/MediaLightbox';
+import { useState } from 'react';
+
 
 interface DefaultLayoutProps {
   profile: any;
@@ -22,6 +24,17 @@ export default function DefaultLayout({
   Tab,
   getFileUrl
 }: DefaultLayoutProps) {
+  const [expandedProject, setExpandedProject] = useState<string | null>(null);
+
+  const toggleExpand = (projectId: string) => {
+    setExpandedProject(prevId => (prevId === projectId ? null : projectId)); // Collapse if the same, otherwise expand
+  };
+
+  const truncateText = (text: string, wordLimit: number) => {
+    const words = text.split(' ');
+    return words.length > wordLimit ? words.slice(0, wordLimit).join(' ') + '...' : text;
+  };
+  
   return (
     <div className="min-h-screen bg-[rgb(var(--color-bg-primary))]">
       {/* Header with Banner */}
@@ -225,13 +238,103 @@ export default function DefaultLayout({
           {/* Projects Section */}
           {activeTab === 'projects' && (
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              {projects.map((project: any) => (
+              {projects.map((project: any) => {
+                const isExpanded = expandedProject === project.id;
+                const wordLimit = 20;
+                return (
                 <div
                   key={project.id}
-                  className="bg-[rgb(var(--color-bg-secondary))] rounded-lg p-6 border border-[rgb(var(--color-border-primary))]"
+                  className="bg-[rgb(var(--color-bg-secondary))] rounded-lg p-6 border border-[rgb(var(--color-border-primary))] cursor-pointer"
                 >
                   <h3 className="text-lg font-medium text-[rgb(var(--color-text-primary))]">{project.title}</h3>
-                  <p className="mt-2 text-[rgb(var(--color-text-secondary))]">{project.description}</p>
+                  {/* Collapsible Description */}
+                  {/* Truncated or Full Description */}
+                  <p className="mt-2 text-[rgb(var(--color-text-secondary))] transition-all duration-300">
+                    {isExpanded ? project.description : truncateText(project.description, wordLimit)}
+                  </p>
+
+                  {isExpanded && project.media_files && project.media_files.length > 0 && (
+                        <div className="relative mt-4">
+                          {/* Scrollable Container with Auto-Height */}
+                          <div className="flex items-center relative">
+                            
+                            {/* Left Scroll Button */}
+                            <button
+                              className="absolute left-0 z-10 p-2 bg-[rgb(var(--color-bg-secondary))] text-[rgb(var(--color-text-primary))] shadow-md rounded-full 
+                                        hover:bg-[rgb(var(--color-bg-tertiary))] transition-opacity"
+                              onClick={() => {
+                                document.getElementById(`media-container-${project.id}`)?.scrollBy({ left: -200, behavior: 'smooth' });
+                              }}
+                            >
+                              ◀
+                            </button>
+
+                            {/* Horizontal Scrollable Section */}
+                            <div
+                              id={`media-container-${project.id}`}
+                              className="flex space-x-2 overflow-x-auto scrollbar-hide snap-x snap-mandatory px-6 py-2 
+                                        flex-nowrap w-full relative"
+                              style={{ 
+                                scrollBehavior: 'smooth',
+                                scrollbarWidth: 'none', /* Hide scrollbar for Firefox */
+                                msOverflowStyle: 'none' /* Hide scrollbar for IE/Edge */
+                              }}
+                            >
+                              {project.media_files.map((file, index) => (
+                                <button
+                                  key={index}
+                                  className="relative rounded-lg overflow-hidden snap-center flex-shrink-0 hover:opacity-80 transition-opacity"
+                                  style={{ width: "auto", height: "auto" }} // Auto size for height
+                                  onClick={() => {
+                                    window.dispatchEvent(new CustomEvent('openLightbox', {
+                                      detail: { media: project.media_files, startIndex: index }
+                                    }));
+                                  }}
+                                >
+                                  {file.endsWith('.pdf') ? (
+                                    <div className="w-32 h-32 bg-[rgb(var(--color-bg-tertiary))] flex flex-col items-center justify-center p-2">
+                                      <FileText className="h-8 w-8 text-[rgb(var(--color-text-tertiary))]" />
+                                      <span className="text-xs text-[rgb(var(--color-text-tertiary))] text-center mt-2">
+                                        PDF Document
+                                      </span>
+                                    </div>
+                                  ) : (
+                                    <img
+                                      src={file}
+                                      alt={`Project media ${index + 1}`}
+                                      className="h-auto w-auto max-h-40 rounded-md object-cover"
+                                      onError={(e) => {
+                                        (e.target as HTMLImageElement).src = 'https://via.placeholder.com/200?text=Image+Error';
+                                      }}
+                                    />
+                                  )}
+                                </button>
+                              ))}
+                            </div>
+
+                            {/* Right Scroll Button */}
+                            <button
+                              className="absolute right-0 z-10 p-2 bg-[rgb(var(--color-bg-secondary))] text-[rgb(var(--color-text-primary))] shadow-md rounded-full 
+                                        hover:bg-[rgb(var(--color-bg-tertiary))] transition-opacity"
+                              onClick={() => {
+                                document.getElementById(`media-container-${project.id}`)?.scrollBy({ left: 200, behavior: 'smooth' });
+                              }}
+                            >
+                              ▶
+                            </button>
+                          </div>
+                        </div>
+                      )}
+
+                  {/* Read More / Read Less Button */}
+                  {project.description.split(' ').length > wordLimit && (
+                    <button
+                      onClick={() => toggleExpand(project.id)}
+                      className="mt-2 text-sm text-[rgb(var(--color-primary-400))] hover:text-[rgb(var(--color-primary-300))] cursor-pointer"
+                    >
+                      {isExpanded ? "Read less" : "Read more"}
+                    </button>
+                  )}
                   <div className="mt-4 flex flex-wrap gap-2">
                     {project.tags.map((tag: string) => (
                       <span
@@ -259,44 +362,9 @@ export default function DefaultLayout({
                     {project.start_date} - {project.end_date || 'Present'}
                   </div>
 
-                  {project.media_files && project.media_files.length > 0 && (
-                    <div className="mt-4 grid grid-cols-3 gap-2">
-                      {project.media_files.map((file, index) => (
-                        <button
-                          key={index}
-                          className="relative aspect-square rounded-lg overflow-hidden hover:opacity-80 transition-opacity"
-                          onClick={() => {
-                            window.dispatchEvent(new CustomEvent('openLightbox', {
-                              detail: {
-                                media: project.media_files,
-                                startIndex: index
-                              }
-                            }));
-                          }}
-                        >
-                          {file.endsWith('.pdf') ? (
-                            <div className="w-full h-full bg-[rgb(var(--color-bg-tertiary))] flex flex-col items-center justify-center p-2">
-                              <BookOpen className="h-8 w-8 text-[rgb(var(--color-text-tertiary))]" />
-                              <span className="text-xs text-[rgb(var(--color-text-tertiary))] text-center mt-2">
-                                PDF Document
-                              </span>
-                            </div>
-                          ) : (
-                            <img
-                              src={file}
-                              alt={`Project media ${index + 1}`}
-                              className="w-full h-full object-cover"
-                              onError={(e) => {
-                                (e.target as HTMLImageElement).src = 'https://via.placeholder.com/200?text=Image+Error';
-                              }}
-                            />
-                          )}
-                        </button>
-                      ))}
-                    </div>
-                  )}
+                  
                 </div>
-              ))}
+              )})}
             </div>
           )}
         </div>
