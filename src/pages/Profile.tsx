@@ -317,37 +317,57 @@ export default function Profile() {
         }),
       });
 
-      const data: LinkedinWebhookResponse = await response.json();
+      const responseText = await response.text();
+      console.log("Raw Webhook Response:", responseText);
 
-      console.log("Parsed Webhook Response:", data);
+      try {
+        // Sanitize control characters
+        const sanitizedText = responseText.replace(/[\u0000-\u001F\u007F-\u009F]/g, "");
+        const data: LinkedinWebhookResponse = JSON.parse(sanitizedText);
 
-      if (data) {
-        const interestsArray = data.interests
-          .split(',')
-          .map((interest) => interest.trim());
-        try {
-          setError(null);
-          const { error } = await supabase
-            .from('profiles')
-            .update({
-              name:data.name,
-              institution: data.institution,
-              bio: data.bio,
-              research_interests: interestsArray,
-            })
-            .eq('id', user.id);
+        console.log("Parsed Webhook Response:", data);
 
-          if (error) throw error;
-          if (!error) {
-            await fetchProfile();
-            alert('Profile updated successfully! Please refresh your page');
+        if (data) {
+          const interestsArray = data.interests
+            .split(',')
+            .map((interest) => interest.trim());
+  
+          console.log("Updating fields:", {
+            name: data.name,
+            institution: data.institution,
+            bio: data.bio,
+            research_interests: interestsArray,
+          });
+          try {
+            setError(null);
+            const { error } = await supabase
+              .from('profiles')
+              .update({
+                name: data.name?.trim(),
+                institution: data.institution?.trim(),
+                bio: data.bio?.trim(),
+                research_interests: interestsArray,
+              })
+              .eq('id', user.id);
+  
+            if (error) throw error;
+            if (!error) {
+              await fetchProfile();
+              alert('Profile updated successfully! Please refresh your page');
+            }
+            
+          } catch (error) {
+            console.error('Error updating profile:', error);
+            setError('Failed to update profile. Please try again.');
           }
-          
-        } catch (error) {
-          console.error('Error updating profile:', error);
-          setError('Failed to update profile. Please try again.');
         }
+      } catch (error) {
+        console.error("JSON Parsing Error:", error);
+        return;
       }
+      
+
+      
       // setShowFullForm(true);
     } catch (error) {
       console.error('Error finding publication:', error);
@@ -452,7 +472,7 @@ export default function Profile() {
 
           <div className="flex justify-between items-center pb-6">
             <h2 className="text-2xl font-semibold text-[rgb(var(--color-text-primary))]">Profile</h2>
-            {/* {profile.social_links?.linkedin && subscription?.plan!=='free' && (
+            {profile.social_links?.linkedin && subscription?.plan!=='free' && (
               <button
                 onClick={autoCompleteProfile}
                 className="btn-primary"
@@ -467,7 +487,7 @@ export default function Profile() {
               >
                 <Lock className="ml-1 h-5 w-5 mr-2" />Use my LinkedIn Profile
               </button>
-            )} */}
+            )}
           </div>
 
           <div className="pb-6"><hr /></div>
@@ -593,6 +613,9 @@ export default function Profile() {
                 onChange={(tags) => setProfile({ ...profile, research_interests: tags })}
                 placeholder="Add research interests..."
               />
+              <p className="mt-1 text-sm text-gray-500">
+                Press ENTER after typing each interest
+              </p>
             </div>
 
             <div className="space-y-4">
