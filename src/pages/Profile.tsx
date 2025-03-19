@@ -308,6 +308,10 @@ export default function Profile() {
       if (profileError) throw profileError;
 
       const linkedinUrl = profileData?.social_links?.linkedin;
+      if(!linkedinUrl){
+        alert("Please add a valid linkedin URL to your social links first")
+        return
+      }
 
       const response = await fetch('https://hook.eu2.make.com/ggjxotdvke95ig31ui8lu43kia58pn54', {
         method: 'POST',
