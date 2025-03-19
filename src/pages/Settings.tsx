@@ -365,20 +365,21 @@ export default function Settings() {
   }
 
   return (
-    <div className="space-y-6">
-      <h2 className="text-2xl font-semibold text-[rgb(var(--color-text-primary))]">Settings</h2>
+    <>
+      <div className="space-y-6">
+        <h2 className="text-2xl font-semibold text-[rgb(var(--color-text-primary))]">Settings</h2>
 
-      {error && (
-        <div className="bg-[rgb(var(--color-error))] bg-opacity-10 border border-[rgb(var(--color-error))] text-[rgb(var(--color-error))] px-4 py-3 rounded-md">
-          {error}
-        </div>
-      )}
+        {error && (
+          <div className="bg-[rgb(var(--color-error))] bg-opacity-10 border border-[rgb(var(--color-error))] text-[rgb(var(--color-error))] px-4 py-3 rounded-md">
+            {error}
+          </div>
+        )}
 
-      {success && (
-        <div className="bg-[rgb(var(--color-success))] bg-opacity-10 border border-[rgb(var(--color-success))] text-[rgb(var(--color-primary))] px-4 py-3 rounded-md">
-          {success}
-        </div>
-      )}
+        {success && (
+          <div className="bg-[rgb(var(--color-success))] bg-opacity-10 border border-[rgb(var(--color-success))] text-[rgb(var(--color-primary))] px-4 py-3 rounded-md">
+            {success}
+          </div>
+        )}
 
       <div className="bg-[rgb(var(--color-bg-secondary))] shadow-sm rounded-lg divide-y divide-[rgb(var(--color-border-primary))] border border-[rgb(var(--color-border-primary))]">
         {/* Subscription Section */}
@@ -576,55 +577,56 @@ export default function Settings() {
           </div>
         </div>
       </div>
-    </div>
+      
+      {/* Password Reset Modal */}
+      {showPasswordResetModal && (
+        <div className="fixed inset-0 z-50 overflow-y-auto">
+          <div className="flex min-h-screen items-end justify-center px-4 pt-4 pb-20 text-center sm:block sm:p-0">
+            <div 
+              className="fixed inset-0 bg-gray-500 bg-opacity-75 transition-opacity" 
+              onClick={() => setShowPasswordResetModal(false)}
+            ></div>
 
-    {/* Password Reset Modal */}
-    {showPasswordResetModal && (
-      <div className="fixed inset-0 z-50 overflow-y-auto">
-        <div className="flex min-h-screen items-end justify-center px-4 pt-4 pb-20 text-center sm:block sm:p-0">
-          <div 
-            className="fixed inset-0 bg-gray-500 bg-opacity-75 transition-opacity" 
-            onClick={() => setShowPasswordResetModal(false)}
-          ></div>
-
-          <div className="inline-block transform overflow-hidden rounded-lg bg-[rgb(var(--color-bg-secondary))] text-left align-bottom shadow-xl transition-all sm:my-8 sm:w-full sm:max-w-lg sm:align-middle">
-            <div className="px-4 pt-5 pb-4 sm:p-6 sm:pb-4">
-              <div className="sm:flex sm:items-start">
-                <div className="mx-auto flex h-12 w-12 flex-shrink-0 items-center justify-center rounded-full bg-[rgb(var(--color-primary-900))] sm:mx-0 sm:h-10 sm:w-10">
-                  <Mail className="h-6 w-6 text-[rgb(var(--color-primary-400))]" />
-                </div>
-                <div className="mt-3 text-center sm:mt-0 sm:ml-4 sm:text-left">
-                  <h3 className="text-lg font-medium leading-6 text-[rgb(var(--color-text-primary))]">
-                    Reset Password
-                  </h3>
-                  <div className="mt-2">
-                    <p className="text-sm text-[rgb(var(--color-text-secondary))]">
-                      We'll send a password reset link to your email address: <strong>{user?.email}</strong>
-                    </p>
+            <div className="inline-block transform overflow-hidden rounded-lg bg-[rgb(var(--color-bg-secondary))] text-left align-bottom shadow-xl transition-all sm:my-8 sm:w-full sm:max-w-lg sm:align-middle">
+              <div className="px-4 pt-5 pb-4 sm:p-6 sm:pb-4">
+                <div className="sm:flex sm:items-start">
+                  <div className="mx-auto flex h-12 w-12 flex-shrink-0 items-center justify-center rounded-full bg-[rgb(var(--color-primary-900))] sm:mx-0 sm:h-10 sm:w-10">
+                    <Mail className="h-6 w-6 text-[rgb(var(--color-primary-400))]" />
+                  </div>
+                  <div className="mt-3 text-center sm:mt-0 sm:ml-4 sm:text-left">
+                    <h3 className="text-lg font-medium leading-6 text-[rgb(var(--color-text-primary))]">
+                      Reset Password
+                    </h3>
+                    <div className="mt-2">
+                      <p className="text-sm text-[rgb(var(--color-text-secondary))]">
+                        We'll send a password reset link to your email address: <strong>{user?.email}</strong>
+                      </p>
+                    </div>
                   </div>
                 </div>
               </div>
-            </div>
-            <div className="bg-[rgb(var(--color-bg-primary))] px-4 py-3 sm:flex sm:flex-row-reverse sm:px-6">
-              <button
-                type="button"
-                className="btn-primary w-full sm:ml-3 sm:w-auto"
-                onClick={handleResetPassword}
-                disabled={isResettingPassword}
-              >
-                {isResettingPassword ? 'Sending...' : 'Send Reset Link'}
-              </button>
-              <button
-                type="button"
-                className="btn-secondary mt-3 w-full sm:mt-0 sm:w-auto"
-                onClick={() => setShowPasswordResetModal(false)}
-              >
-                Cancel
-              </button>
+              <div className="bg-[rgb(var(--color-bg-primary))] px-4 py-3 sm:flex sm:flex-row-reverse sm:px-6">
+                <button
+                  type="button"
+                  className="btn-primary w-full sm:ml-3 sm:w-auto"
+                  onClick={handleResetPassword}
+                  disabled={isResettingPassword}
+                >
+                  {isResettingPassword ? 'Sending...' : 'Send Reset Link'}
+                </button>
+                <button
+                  type="button"
+                  className="btn-secondary mt-3 w-full sm:mt-0 sm:w-auto"
+                  onClick={() => setShowPasswordResetModal(false)}
+                >
+                  Cancel
+                </button>
+              </div>
             </div>
           </div>
         </div>
-      </div>
-    )}
+      )}
+    </div>
+    </>
   );
 }
