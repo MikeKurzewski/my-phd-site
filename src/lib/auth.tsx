@@ -172,7 +172,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }): JSX.E
       return {
         success: true, // Email update was successful.
         user: data.user, // User object with the new email.
-        message: 'Verification email sent. Please check your inbox.'
+        message: 'Verification emails sent. Please check both your current and new email inboxes to complete the change.'
       };
 
     } catch (error: unknown) {
