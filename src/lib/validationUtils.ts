@@ -33,3 +33,8 @@ export function checkInvalidWebsiteName(name: string): boolean {
   // Only allow letters, numbers, and hyphens. Return true if the name contains invalid characters.
   return !/^[a-z0-9-]+$/i.test(name);
 }
+
+// Check for invalid email. Return true if the email is invalid.
+export function checkInvalidEmail(email: string): boolean {
+  return (email.includes(' ') || !email.includes('@'));
+}

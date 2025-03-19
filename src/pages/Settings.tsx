@@ -6,7 +6,7 @@ import { useTheme } from '../lib/theme';
 import { useNavigate } from 'react-router-dom';
 import ThemeSelector from '../components/ThemeSelector';
 import LayoutSelector from '../components/LayoutSelector';
-import { checkInvalidWebsiteName } from '../lib/validationUtils';
+import { checkInvalidEmail, checkInvalidWebsiteName } from '../lib/validationUtils';
 
 interface Profile {
   id: string;
@@ -456,7 +456,7 @@ export default function Settings() {
                   onChange={(e) => {
                     setEditingEmail(e.target.value);
                     // Clear error when user starts typing
-                    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(e.target.value)) {
+                    if (checkInvalidEmail(e.target.value)) {
                       setError('Invalid email format');
                     } else {
                       setError(null);
@@ -466,7 +466,7 @@ export default function Settings() {
                   className="flex-1 block w-full rounded-md border-[rgb(var(--color-border-primary))] p-2 bg-[rgb(var(--color-bg-primary))] text-[rgb(var(--color-text-tertiary))] shadow-sm focus:border-[rgb(var(--color-primary-400))] focus:ring-[rgb(var(--color-primary-400))] sm:text-sm"
                 />
                 <button
-                  disabled={checkingEmail || !editingEmail.trim() || editingEmail === user?.email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(editingEmail)}
+                  disabled={checkingEmail || !editingEmail.trim() || editingEmail === user?.email || checkInvalidEmail(editingEmail)}
                   onClick={() => {//TODO: Implement email update
                   }}
                   className="btn-primary whitespace-nowrap"
