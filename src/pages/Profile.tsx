@@ -40,6 +40,8 @@ interface LinkedinWebhookResponse {
   institution: string,
   bio: string;
   interests: string;
+  title: string;
+  department: string;
 }
 
 interface QualificationFormData {
@@ -345,6 +347,8 @@ export default function Profile() {
               .update({
                 name: data.name?.trim(),
                 institution: data.institution?.trim(),
+                title: data.title?.trim(),
+                department: data.department?.trim(),
                 bio: data.bio?.trim(),
                 research_interests: interestsArray,
               })
@@ -472,7 +476,7 @@ export default function Profile() {
 
           <div className="flex justify-between items-center pb-6">
             <h2 className="text-2xl font-semibold text-[rgb(var(--color-text-primary))]">Profile</h2>
-            {profile.social_links?.linkedin && subscription?.plan!=='free' && !profile.bio && profile.bio?.trim() == '' && (
+            {profile.social_links?.linkedin && subscription?.plan!=='free' && (
               <button
                 onClick={autoCompleteProfile}
                 className="btn-primary"
