@@ -1,7 +1,6 @@
 import { createContext, useContext, useEffect, useState } from 'react';
 import { User } from '@supabase/supabase-js';
 import { supabase } from './supabase';
-import { fetchAuthorData } from "../lib/serpapi"; // SerpAPI function
 
 interface SignUpData {
   email: string;
@@ -14,6 +13,8 @@ interface AuthContextType {
   signUp: (data: SignUpData) => Promise<void>;
   signOut: () => Promise<void>;
   deleteAccount: () => Promise<boolean>;
+  updateUserEmail: (newEmail: string) => Promise<{ success: boolean; user: User | null; message: string }>;
+  resetPassword: (email: string) => Promise<{ success: boolean; message: string }>;
   loading: boolean;
 }
 
@@ -23,6 +24,7 @@ const AuthContext = createContext<AuthContextType>({
   signUp: async () => { },
   signOut: async () => { },
   deleteAccount: async () => false,
+  updateUserEmail: async () => ({ success: false, user: null, message: '' }),
   loading: true,
 });
 
@@ -115,7 +117,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }): JSX.E
     if (error) throw error;
     if (authData.user) {
       localStorage.setItem('newUser', 'true');
-      }
+    }
   };
 
   const signIn = async (email: string, password: string) => {
@@ -152,12 +154,84 @@ export function AuthProvider({ children }: { children: React.ReactNode }): JSX.E
     }
   };
 
+  const updateUserEmail = async (newEmail: string) => {
+    try {
+      // Check if user is logged in
+      const { data: { session } } = await supabase.auth.getSession();
+      if (!session) throw new Error('User is not logged in');
+
+      // Update Email.
+      // Note: This will send a verification email to the new email address that must be confirmed.
+      const { data, error } = await supabase.auth.updateUser(
+        { email: newEmail },
+        { emailRedirectTo: `${window.location.origin}/settings/email-updated` }
+      );
+
+      if (error) throw error;
+
+      return {
+        success: true, // Email update was successful.
+        user: data.user, // User object with the new email.
+        message: 'Verification emails sent. Please check both your current and new email inboxes to complete the change.'
+      };
+
+    } catch (error: unknown) {
+      console.error('Error updating email:', error);
+
+      let errorMessage = 'Failed to update email';
+      if (error instanceof Error) {
+        errorMessage = error.message;
+      } else if (typeof error === 'object' && error !== null && 'message' in error) {
+        errorMessage = error.message as string;
+      }
+
+      return {
+        success: false,
+        user: null,
+        message: errorMessage
+      };
+    }
+  };
+
+  const resetPassword = async (email: string) => {
+    try {
+      // Send password reset email
+      const { error } = await supabase.auth.resetPasswordForEmail(
+        email,
+        { redirectTo: `${window.location.origin}/reset-password` }
+      );
+
+      if (error) throw error;
+
+      return {
+        success: true,
+        message: 'Password reset instructions sent to your email.'
+      };
+    } catch (error: unknown) {
+      console.error('Error resetting password:', error);
+
+      let errorMessage = 'Failed to send password reset email';
+      if (error instanceof Error) {
+        errorMessage = error.message;
+      } else if (typeof error === 'object' && error !== null && 'message' in error) {
+        errorMessage = error.message as string;
+      }
+
+      return {
+        success: false,
+        message: errorMessage
+      };
+    }
+  };
+
   const value = {
     user,
     signIn,
     signUp,
     signOut,
     deleteAccount,
+    updateUserEmail,
+    resetPassword,
     loading,
   };
 

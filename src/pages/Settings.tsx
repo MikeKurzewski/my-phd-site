@@ -1,16 +1,16 @@
 import React, { useState, useEffect } from 'react';
-import { Globe, Lock, Palette, ExternalLink, CreditCard, Layout } from 'lucide-react';
+import { Globe, Lock, Palette, ExternalLink, CreditCard, Layout, Mail } from 'lucide-react';
 import { useAuth } from '../lib/auth';
 import { supabase } from '../lib/supabase';
 import { useTheme } from '../lib/theme';
-import { useNavigate } from 'react-router-dom';
 import ThemeSelector from '../components/ThemeSelector';
 import LayoutSelector from '../components/LayoutSelector';
+import { checkInvalidEmail, checkInvalidWebsiteName } from '../lib/validationUtils';
 
 interface Profile {
   id: string;
   username: string;
-  theme:  'dark-teal' | 'dark-bronze' | 'minimal';
+  theme: 'dark-teal' | 'dark-bronze' | 'minimal';
   layout: 'default' | 'academic';
 }
 
@@ -24,9 +24,8 @@ interface Subscription {
 
 export default function Settings() {
   const { user, signOut } = useAuth();
-  const navigate = useNavigate();
   const [isDeletingAcc, setIsDeleting] = useState(false);
-  const { deleteAccount } = useAuth();
+  const { deleteAccount, updateUserEmail, resetPassword } = useAuth();
   const [profile, setProfile] = useState<Profile | null>(null);
   const [subscription, setSubscription] = useState<Subscription | null>(null);
   const [theme, setTheme] = useState<'dark-teal' | 'minimal' | 'dark-bronze'>('dark-teal');
@@ -35,6 +34,10 @@ export default function Settings() {
   const [success, setSuccess] = useState<string | null>(null);
   const [editingUsername, setEditingUsername] = useState('');
   const [checkingUsername, setCheckingUsername] = useState(false);
+  const [checkingEmail, setCheckingEmail] = useState(false);
+  const [editingEmail, setEditingEmail] = useState(user?.email || '');
+  const [isResettingPassword, setIsResettingPassword] = useState(false);
+  const [showPasswordResetModal, setShowPasswordResetModal] = useState(false);
 
   useEffect(() => {
     if (user?.id) {
@@ -72,7 +75,6 @@ export default function Settings() {
         window.location.href = '/';
       }
     } catch (error) {
-      console.error('Error:', error);
       alert('Failed to delete account. Please try again later.');
     } finally {
       setIsDeleting(false);
@@ -107,7 +109,7 @@ export default function Settings() {
       if (error) throw error;
       setSubscription(data);
     } catch (error) {
-      console.error('Error fetching subscription:', error);
+      // TODO: handle error
     }
   };
 
@@ -192,6 +194,88 @@ export default function Settings() {
       setError('Failed to update username');
     } finally {
       setCheckingUsername(false);
+    }
+  };
+
+  const handleEmailChange = async () => {
+    // Validate email
+    if (!editingEmail.trim() || editingEmail === user?.email) return;
+    if (checkInvalidEmail(editingEmail)) {
+      setError('Invalid email format!');
+      return;
+    }
+
+    // Clear any previous messages and set loading state
+    setError(null);
+    setSuccess(null);
+    setCheckingEmail(true);
+
+    try {
+      // Step 1. Update email in Supabase Auth.
+      const { success, user: updatedUser, message } = await updateUserEmail(editingEmail);
+
+      if (!success) {
+        setError(message);
+        return;
+      }
+
+      // Step 2: If auth update successful, update profile.
+      try {
+        const { error: profileError } = await supabase
+          .from('profiles')
+          .update({ email: updatedUser?.email })
+          .eq('id', user?.id);
+
+        if (profileError) {
+          // This is a partial success case - auth updated, but profile failed.
+          setSuccess(`${message} However, there was an issue updating your profile. This will be fixed automatically when you confirm your email.`);
+        } else {
+          // Both auth and profile updated successfully.
+          setSuccess(message);
+          // Update local profile state to reflect changes.
+          setProfile(prev => prev ? { ...prev, email: updatedUser?.email } : null);
+          setEditingEmail(updatedUser?.email || '');
+        }
+      } catch (profileUpdateError) {
+        // This is a partial success case - auth updated, but profile failed.
+        console.error('Error updating profile email:', profileUpdateError);
+        setSuccess(`${message} However, there was an issue updating your profile. This will be fixed automatically when you confirm your email.`);
+      }
+    } catch (error) {
+      console.error('Unexpected error in email update: ', error);
+      setError('An unexpected error occurred while updating your email.');
+    } finally {
+      setCheckingEmail(false);
+    }
+  };
+
+  const handleResetPassword = async () => {
+    // Use the current user's email
+    const emailToUse = user?.email || '';
+    
+    if (!emailToUse || checkInvalidEmail(emailToUse)) {
+      setError('Invalid email address. Please update your email first.');
+      return;
+    }
+
+    setError(null);
+    setSuccess(null);
+    setIsResettingPassword(true);
+
+    try {
+      const { success, message } = await resetPassword(emailToUse);
+      
+      if (success) {
+        setSuccess(message);
+        setShowPasswordResetModal(false);
+      } else {
+        setError(message);
+      }
+    } catch (error) {
+      console.error('Error in password reset:', error);
+      setError('An unexpected error occurred while requesting password reset.');
+    } finally {
+      setIsResettingPassword(false);
     }
   };
 
@@ -281,20 +365,21 @@ export default function Settings() {
   }
 
   return (
-    <div className="space-y-6">
-      <h2 className="text-2xl font-semibold text-[rgb(var(--color-text-primary))]">Settings</h2>
+    <>
+      <div className="space-y-6">
+        <h2 className="text-2xl font-semibold text-[rgb(var(--color-text-primary))]">Settings</h2>
 
-      {error && (
-        <div className="bg-[rgb(var(--color-error))] bg-opacity-10 border border-[rgb(var(--color-error))] text-[rgb(var(--color-error))] px-4 py-3 rounded-md">
-          {error}
-        </div>
-      )}
+        {error && (
+          <div className="bg-[rgb(var(--color-error))] bg-opacity-10 border border-[rgb(var(--color-error))] text-[rgb(var(--color-error))] px-4 py-3 rounded-md">
+            {error}
+          </div>
+        )}
 
-      {success && (
-        <div className="bg-[rgb(var(--color-success))] bg-opacity-10 border border-[rgb(var(--color-success))] text-[rgb(var(--color-primary))] px-4 py-3 rounded-md">
-          {success}
-        </div>
-      )}
+        {success && (
+          <div className="bg-[rgb(var(--color-success))] bg-opacity-10 border border-[rgb(var(--color-success))] text-[rgb(var(--color-primary))] px-4 py-3 rounded-md">
+            {success}
+          </div>
+        )}
 
       <div className="bg-[rgb(var(--color-bg-secondary))] shadow-sm rounded-lg divide-y divide-[rgb(var(--color-border-primary))] border border-[rgb(var(--color-border-primary))]">
         {/* Subscription Section */}
@@ -320,14 +405,14 @@ export default function Settings() {
               </div>
               {subscription?.plan === 'free' ? (
                 <div>
-                <button
-                  onClick={handleUpgrade}
-                  className="btn-primary"
-                >
-                 Upgrade to Premium
-                </button>
+                  <button
+                    onClick={handleUpgrade}
+                    className="btn-primary"
+                  >
+                    Upgrade to Premium
+                  </button>
 
-              </div>
+                </div>
               ) : (
                 //<button
                 //onClick={handleCancelSubscription}
@@ -384,10 +469,10 @@ export default function Settings() {
               <div className="mt-2 flex justify-end">
                 <button
                   onClick={handleUsernameChange}
-                  disabled={checkingUsername || !editingUsername.trim() || editingUsername === profile?.username}
+                  disabled={checkingUsername || !editingUsername.trim() || editingUsername === profile?.username || checkInvalidWebsiteName(editingUsername)}
                   className="btn-primary"
                 >
-                  {checkingUsername ? 'Checking...' : 'Update Username'}
+                  {checkingUsername ? 'Checking...' : 'Update URL'}
                 </button>
               </div>
             </div>
@@ -442,24 +527,43 @@ export default function Settings() {
           <div className="space-y-4">
             <div>
               <label className="block text-sm font-medium text-[rgb(var(--color-text-secondary))]">Email Address</label>
-              <input
-                type="email"
-                value={user?.email || ''}
-                readOnly
-                className="mt-1 block w-full rounded-md border-[rgb(var(--color-border-primary))] p-2 bg-[rgb(var(--color-bg-primary))] text-[rgb(var(--color-text-tertiary))] shadow-sm focus:border-[rgb(var(--color-primary-400))] focus:ring-[rgb(var(--color-primary-400))] sm:text-sm"
-              />
+              {editingEmail && checkInvalidEmail(editingEmail) && (
+                <div className="text-sm text-[rgb(var(--color-error))] mb-1">
+                  Please enter a valid email address
+                </div>
+              )}
+              <div className="mt-1 flex rounded-md shadow-sm gap-2">
+                <input
+                  type="email"
+                  onChange={(e) => {
+                    setEditingEmail(e.target.value);
+                    // Clear error when user starts typing
+                    setError(null);
+                  }}
+                  value={editingEmail}
+                  className="flex-1 block w-full rounded-md border-[rgb(var(--color-border-primary))] p-2 bg-[rgb(var(--color-bg-primary))] text-[rgb(var(--color-text-tertiary))] shadow-sm focus:border-[rgb(var(--color-primary-400))] focus:ring-[rgb(var(--color-primary-400))] sm:text-sm"
+                />
+                <button
+                  disabled={checkingEmail || !editingEmail.trim() || editingEmail === user?.email || checkInvalidEmail(editingEmail)}
+                  onClick={handleEmailChange}
+                  className="btn-primary whitespace-nowrap"
+                >
+                  Update Email
+                </button>
+              </div>
             </div>
             <div className="flex space-x-4">
               <button
                 className="btn-secondary"
-                onClick={() => {/* TODO: Implement password reset */ }}
+                onClick={() => setShowPasswordResetModal(true)}
               >
                 Reset Password
               </button>
               <button
                 onClick={handleDeleteAccount}
                 disabled={isDeletingAcc}
-                className="btn-secondary"
+                // Secondary Button that is error colored when not hovered, and only error outline color when hovered
+                className="btn-secondary bg-[rgb(var(--color-error))] hover:bg-transparent hover:outline hover:outline-2 hover:outline-[rgb(var(--color-error))]"
               >
                 {isDeletingAcc ? 'Deleting...' : 'Delete Account'}
               </button>
@@ -473,6 +577,56 @@ export default function Settings() {
           </div>
         </div>
       </div>
+      
+      {/* Password Reset Modal */}
+      {showPasswordResetModal && (
+        <div className="fixed inset-0 z-50 overflow-y-auto">
+          <div className="flex min-h-screen items-end justify-center px-4 pt-4 pb-20 text-center sm:block sm:p-0">
+            <div 
+              className="fixed inset-0 bg-gray-500 bg-opacity-75 transition-opacity" 
+              onClick={() => setShowPasswordResetModal(false)}
+            ></div>
+
+            <div className="inline-block transform overflow-hidden rounded-lg bg-[rgb(var(--color-bg-secondary))] text-left align-bottom shadow-xl transition-all sm:my-8 sm:w-full sm:max-w-lg sm:align-middle">
+              <div className="px-4 pt-5 pb-4 sm:p-6 sm:pb-4">
+                <div className="sm:flex sm:items-start">
+                  <div className="mx-auto flex h-12 w-12 flex-shrink-0 items-center justify-center rounded-full bg-[rgb(var(--color-primary-900))] sm:mx-0 sm:h-10 sm:w-10">
+                    <Mail className="h-6 w-6 text-[rgb(var(--color-primary-400))]" />
+                  </div>
+                  <div className="mt-3 text-center sm:mt-0 sm:ml-4 sm:text-left">
+                    <h3 className="text-lg font-medium leading-6 text-[rgb(var(--color-text-primary))]">
+                      Reset Password
+                    </h3>
+                    <div className="mt-2">
+                      <p className="text-sm text-[rgb(var(--color-text-secondary))]">
+                        We'll send a password reset link to your email address: <strong>{user?.email}</strong>
+                      </p>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div className="bg-[rgb(var(--color-bg-primary))] px-4 py-3 sm:flex sm:flex-row-reverse sm:px-6">
+                <button
+                  type="button"
+                  className="btn-primary w-full sm:ml-3 sm:w-auto"
+                  onClick={handleResetPassword}
+                  disabled={isResettingPassword}
+                >
+                  {isResettingPassword ? 'Sending...' : 'Send Reset Link'}
+                </button>
+                <button
+                  type="button"
+                  className="btn-secondary mt-3 w-full sm:mt-0 sm:w-auto"
+                  onClick={() => setShowPasswordResetModal(false)}
+                >
+                  Cancel
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
+    </>
   );
 }
