@@ -3,7 +3,6 @@ import { Globe, Lock, Palette, ExternalLink, CreditCard, Layout } from 'lucide-r
 import { useAuth } from '../lib/auth';
 import { supabase } from '../lib/supabase';
 import { useTheme } from '../lib/theme';
-import { useNavigate } from 'react-router-dom';
 import ThemeSelector from '../components/ThemeSelector';
 import LayoutSelector from '../components/LayoutSelector';
 import { checkInvalidEmail, checkInvalidWebsiteName } from '../lib/validationUtils';
@@ -11,7 +10,7 @@ import { checkInvalidEmail, checkInvalidWebsiteName } from '../lib/validationUti
 interface Profile {
   id: string;
   username: string;
-  theme:  'dark-teal' | 'dark-bronze' | 'minimal';
+  theme: 'dark-teal' | 'dark-bronze' | 'minimal';
   layout: 'default' | 'academic';
 }
 
@@ -25,9 +24,8 @@ interface Subscription {
 
 export default function Settings() {
   const { user, signOut } = useAuth();
-  const navigate = useNavigate();
   const [isDeletingAcc, setIsDeleting] = useState(false);
-  const { deleteAccount } = useAuth();
+  const { deleteAccount, updateUserEmail } = useAuth();
   const [profile, setProfile] = useState<Profile | null>(null);
   const [subscription, setSubscription] = useState<Subscription | null>(null);
   const [theme, setTheme] = useState<'dark-teal' | 'minimal' | 'dark-bronze'>('dark-teal');
@@ -75,7 +73,6 @@ export default function Settings() {
         window.location.href = '/';
       }
     } catch (error) {
-      console.error('Error:', error);
       alert('Failed to delete account. Please try again later.');
     } finally {
       setIsDeleting(false);
@@ -110,7 +107,7 @@ export default function Settings() {
       if (error) throw error;
       setSubscription(data);
     } catch (error) {
-      console.error('Error fetching subscription:', error);
+      // TODO: handle error
     }
   };
 
@@ -195,6 +192,58 @@ export default function Settings() {
       setError('Failed to update username');
     } finally {
       setCheckingUsername(false);
+    }
+  };
+
+  const handleEmailChange = async () => {
+    // Validate email
+    if (!editingEmail.trim() || editingEmail === user?.email) return;
+    if (checkInvalidEmail(editingEmail)) {
+      setError('Invalid email format!');
+      return;
+    }
+
+    // Clear any previous messages and set loading state
+    setError(null);
+    setSuccess(null);
+    setCheckingEmail(true);
+
+    try {
+      // Step 1. Update email in Supabase Auth.
+      const { success, user: updatedUser, message } = await updateUserEmail(editingEmail);
+
+      if (!success) {
+        setError(message);
+        return;
+      }
+
+      // Step 2: If auth update successful, update profile.
+      try {
+        const { error: profileError } = await supabase
+          .from('profiles')
+          .update({ email: updatedUser?.email })
+          .eq('id', user?.id);
+
+        if (profileError) {
+          // This is a partial success case - auth updated, but profile failed.
+          setSuccess(`${message} However, there was an issue updating your profile. This will be fixed automatically when you confirm your email.`);
+        } else {
+          // Both auth and profile updated successfully.
+          setSuccess(message);
+          // Update local profile state to reflect changes.
+          setProfile(prev => prev ? { ...prev, email: updatedUser?.email } : null);
+          setEditingEmail(updatedUser?.email || '');
+        }
+      } catch (profileUpdateError) {
+        // This is a partial success case - auth updated, but profile failed.
+        console.error('Error updating profile email:', profileUpdateError);
+        setSuccess(`${message} However, there was an issue updating your profile. This will be fixed automatically when you confirm your email.`);
+      }
+    } catch (error) {
+      console.error('Unexpected error in email update: ', error);
+      setError('An unexpected error occurred while updating your email.');
+    } finally {
+      setCheckingEmail(false);
     }
   };
 
@@ -323,14 +372,14 @@ export default function Settings() {
               </div>
               {subscription?.plan === 'free' ? (
                 <div>
-                <button
-                  onClick={handleUpgrade}
-                  className="btn-primary"
-                >
-                 Upgrade to Premium
-                </button>
+                  <button
+                    onClick={handleUpgrade}
+                    className="btn-primary"
+                  >
+                    Upgrade to Premium
+                  </button>
 
-              </div>
+                </div>
               ) : (
                 //<button
                 //onClick={handleCancelSubscription}
@@ -463,29 +512,7 @@ export default function Settings() {
                 />
                 <button
                   disabled={checkingEmail || !editingEmail.trim() || editingEmail === user?.email || checkInvalidEmail(editingEmail)}
-                  onClick={async () => {
-                    if (checkInvalidEmail(editingEmail)) {
-                      setError('Invalid email format');
-                      return;
-                    }
-                    
-                    setCheckingEmail(true);
-                    try {
-                      // Update email in Supabase Auth
-                      const { error } = await supabase.auth.updateUser({
-                        email: editingEmail,
-                      });
-                      
-                      if (error) throw error;
-                      
-                      setSuccess('Verification email sent. Please check your inbox to confirm the change.');
-                    } catch (error) {
-                      console.error('Error updating email:', error);
-                      setError('Failed to update email address');
-                    } finally {
-                      setCheckingEmail(false);
-                    }
-                  }}
+                  onClick={handleEmailChange}
                   className="btn-primary whitespace-nowrap"
                 >
                   Update Email
