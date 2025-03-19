@@ -14,6 +14,7 @@ interface AuthContextType {
   signOut: () => Promise<void>;
   deleteAccount: () => Promise<boolean>;
   updateUserEmail: (newEmail: string) => Promise<{ success: boolean; user: User | null; message: string }>;
+  resetPassword: (email: string) => Promise<{ success: boolean; message: string }>;
   loading: boolean;
 }
 
@@ -192,6 +193,37 @@ export function AuthProvider({ children }: { children: React.ReactNode }): JSX.E
     }
   };
 
+  const resetPassword = async (email: string) => {
+    try {
+      // Send password reset email
+      const { error } = await supabase.auth.resetPasswordForEmail(
+        email,
+        { redirectTo: `${window.location.origin}/reset-password` }
+      );
+
+      if (error) throw error;
+
+      return {
+        success: true,
+        message: 'Password reset instructions sent to your email.'
+      };
+    } catch (error: unknown) {
+      console.error('Error resetting password:', error);
+
+      let errorMessage = 'Failed to send password reset email';
+      if (error instanceof Error) {
+        errorMessage = error.message;
+      } else if (typeof error === 'object' && error !== null && 'message' in error) {
+        errorMessage = error.message as string;
+      }
+
+      return {
+        success: false,
+        message: errorMessage
+      };
+    }
+  };
+
   const value = {
     user,
     signIn,
@@ -199,6 +231,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }): JSX.E
     signOut,
     deleteAccount,
     updateUserEmail,
+    resetPassword,
     loading,
   };
 
