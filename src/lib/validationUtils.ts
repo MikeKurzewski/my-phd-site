@@ -36,5 +36,10 @@ export function checkInvalidWebsiteName(name: string): boolean {
 
 // Check for invalid email. Return true if the email is invalid.
 export function checkInvalidEmail(email: string): boolean {
-  return (email.includes(' ') || !email.includes('@'));
+  // Basic email validation - checks for:
+  // - No spaces
+  // - Contains @ symbol
+  // - Has something before and after the @ symbol
+  // - Has a domain with at least one dot
+  return !email || !email.match(/^[^\s@]+@[^\s@]+\.[^\s@]+$/);
 }

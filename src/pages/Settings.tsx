@@ -445,7 +445,7 @@ export default function Settings() {
           <div className="space-y-4">
             <div>
               <label className="block text-sm font-medium text-[rgb(var(--color-text-secondary))]">Email Address</label>
-              {editingEmail && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(editingEmail) && (   // Jesus who invented regex...
+              {editingEmail && checkInvalidEmail(editingEmail) && (
                 <div className="text-sm text-[rgb(var(--color-error))] mb-1">
                   Please enter a valid email address
                 </div>
@@ -456,18 +456,35 @@ export default function Settings() {
                   onChange={(e) => {
                     setEditingEmail(e.target.value);
                     // Clear error when user starts typing
-                    if (checkInvalidEmail(e.target.value)) {
-                      setError('Invalid email format');
-                    } else {
-                      setError(null);
-                    }
+                    setError(null);
                   }}
                   value={editingEmail}
                   className="flex-1 block w-full rounded-md border-[rgb(var(--color-border-primary))] p-2 bg-[rgb(var(--color-bg-primary))] text-[rgb(var(--color-text-tertiary))] shadow-sm focus:border-[rgb(var(--color-primary-400))] focus:ring-[rgb(var(--color-primary-400))] sm:text-sm"
                 />
                 <button
                   disabled={checkingEmail || !editingEmail.trim() || editingEmail === user?.email || checkInvalidEmail(editingEmail)}
-                  onClick={() => {//TODO: Implement email update
+                  onClick={async () => {
+                    if (checkInvalidEmail(editingEmail)) {
+                      setError('Invalid email format');
+                      return;
+                    }
+                    
+                    setCheckingEmail(true);
+                    try {
+                      // Update email in Supabase Auth
+                      const { error } = await supabase.auth.updateUser({
+                        email: editingEmail,
+                      });
+                      
+                      if (error) throw error;
+                      
+                      setSuccess('Verification email sent. Please check your inbox to confirm the change.');
+                    } catch (error) {
+                      console.error('Error updating email:', error);
+                      setError('Failed to update email address');
+                    } finally {
+                      setCheckingEmail(false);
+                    }
                   }}
                   className="btn-primary whitespace-nowrap"
                 >
