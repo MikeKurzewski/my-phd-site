@@ -104,10 +104,12 @@ export function AuthProvider({ children }: { children: React.ReactNode }): JSX.E
     });
 
     // Listen for auth changes
-    const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
+    const { data: { subscription } } = supabase.auth.onAuthStateChange(async (event, session) => {
       if (event === 'PASSWORD_RECOVERY') {
-        // Handle password recovery state if needed
+        // Handle password recovery state
         console.log('Password recovery flow initiated');
+        const newSession = await supabase.auth.getSession();
+        setUser(newSession.data.session?.user ?? null);
       }
       setUser(session?.user ?? null);
       setLoading(false);
@@ -208,7 +210,9 @@ export function AuthProvider({ children }: { children: React.ReactNode }): JSX.E
       const { error } = await supabase.auth.resetPasswordForEmail(
         // TODO: SECURITY Add Catpcha integration.
         email,
-        { redirectTo: `${window.location.origin}/reset-password`, }
+        { 
+          redirectTo: `${window.location.origin}/reset-password`,
+        }
       );
 
       if (error) throw error;

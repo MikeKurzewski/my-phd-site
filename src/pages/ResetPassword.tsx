@@ -1,7 +1,8 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../lib/auth';
 import { Lock, Eye, EyeOff } from 'lucide-react';
+import { supabase } from '../lib/supabase';
 
 export default function ResetPassword() {
   const [password, setPassword] = useState('');
@@ -11,6 +12,16 @@ export default function ResetPassword() {
   const [showPassword, setShowPassword] = useState(false);
   const { updateUserPassword } = useAuth();
   const navigate = useNavigate();
+  
+  useEffect(() => {
+    // Listen for the password recovery event
+    supabase.auth.onAuthStateChange(async (event, session) => {
+      if (event === 'PASSWORD_RECOVERY') {
+        // This ensures we have the recovery session
+        console.log('Password recovery session detected');
+      }
+    });
+  }, []);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -55,6 +66,9 @@ export default function ResetPassword() {
       <div className="mt-8 sm:mx-auto sm:w-full sm:max-w-md">
         <div className="bg-[rgb(var(--color-bg-secondary))] py-8 px-4 shadow-lg sm:rounded-lg sm:px-10 border border-[rgb(var(--color-border-primary))]">
           <form onSubmit={handleSubmit} className="space-y-6">
+            <div className="bg-[rgb(var(--color-info))] bg-opacity-10 border border-[rgb(var(--color-info))] text-[rgb(var(--color-text-primary))] px-4 py-3 rounded-md mb-4">
+              <p className="text-sm">Enter your new password below. Make sure it's at least 6 characters long.</p>
+            </div>
             {error && (
               <div className="bg-[rgb(var(--color-error))] bg-opacity-10 border border-[rgb(var(--color-error))] text-white px-4 py-3 rounded-md">
                 {error}
