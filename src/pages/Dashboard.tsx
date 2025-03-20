@@ -228,7 +228,7 @@ export default function Dashboard() {
                 className="inline-flex items-center px-4 py-2 bg-[rgb(var(--color-primary-500))] hover:bg-[rgb(var(--color-primary-600))] text-white rounded-md font-medium transition-colors"
               >
                 <ExternalLink className="h-4 w-4 mr-2" />
-                Launch Website
+                Preview Website
               </a>
             </div>
           </div>
