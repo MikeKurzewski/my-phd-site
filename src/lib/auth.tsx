@@ -1,5 +1,5 @@
 import { createContext, useContext, useEffect, useState } from 'react';
-import { User } from '@supabase/supabase-js';
+import { AuthError, User } from '@supabase/supabase-js';
 import { supabase } from './supabase';
 
 interface SignUpData {
@@ -14,7 +14,8 @@ interface AuthContextType {
   signOut: () => Promise<void>;
   deleteAccount: () => Promise<boolean>;
   updateUserEmail: (newEmail: string) => Promise<{ success: boolean; user: User | null; message: string }>;
-  resetPassword: (email: string) => Promise<{ success: boolean; message: string }>;
+  updateUserPassword: (newPassword: string) => Promise<{ success: boolean; user: User | null; message: string }>;
+  sendPasswordResetEmail: (email: string) => Promise<{ success: boolean; message: string }>;
   loading: boolean;
 }
 
@@ -25,6 +26,8 @@ const AuthContext = createContext<AuthContextType>({
   signOut: async () => { },
   deleteAccount: async () => false,
   updateUserEmail: async () => ({ success: false, user: null, message: '' }),
+  updateUserPassword: async () => ({ success: false, user: null, message: '' }),
+  sendPasswordResetEmail: async () => ({ success: false, message: '' }),
   loading: true,
 });
 
@@ -164,6 +167,8 @@ export function AuthProvider({ children }: { children: React.ReactNode }): JSX.E
       // Note: This will send a verification email to the new email address that must be confirmed.
       const { data, error } = await supabase.auth.updateUser(
         { email: newEmail },
+        // TODO: SECURITY Add Catpcha integration.
+        // TODO: add email-updated UI?
         { emailRedirectTo: `${window.location.origin}/settings/email-updated` }
       );
 
@@ -193,12 +198,13 @@ export function AuthProvider({ children }: { children: React.ReactNode }): JSX.E
     }
   };
 
-  const resetPassword = async (email: string) => {
+
+  const sendPasswordResetEmail = async (email: string) => {
     try {
-      // Send password reset email
       const { error } = await supabase.auth.resetPasswordForEmail(
+        // TODO: SECURITY Add Catpcha integration.
         email,
-        { redirectTo: `${window.location.origin}/reset-password` }
+        { redirectTo: `${window.location.origin}/reset-password`, }
       );
 
       if (error) throw error;
@@ -206,12 +212,42 @@ export function AuthProvider({ children }: { children: React.ReactNode }): JSX.E
       return {
         success: true,
         message: 'Password reset instructions sent to your email.'
+      }
+    } catch (error: unknown) {
+      let errorMessage = 'Failed to send password reset email';
+
+      if (error instanceof AuthError) {
+        errorMessage = error.message;
+      } else if (typeof error === 'object' && error !== null && 'message' in error) {
+        errorMessage = error.message as string;
+      }
+      return {
+        success: false,
+        message: errorMessage
+      }
+    }
+  }
+
+  const updateUserPassword = async (newPassword: string) => {
+    try {
+      // User may not be logged in, since this is a password reset.
+      // However, supabase does ensure that they are authenticated, via the token in the reset link.
+      // So we can call the update password function directly.
+      const { data, error } = await supabase.auth.updateUser({
+        password: newPassword,
+      });
+
+      if (error) throw error;
+
+      return {
+        success: true,
+        user: data.user,
+        message: 'Password updated successfully.'
       };
     } catch (error: unknown) {
-      console.error('Error resetting password:', error);
+      let errorMessage = 'Failed to update password';
 
-      let errorMessage = 'Failed to send password reset email';
-      if (error instanceof Error) {
+      if (error instanceof AuthError) {
         errorMessage = error.message;
       } else if (typeof error === 'object' && error !== null && 'message' in error) {
         errorMessage = error.message as string;
@@ -219,10 +255,11 @@ export function AuthProvider({ children }: { children: React.ReactNode }): JSX.E
 
       return {
         success: false,
+        user: null,
         message: errorMessage
-      };
+      }
     }
-  };
+  }
 
   const value = {
     user,
@@ -231,7 +268,8 @@ export function AuthProvider({ children }: { children: React.ReactNode }): JSX.E
     signOut,
     deleteAccount,
     updateUserEmail,
-    resetPassword,
+    updateUserPassword,
+    sendPasswordResetEmail,
     loading,
   };
 
