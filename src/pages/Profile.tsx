@@ -308,9 +308,12 @@ export default function Profile() {
       if (profileError) throw profileError;
 
       const linkedinUrl = profileData?.social_links?.linkedin;
-      if(!linkedinUrl){
-        alert("Please add a valid linkedin URL to your social links first")
-        return
+      // Regular expression for LinkedIn profile URLs
+      const linkedinRegex = /^(https?:\/\/)?(www\.)?linkedin\.com\/in\/[a-zA-Z0-9-]+\/?$/;
+
+      if (!linkedinUrl || !linkedinRegex.test(linkedinUrl)) {
+        alert("Please add a valid LinkedIn profile URL (e.g., https://www.linkedin.com/in/your-profile)");
+        return;
       }
 
       const response = await fetch('https://hook.eu2.make.com/ggjxotdvke95ig31ui8lu43kia58pn54', {
@@ -391,6 +394,10 @@ export default function Profile() {
 
   const alertPaymentNeeded = async () => {
     alert('You need a paid subscription to access this feature');
+
+  }
+  const alertLinkedinNeeded = async () => {
+    alert('You need to put your LinkedIn Profile URL in your soccial links first');
 
   }
 
@@ -480,14 +487,23 @@ export default function Profile() {
 
           <div className="flex justify-between items-center pb-6">
             <h2 className="text-2xl font-semibold text-[rgb(var(--color-text-primary))]">Profile</h2>
-            {profile.social_links?.linkedin && subscription?.plan!=='free' && (
+            {profile.social_links?.linkedin && subscription?.plan!=='free' ? (
               <button
                 onClick={autoCompleteProfile}
                 className="btn-primary"
               >
                 Use my LinkedIn Profile
               </button>
+            ) : (
+              <button
+                onClick={alertLinkedinNeeded}
+                className="btn-secondary"
+              >
+                <Lock className="h-5 w-5 text-[rgb(var(--color-text-primary))] mr-2" />
+                Use my LinkedIn Profile
+              </button>
             )}
+            
             {subscription?.plan=='free' && (
               <button
                 onClick={alertPaymentNeeded}
@@ -691,7 +707,7 @@ export default function Profile() {
               </div>
 
               {showQualificationForm && (
-                <div className="bg-[rgb(var(--color-bg-primary))] p-4 rounded-md border border-[rgb(var(--color-border-primary))]">
+                <div className="bg-[rgb(var(--color-bg-tertiary))] p-4 rounded-md border border-[rgb(var(--color-border-primary))]">
                   <div className="space-y-4">
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                       <div>
