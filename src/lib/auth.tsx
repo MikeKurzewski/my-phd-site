@@ -104,7 +104,11 @@ export function AuthProvider({ children }: { children: React.ReactNode }): JSX.E
     });
 
     // Listen for auth changes
-    const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
+      if (event === 'PASSWORD_RECOVERY') {
+        // Handle password recovery state if needed
+        console.log('Password recovery flow initiated');
+      }
       setUser(session?.user ?? null);
       setLoading(false);
     });
