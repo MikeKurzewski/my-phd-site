@@ -25,7 +25,7 @@ interface Subscription {
 export default function Settings() {
   const { user, signOut } = useAuth();
   const [isDeletingAcc, setIsDeleting] = useState(false);
-  const { deleteAccount, updateUserEmail, resetPassword } = useAuth();
+  const { deleteAccount, updateUserEmail, sendPasswordResetEmail} = useAuth();
   const [profile, setProfile] = useState<Profile | null>(null);
   const [subscription, setSubscription] = useState<Subscription | null>(null);
   const [theme, setTheme] = useState<'dark-teal' | 'minimal' | 'dark-bronze'>('dark-teal');
@@ -252,7 +252,7 @@ export default function Settings() {
   const handleResetPassword = async () => {
     // Use the current user's email
     const emailToUse = user?.email || '';
-    
+
     if (!emailToUse || checkInvalidEmail(emailToUse)) {
       setError('Invalid email address. Please update your email first.');
       return;
@@ -263,8 +263,8 @@ export default function Settings() {
     setIsResettingPassword(true);
 
     try {
-      const { success, message } = await resetPassword(emailToUse);
-      
+      const { success, message } = await sendPasswordResetEmail(emailToUse);
+
       if (success) {
         setSuccess(message);
         setShowPasswordResetModal(false);
@@ -272,8 +272,7 @@ export default function Settings() {
         setError(message);
       }
     } catch (error) {
-      console.error('Error in password reset:', error);
-      setError('An unexpected error occurred while requesting password reset.');
+      setError('Failed to send password reset email');
     } finally {
       setIsResettingPassword(false);
     }
@@ -577,13 +576,13 @@ export default function Settings() {
           </div>
         </div>
       </div>
-      
+        {/* TODO: REFACTOR is this good to refactor? */}
       {/* Password Reset Modal */}
       {showPasswordResetModal && (
         <div className="fixed inset-0 z-50 overflow-y-auto">
           <div className="flex min-h-screen items-end justify-center px-4 pt-4 pb-20 text-center sm:block sm:p-0">
-            <div 
-              className="fixed inset-0 bg-gray-500 bg-opacity-75 transition-opacity" 
+            <div
+              className="fixed inset-0 bg-gray-500 bg-opacity-75 transition-opacity"
               onClick={() => setShowPasswordResetModal(false)}
             ></div>
 
