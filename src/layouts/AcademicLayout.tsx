@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import CustomPageLayout from './CustomPageLayout';
 
 const formatDate = (dateString: string) => {
   const date = new Date(dateString);
@@ -20,11 +21,25 @@ import { BookOpen, Briefcase, FileText, Mail, Linkedin, Github, Menu, X, Externa
 import { TabProps } from '../types/common';
 import { EditableField } from '../components/EditableField';
 
+interface CustomSection {
+  id: string;
+  section_title: string;
+  content: string;
+}
+
+interface CustomPage {
+  id: string;
+  title: string;
+  position: number;
+  custom_sections: CustomSection[];
+}
+
 interface AcademicLayoutProps {
   profile: any;
   publications: any[];
   projects: any[];
   qualifications: any[];
+  customPages: any[];
   activeTab: string;
   onTabChange: (tab: string) => void;
   Tab: React.FC<TabProps>;
@@ -39,6 +54,7 @@ export default function AcademicLayout({
   publications,
   projects,
   qualifications,
+  customPages,
   activeTab,
   onTabChange,
   Tab,
@@ -104,6 +120,15 @@ export default function AcademicLayout({
                 onClick={() => onTabChange('projects')}
               />
             )}
+            {customPages.map((page) => (
+              <Tab
+                key={page.id}
+                label={page.title}
+                icon={<FileText className="h-5 w-5" />}
+                isActive={activeTab === `custom-${page.id}`}
+                onClick={() => onTabChange(`custom-${page.id}`)}
+              />
+            ))}
           </div>
 
           {/* CV Button */}
@@ -436,6 +461,22 @@ export default function AcademicLayout({
             </div>
           </div>
         </div>
+
+        {activeTab.startsWith('custom-') && (() => {
+          const pageId = activeTab.replace('custom-', '');
+          const page = customPages.find((p) => p.id === pageId);
+          if (page) {
+            return (
+              <CustomPageLayout
+                title={page.title}
+                sections={page.custom_sections}
+              />
+            );
+          } else {
+            return <p>No custom page found.</p>;
+          }
+        })()}
+
       </main>
 
       {/* Media Lightbox */}
