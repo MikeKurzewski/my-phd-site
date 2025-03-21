@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
 import { useAuth } from '../lib/auth';
 import { Lock, Eye, EyeOff } from 'lucide-react';
 import { supabase } from '../lib/supabase';
@@ -10,17 +10,45 @@ export default function ResetPassword() {
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
+  const [resetSessionPresent, setResetSessionPresent] = useState(false);
   const { updateUserPassword } = useAuth();
   const navigate = useNavigate();
-  
+  const location = useLocation();
+
   useEffect(() => {
-    // Listen for the password recovery event
-    supabase.auth.onAuthStateChange(async (event, session) => {
+    // Check the URL for hash params (which is where the token will be)
+    const hashParams = new URLSearchParams(window.location.hash.substring(1));
+    const accessToken = hashParams.get('access_token');
+    const refreshToken = hashParams.get('refresh_token');
+    const type = hashParams.get('type');
+
+    // Log to see what's available
+    console.log('URL check: ', accessToken, refreshToken, type);
+
+    const checkSession = async () => {
+      const { data } = await supabase.auth.getSession();
+      console.log('Current session: ', data.session);
+
+      if (data.session) {
+        setResetSessionPresent(true);
+      }
+    };
+
+    checkSession();
+
+    // Listen for auth changes.
+    const { data } = supabase.auth.onAuthStateChange((event, session) => {
+      console.log('Auth state change: ', event, session);
+
       if (event === 'PASSWORD_RECOVERY') {
-        // This ensures we have the recovery session
-        console.log('Password recovery session detected');
+        console.log('Password recovery event detected');
+        setResetSessionPresent(true);
       }
     });
+
+    return () => {
+      data.subscription.unsubscribe();
+    };
   }, []);
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -54,6 +82,14 @@ export default function ResetPassword() {
 
   return (
     <div className="min-h-screen bg-[rgb(var(--color-bg-primary))] flex flex-col justify-center py-12 sm:px-6 lg:px-8">
+      {/* To show if reset session is present */}
+      {!resetSessionPresent && (
+        <div className="sm:mx-auto sm:w-full sm:max-w-md mb-4">
+          <div className="bg-[rgb(var(--color-error))] bg-opacity-10 border border-[rgb(var(--color-error))] text-white px-4 py-3 rounded-md">
+            No valid password reset session found. This link may have expired or already been used.
+          </div>
+        </div>
+      )}
       <div className="sm:mx-auto sm:w-full sm:max-w-md">
         <div className="flex justify-center">
           <Lock className="h-12 w-12 text-[rgb(var(--color-primary-400))]" />
