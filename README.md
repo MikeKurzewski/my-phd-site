@@ -15,8 +15,8 @@
    - [x] Fix minimal theme contrast ratios
 
 4. **Publication Management**
-   - [ ] Add "Delete All" button with confirmation
-   - [ ] Bulk selection functionality
+   - [x] Add "Delete All" button with confirmation
+   - [x] Bulk selection functionality
 
 5. **Dashboard Improvements**
    - [ ] Add stats cards framework
