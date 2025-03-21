@@ -64,6 +64,25 @@ export default function Publications() {
     publication_url: '',
     type: 'publication'
   });
+  const [selectedPublications, setSelectedPublications] = useState<string[]>([]);
+  const [isBulkEditMode, setIsBulkEditMode] = useState(false);
+
+
+  const toggleSelection = (id: string) => {
+    if (selectedPublications.includes(id)) {
+      setSelectedPublications(selectedPublications.filter(item => item !== id));
+    } else {
+      setSelectedPublications([...selectedPublications, id]);
+    }
+  };
+  
+  const toggleSelectAll = () => {
+    if (selectedPublications.length === publications.length) {
+      setSelectedPublications([]);
+    } else {
+      setSelectedPublications(publications.map(pub => pub.id));
+    }
+  };
 
   useEffect(() => {
     if (user?.id) {
@@ -301,6 +320,26 @@ export default function Publications() {
     setIsModalOpen(true);
   };
 
+  const handleBulkDelete = async () => {
+    if (selectedPublications.length === 0) return;
+    if (!confirm("Are you sure you want to delete the selected publications?")) return;
+    
+    try {
+      const { error } = await supabase
+        .from('publications')
+        .delete()
+        .in('id', selectedPublications);
+  
+      if (error) throw error;
+      // Clear the selection and refresh publications
+      setSelectedPublications([]);
+      fetchPublications();
+    } catch (error) {
+      console.error("Error deleting publications: ", error);
+    }
+  };
+  
+
   const handleDelete = async (id: string) => {
     if (!confirm('Are you sure you want to delete this publication?')) return;
 
@@ -405,8 +444,62 @@ export default function Publications() {
         </div>
       ) : (
         <div className="space-y-4">
+          {publications.length > 0 && (
+          <div className="flex justify-between items-center mb-4">
+          {isBulkEditMode ? (
+            <div className="flex items-center">
+              <input
+                type="checkbox"
+                checked={selectedPublications.length === publications.length}
+                onChange={toggleSelectAll}
+                className="mr-2 transform scale-125 origin-top-left"
+              />
+              <span>Select All</span>
+            </div>
+          ) : (
+            <button
+              onClick={() => setIsBulkEditMode(true)}
+              className="btn-primary"
+            >
+              Bulk Edit
+            </button>
+          )}
+          {isBulkEditMode && (
+            <div className="flex space-x-2">
+              {selectedPublications.length > 0 && (
+                <button
+                  onClick={handleBulkDelete}
+                  className="btn-primary bg-[rgb(var(--color-error))]"
+                >
+                  Delete Selected
+                </button>
+              )}
+              <button
+                onClick={() => {
+                  setIsBulkEditMode(false);
+                  setSelectedPublications([]); // Optionally clear selection when canceling
+                }}
+                className="btn-secondary"
+              >
+                Cancel
+              </button>
+            </div>
+          )}
+        </div>
+        )}
           {publications.map((publication) => (
-            <div key={publication.id} className="bg-[rgb(var(--color-bg-secondary))] shadow-sm rounded-lg p-6 border border-[rgb(var(--color-border-primary))]">
+            <div className="flex flex-row items-center">
+
+            {isBulkEditMode && (
+              <input
+              type="checkbox"
+              checked={selectedPublications.includes(publication.id)}
+              onChange={() => toggleSelection(publication.id)}
+              className="mr-2 w-5 h-5"
+            />
+            )}
+            
+            <div key={publication.id} className="flex-1 bg-[rgb(var(--color-bg-secondary))] shadow-sm rounded-lg p-6 border border-[rgb(var(--color-border-primary))]">
               <div className="flex justify-between items-start mb-4">
                 <div>
                   <h3 className="text-lg font-medium text-[rgb(var(--color-text-primary))]">{publication.title}</h3>
@@ -462,6 +555,7 @@ export default function Publications() {
                   </a>
                 ))}
               </div>
+            </div>
             </div>
           ))}
         </div>
