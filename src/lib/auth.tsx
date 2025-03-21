@@ -175,7 +175,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }): JSX.E
         { email: newEmail },
         // TODO: SECURITY Add Catpcha integration.
         // TODO: add email-updated UI?
-        { emailRedirectTo: `${window.location.origin}/settings/email-updated` }
+        { emailRedirectTo: 'https://myphd.site/email-updated' }
       );
 
       if (error) throw error;
@@ -210,8 +210,8 @@ export function AuthProvider({ children }: { children: React.ReactNode }): JSX.E
       const { error } = await supabase.auth.resetPasswordForEmail(
         // TODO: SECURITY Add Catpcha integration.
         email,
-        { 
-          redirectTo: `${window.location.origin}/reset-password`,
+        {
+          redirectTo: 'https://myphd.site/reset-password',
         }
       );
 

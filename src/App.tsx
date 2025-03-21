@@ -19,6 +19,7 @@ import ConfirmationModal from './components/ConfirmationModal';
 import { fetchAuthorData } from './lib/serpapi';
 import { createProfile } from './lib/auth';
 import { initTheme } from './lib/theme';
+import ResetPassword from './pages/ResetPassword';
 
 initTheme();
 
@@ -178,6 +179,10 @@ function AppRoutes() {
               </Layout>
             </PrivateRoute>
           }
+        />
+        <Route
+          path="/reset-password"
+          element={<ResetPassword />}
         />
       </Routes>
       {showWelcomeModal && <WelcomeModal onStartSetup={handleStartSetup} />}
