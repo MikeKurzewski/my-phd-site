@@ -172,7 +172,7 @@ export default function Login() {
               </div>
             </form>
 
-            <div className="mt-6">
+            <div className="mt-6 flex flex-col space-y-2">
               <button
                 onClick={() => setIsSignUp(!isSignUp)}
                 className="w-full text-center text-sm text-[rgb(var(--color-primary-400))] hover:text-[rgb(var(--color-primary-300))]"
@@ -181,6 +181,16 @@ export default function Login() {
                   ? 'Already have an account? Sign in'
                   : "Don't have an account? Sign up"}
               </button>
+                
+              {!isSignUp && (
+                <button
+                  type="button"
+                  onClick={() => navigate('/forgot-password')}
+                  className="w-full text-center text-sm text-[rgb(var(--color-primary-400))] hover:text-[rgb(var(--color-primary-300))]"
+                >
+                  Forgot your password?
+                </button>
+              )}
             </div>
           </div>
         </div>
