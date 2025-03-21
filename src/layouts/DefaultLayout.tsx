@@ -1,14 +1,24 @@
-import { ExternalLink, Mail, Linkedin, Github, X, BookOpen, Briefcase } from 'lucide-react';
+import { ExternalLink, Mail, Linkedin, Github, X, BookOpen, Briefcase, FileText } from 'lucide-react';
 import { TabProps } from '../types/common';
 import MediaLightbox from '../components/MediaLightbox';
-import { useState } from 'react';
-
+import React, { useState, useEffect } from 'react';
+import CustomPageLayout from './CustomPageLayout';
 
 interface DefaultLayoutProps {
   profile: any;
   publications: any[];
   qualifications: any[];
   projects: any[];
+  customPages: {
+    id: string;
+    title: string;
+    custom_sections: {
+      id: string;
+      section_title: string;
+      content: string;
+      section_type: string;
+    }[];
+  }[];
   activeTab: string;
   onTabChange: (tab: string) => void;
   Tab: React.FC<TabProps>;
@@ -19,6 +29,7 @@ export default function DefaultLayout({
   profile,
   publications,
   projects,
+  customPages,
   activeTab,
   onTabChange,
   Tab,
@@ -153,7 +164,13 @@ export default function DefaultLayout({
                   ...(projects.length > 0
                     ? [{ label: 'Projects', icon: <Briefcase className="h-5 w-5" />, key: 'projects' }]
                     : []
-                  )
+                  ),
+                  // Inject custom pages as additional tabs
+                  ...customPages.map((page: any) => ({
+                    label: page.title,
+                    icon: <FileText className="h-5 w-5" />,
+                    key: `custom-${page.id}`
+                  }))
                 ].map((tab) => (
                   <Tab
                     key={tab.key}
@@ -367,7 +384,22 @@ export default function DefaultLayout({
               )})}
             </div>
           )}
-        </div>
+
+          {activeTab.startsWith('custom-') && (() => {
+            const pageId = activeTab.replace('custom-', '');
+            const page = customPages.find((p) => p.id === pageId);
+            if (page) {
+              return (
+                <CustomPageLayout
+                  title={page.title}
+                  sections={page.custom_sections}
+                />
+              );
+            } else {
+              return <p>No custom page found.</p>;
+            }
+          })()}
+          </div>
       </div>
       <MediaLightbox />
     </div>

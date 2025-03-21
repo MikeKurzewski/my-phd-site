@@ -11,6 +11,20 @@ import { Project, Publication } from '../types';
 import { Profile } from './Profile';
 import { uploadFileToStorage } from '../lib/fileUtils';
 
+interface CustomSection {
+  id: string;
+  section_title: string;
+  content: string;
+  section_type: string;
+}
+
+interface CustomPage {
+  id: string;
+  title: string;
+  position: number;
+  custom_sections: CustomSection[];
+}
+
 const Tab: React.FC<TabProps> = ({ label, icon, isActive, onClick }) => (
   <button
     onClick={onClick}
@@ -46,9 +60,66 @@ export default function Website() {
   const [saveStatus, setSaveStatus] = useState<'idle' | 'saving' | 'error'>('idle');
   const [uploadingFile, setUploadingFile] = useState(false);
   const { user } = useAuth();
+  const [customPages, setCustomPages] = useState<CustomPage[]>([]);
+
+
+  const fetchCustomPages = async (username: string) => {
+    if (!username) return;
+    try {
+      // Step 1: Get user_id from the profiles table
+      const { data: profile, error: profileError } = await supabase
+        .from('profiles')
+        .select('id')  // Fetch the user_id
+        .eq('username', username)
+        .single();
+  
+      if (profileError || !profile) {
+        console.error("Error fetching profile for username:", username, profileError);
+        return;
+      }
+  
+      const userId = profile.id;
+  
+      // Step 2: Fetch custom pages linked to user_id
+      const { data: pages, error: pagesError } = await supabase
+        .from('custom_pages')
+        .select('id, title, position')
+        .eq('user_id', userId)  // ✅ Now correctly filtering by user_id!
+        .order('position', { ascending: true });
+  
+      if (pagesError) throw pagesError;
+  
+      // Step 3: Fetch sections for each page
+      const enrichedPages = await Promise.all(
+        (pages || []).map(async (page) => {
+          const { data: sections, error: sectionsError } = await supabase
+            .from('custom_sections')
+            .select('id, section_title, content, section_type')
+            .eq('page_id', page.id)
+            .order('created_at', { ascending: true });
+  
+          if (sectionsError) {
+            console.error("Error fetching sections for page", page.id, sectionsError);
+            return { ...page, custom_sections: [] };
+          }
+  
+          return { ...page, custom_sections: sections };
+        })
+      );
+  
+      console.log("Fetched custom pages:", enrichedPages); // Debugging
+      setCustomPages(enrichedPages);
+    } catch (error) {
+      console.error("Error fetching custom pages and sections:", error);
+    }
+  };
+  
 
   useEffect(() => {
-    fetchProfileData();
+    if (params.username) {
+      fetchProfileData();
+      fetchCustomPages(params.username);
+    }
   }, [params.username]);
 
   useEffect(() => {
@@ -77,6 +148,7 @@ export default function Website() {
   }, [pendingChanges, profile?.id]);
 
   useTheme(theme);
+
 
   const handleFieldChange = async (
     section: 'profile' | 'publications' | 'projects',
@@ -305,6 +377,7 @@ export default function Website() {
           qualifications={qualifications}
           projects={projects}
           publications={publications}
+          customPages={customPages}
           activeTab={activeTab}
           onTabChange={setActiveTab}
           Tab={Tab}
@@ -320,6 +393,7 @@ export default function Website() {
           qualifications={qualifications}
           projects={projects}
           publications={publications}
+          customPages={customPages}
           activeTab={activeTab}
           onTabChange={setActiveTab}
           Tab={Tab}

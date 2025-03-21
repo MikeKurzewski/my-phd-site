@@ -8,6 +8,8 @@ import Profile from './pages/Profile';
 import Projects from './pages/Projects';
 import Publications from './pages/Publications';
 import Settings from './pages/Settings';
+import CustomPages from './pages/CustomPages';
+import CustomSectionPage from './pages/CustomSectionPage';
 import Website from './pages/Website';
 import WebsiteDemo from './pages/WebsiteDemo';
 import { AuthProvider, useAuth } from './lib/auth';
@@ -142,6 +144,27 @@ function AppRoutes() {
             <PrivateRoute>
               <Layout>
                 <Publications />
+              </Layout>
+            </PrivateRoute>
+          }
+        />
+        {/* Custom Pages route */}
+        <Route
+          path="/custom-pages"
+          element={
+            <PrivateRoute>
+              <Layout>
+                <CustomPages />
+              </Layout>
+            </PrivateRoute>
+          }
+        />
+        <Route
+          path="/custom-pages/:pageTitle"
+          element={
+            <PrivateRoute>
+              <Layout>
+                <CustomSectionPage />
               </Layout>
             </PrivateRoute>
           }
