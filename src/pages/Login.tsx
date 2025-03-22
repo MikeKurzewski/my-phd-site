@@ -18,6 +18,7 @@ export default function Login() {
   const [showPassword, setShowPassword] = useState(false);
   const [showForgetPasswordModal, setShowForgetPasswordModal] = useState(false);
   const [isResettingPassword, setIsResettingPassword] = useState(false);
+  const [resetEmailSent, setResetEmailSent] = useState(false);
   const { signIn, signUp, sendPasswordResetEmail } = useAuth();
   const navigate = useNavigate();
   const [resetPasswordEmail, setResetPasswordEmail] = useState('');
@@ -61,26 +62,28 @@ export default function Login() {
   };
 
   const handleForgotPassword = async () => {
-    if (!resetPasswordEmail|| checkInvalidEmail(resetPasswordEmail)) {
+    if (!resetPasswordEmail || checkInvalidEmail(resetPasswordEmail)) {
       setError('Invalid email address. Please enter a valid email address.');
       return;
     }
 
     setError(null);
-    // TODO: Any set success?
     setIsResettingPassword(true);
 
     try {
-      const { success, message } = await sendPasswordResetEmail(resetPasswordEmail);
-
-      if (success) {
-        // TODO: any set success?
+      await sendPasswordResetEmail(resetPasswordEmail);
+      setResetEmailSent(true);
+      
+      setTimeout(() => {
         setShowForgetPasswordModal(false);
-      } else {
-        setError(message);
-      }
+        setResetEmailSent(false);
+      }, 3000);
     } catch (error) {
-      setError('Failed to send password reset email');
+      setResetEmailSent(true);
+      setTimeout(() => {
+        setShowForgetPasswordModal(false);
+        setResetEmailSent(false);
+      }, 3000);
     } finally {
       setIsResettingPassword(false);
     }
@@ -232,40 +235,69 @@ export default function Login() {
             ></div>
 
             <div className="inline-block transform overflow-hidden rounded-lg bg-[rgb(var(--color-bg-secondary))] text-left align-bottom shadow-xl transition-all sm:my-8 sm:w-full sm:max-w-lg sm:align-middle">
-              <div className="px-4 pt-5 pb-4 sm:p-6 sm:pb-4">
-                <div className="sm:flex sm:items-start">
-                  <div className="mx-auto flex h-12 w-12 flex-shrink-0 items-center justify-center rounded-full bg-[rgb(var(--color-primary-900))] sm:mx-0 sm:h-10 sm:w-10">
-                    <Mail className="h-6 w-6 text-[rgb(var(--color-primary-400))]" />
-                  </div>
-                  <div className="mt-3 text-center sm:mt-0 sm:ml-4 sm:text-left">
-                    <h3 className="text-lg font-medium leading-6 text-[rgb(var(--color-text-primary))]">
-                      Reset Password
-                    </h3>
-                    <div className="mt-2">
-                      <p className="text-sm text-[rgb(var(--color-text-secondary))]">
-                        We'll send a password reset link to your email address:
-                      </p>
+              {!resetEmailSent ? (
+                <>
+                  <div className="px-4 pt-5 pb-4 sm:p-6 sm:pb-4">
+                    <div className="sm:flex sm:items-start">
+                      <div className="mx-auto flex h-12 w-12 flex-shrink-0 items-center justify-center rounded-full bg-[rgb(var(--color-primary-900))] sm:mx-0 sm:h-10 sm:w-10">
+                        <Mail className="h-6 w-6 text-[rgb(var(--color-primary-400))]" />
+                      </div>
+                      <div className="mt-3 text-center sm:mt-0 sm:ml-4 sm:text-left">
+                        <h3 className="text-lg font-medium leading-6 text-[rgb(var(--color-text-primary))]">
+                          Reset Password
+                        </h3>
+                        <div className="mt-2">
+                          <p className="text-sm text-[rgb(var(--color-text-secondary))]">
+                            Enter your email address to receive a password reset link:
+                          </p>
+                        </div>
+                      </div>
+                    </div>
+                    <div className="mt-4">
+                      <label htmlFor="reset-email" className="block text-sm font-medium text-[rgb(var(--color-text-secondary))]">
+                        Email address
+                      </label>
+                      <div className="mt-1">
+                        <input
+                          type="email"
+                          id="reset-email"
+                          autoComplete="email"
+                          required
+                          value={resetPasswordEmail}
+                          onChange={(e) => setResetPasswordEmail(e.target.value)}
+                          className="form-input w-full"
+                        />
+                      </div>
                     </div>
                   </div>
+                  <div className="bg-[rgb(var(--color-bg-primary))] px-4 py-3 sm:flex sm:flex-row-reverse sm:px-6">
+                    <button
+                      type="button"
+                      className="btn-primary w-full sm:ml-3 sm:w-auto"
+                      onClick={handleForgotPassword}
+                      disabled={isResettingPassword}
+                    >
+                      {isResettingPassword ? 'Sending...' : 'Send Reset Link'}
+                    </button>
+                    <button
+                      type="button"
+                      className="btn-secondary mt-3 w-full sm:mt-0 sm:w-auto"
+                      onClick={() => setShowForgetPasswordModal(false)}
+                    >
+                      Cancel
+                    </button>
+                  </div>
+                </>
+              ) : (
+                <div className="p-6 text-center">
+                  <h3 className="text-lg font-medium text-[rgb(var(--color-text-primary))]">
+                    Email Sent
+                  </h3>
+                  <p className="mt-2 text-sm text-[rgb(var(--color-text-secondary))]">
+                    If an account exists with this email, you'll receive a password reset link shortly.
+                  </p>
                 </div>
-              </div>
-              <div className="bg-[rgb(var(--color-bg-primary))] px-4 py-3 sm:flex sm:flex-row-reverse sm:px-6">
-                <button
-                  type="button"
-                  className="btn-primary w-full sm:ml-3 sm:w-auto"
-                  onClick={handleForgotPassword}
-                  disabled={isResettingPassword}
-                >
-                  {isResettingPassword ? 'Sending...' : 'Send Reset Link'}
-                </button>
-                <button
-                  type="button"
-                  className="btn-secondary mt-3 w-full sm:mt-0 sm:w-auto"
-                  onClick={() => setShowForgetPasswordModal(false)}
-                >
-                  Cancel
-                </button>
-              </div>
+              )}
             </div>
           </div>
         </div>
