@@ -112,7 +112,7 @@ export default function Profile() {
           .select('*')
           .eq('user_id', user?.id)
           .single();
-  
+
         if (error) throw error;
         setSubscription(data);
       } catch (error) {
@@ -340,7 +340,7 @@ export default function Profile() {
           const interestsArray = data.interests
             .split(',')
             .map((interest) => interest.trim());
-  
+
           console.log("Updating fields:", {
             name: data.name,
             institution: data.institution,
@@ -360,13 +360,13 @@ export default function Profile() {
                 research_interests: interestsArray,
               })
               .eq('id', user.id);
-  
+
             if (error) throw error;
             if (!error) {
               await fetchProfile();
               alert('Profile updated successfully! Please refresh your page');
             }
-            
+
           } catch (error) {
             console.error('Error updating profile:', error);
             setError('Failed to update profile. Please try again.');
@@ -376,9 +376,9 @@ export default function Profile() {
         console.error("JSON Parsing Error:", error);
         return;
       }
-      
 
-      
+
+
       // setShowFullForm(true);
     } catch (error) {
       console.error('Error finding publication:', error);
@@ -472,10 +472,10 @@ export default function Profile() {
               <button
                 onClick={() => handleFileClick('profile')}
                 disabled={!!uploadingImage}
-                className="absolute bottom-0 right-0 p-2 bg-[rgb(var(--color-bg-secondary))] rounded-full shadow-sm hover:bg-[rgb(var(--color-bg-tertiary))] transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                className="absolute bottom-3 right-3 p-1.5 bg-[rgb(var(--color-bg-secondary))] rounded-full shadow-sm hover:bg-[rgb(var(--color-bg-tertiary))] transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
                 title="Change profile image"
               >
-                <Camera className="h-5 w-5 text-[rgb(var(--color-text-primary))]" />
+                <Camera className="h-4 w-4 text-[rgb(var(--color-text-primary))]" />
               </button>
             </div>
             {uploadingImage && (
@@ -503,7 +503,7 @@ export default function Profile() {
                 Use my LinkedIn Profile
               </button>
             )}
-            
+
             {subscription?.plan=='free' && (
               <button
                 onClick={alertPaymentNeeded}
