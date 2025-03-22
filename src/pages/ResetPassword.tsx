@@ -102,9 +102,6 @@ export default function ResetPassword() {
       <div className="mt-8 sm:mx-auto sm:w-full sm:max-w-md">
         <div className="bg-[rgb(var(--color-bg-secondary))] py-8 px-4 shadow-lg sm:rounded-lg sm:px-10 border border-[rgb(var(--color-border-primary))]">
           <form onSubmit={handleSubmit} className="space-y-6">
-            <div className="bg-[rgb(var(--color-info))] bg-opacity-10 border border-[rgb(var(--color-info))] text-[rgb(var(--color-text-primary))] px-4 py-3 rounded-md mb-4">
-              <p className="text-sm">Enter your new password below. Make sure it's at least 6 characters long.</p>
-            </div>
             {error && (
               <div className="bg-[rgb(var(--color-error))] bg-opacity-10 border border-[rgb(var(--color-error))] text-white px-4 py-3 rounded-md">
                 {error}

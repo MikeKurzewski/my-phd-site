@@ -1,7 +1,8 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../lib/auth';
-import { GraduationCap, Github, Mail, Eye, EyeOff } from 'lucide-react';
+import { GraduationCap, Mail, Eye, EyeOff } from 'lucide-react';
+import { checkInvalidEmail } from '../lib/validationUtils';
 
 interface SignUpFormData {
   email: string;
@@ -11,12 +12,16 @@ interface SignUpFormData {
 
 export default function Login() {
   const [isSignUp, setIsSignUp] = useState(false);
-  const [error, setError] = useState('');
+  const [error, setError] = useState<string | null>(null); // State to hold error messages
   const [message, setMessage] = useState(''); // State to hold user messages
   const [loading, setLoading] = useState(false); // Loading state
   const [showPassword, setShowPassword] = useState(false);
-  const { signIn, signUp } = useAuth();
+  const [showForgetPasswordModal, setShowForgetPasswordModal] = useState(false);
+  const [isResettingPassword, setIsResettingPassword] = useState(false);
+  const [resetEmailSent, setResetEmailSent] = useState(false);
+  const { signIn, signUp, sendPasswordResetEmail } = useAuth();
   const navigate = useNavigate();
+  const [resetPasswordEmail, setResetPasswordEmail] = useState('');
   const [formData, setFormData] = useState<SignUpFormData>({
     email: '',
     password: '',
@@ -56,18 +61,33 @@ export default function Login() {
     }
   };
 
-  // const handleSocialSignIn = async (provider: 'github' | 'google') => {
-  //   try {
-  //     if (provider === 'github') {
-  //       await signInWithGithub();
-  //     } else if (provider === 'google') {
-  //       await signInWithGoogle();
-  //     }
-  //     navigate('/dashboard');
-  //   } catch (err) {
-  //     setError(err instanceof Error ? err.message : 'An error occurred');
-  //   }
-  // };
+  const handleForgotPassword = async () => {
+    if (!resetPasswordEmail || checkInvalidEmail(resetPasswordEmail)) {
+      setError('Invalid email address. Please enter a valid email address.');
+      return;
+    }
+
+    setError(null);
+    setIsResettingPassword(true);
+
+    try {
+      await sendPasswordResetEmail(resetPasswordEmail);
+      setResetEmailSent(true);
+      
+      setTimeout(() => {
+        setShowForgetPasswordModal(false);
+        setResetEmailSent(false);
+      }, 3000);
+    } catch (error) {
+      setResetEmailSent(true);
+      setTimeout(() => {
+        setShowForgetPasswordModal(false);
+        setResetEmailSent(false);
+      }, 3000);
+    } finally {
+      setIsResettingPassword(false);
+    }
+  };
 
   return (
     <div className="min-h-screen bg-[rgb(var(--color-bg-primary))] flex flex-col justify-center py-12 sm:px-6 lg:px-8">
@@ -181,11 +201,11 @@ export default function Login() {
                   ? 'Already have an account? Sign in'
                   : "Don't have an account? Sign up"}
               </button>
-                
+
               {!isSignUp && (
                 <button
                   type="button"
-                  onClick={() => navigate('/forgot-password')}
+                  onClick={() => setShowForgetPasswordModal(true)}
                   className="w-full text-center text-sm text-[rgb(var(--color-primary-400))] hover:text-[rgb(var(--color-primary-300))]"
                 >
                   Forgot your password?
@@ -201,6 +221,83 @@ export default function Login() {
             <div className="modal-content p-4">
               <p className="text-center mb-4">{message}</p>
               <div className="spinner mx-auto"></div>
+            </div>
+          </div>
+        </div>
+      )}
+      {/* Forget Password Modal */}
+      {showForgetPasswordModal && (
+        <div className="fixed inset-0 z-50 overflow-y-auto">
+          <div className="flex min-h-screen items-end justify-center px-4 pt-4 pb-20 text-center sm:block sm:p-0">
+            <div
+              className="fixed inset-0 bg-gray-500 bg-opacity-75 transition-opacity"
+              onClick={() => setShowForgetPasswordModal(false)}
+            ></div>
+
+            <div className="inline-block transform overflow-hidden rounded-lg bg-[rgb(var(--color-bg-secondary))] text-left align-bottom shadow-xl transition-all sm:my-8 sm:w-full sm:max-w-lg sm:align-middle">
+              {!resetEmailSent ? (
+                <>
+                  <div className="px-4 pt-5 pb-4 sm:p-6 sm:pb-4">
+                    <div className="sm:flex sm:items-start">
+                      <div className="mx-auto flex h-12 w-12 flex-shrink-0 items-center justify-center rounded-full bg-[rgb(var(--color-primary-900))] sm:mx-0 sm:h-10 sm:w-10">
+                        <Mail className="h-6 w-6 text-[rgb(var(--color-primary-400))]" />
+                      </div>
+                      <div className="mt-3 text-center sm:mt-0 sm:ml-4 sm:text-left">
+                        <h3 className="text-lg font-medium leading-6 text-[rgb(var(--color-text-primary))]">
+                          Reset Password
+                        </h3>
+                        <div className="mt-2">
+                          <p className="text-sm text-[rgb(var(--color-text-secondary))]">
+                            Enter your email address to receive a password reset link:
+                          </p>
+                        </div>
+                      </div>
+                    </div>
+                    <div className="mt-4">
+                      <label htmlFor="reset-email" className="block text-sm font-medium text-[rgb(var(--color-text-secondary))]">
+                        Email address
+                      </label>
+                      <div className="mt-1">
+                        <input
+                          type="email"
+                          id="reset-email"
+                          autoComplete="email"
+                          required
+                          value={resetPasswordEmail}
+                          onChange={(e) => setResetPasswordEmail(e.target.value)}
+                          className="form-input w-full"
+                        />
+                      </div>
+                    </div>
+                  </div>
+                  <div className="bg-[rgb(var(--color-bg-primary))] px-4 py-3 sm:flex sm:flex-row-reverse sm:px-6">
+                    <button
+                      type="button"
+                      className="btn-primary w-full sm:ml-3 sm:w-auto"
+                      onClick={handleForgotPassword}
+                      disabled={isResettingPassword}
+                    >
+                      {isResettingPassword ? 'Sending...' : 'Send Reset Link'}
+                    </button>
+                    <button
+                      type="button"
+                      className="btn-secondary mt-3 w-full sm:mt-0 sm:w-auto"
+                      onClick={() => setShowForgetPasswordModal(false)}
+                    >
+                      Cancel
+                    </button>
+                  </div>
+                </>
+              ) : (
+                <div className="p-6 text-center">
+                  <h3 className="text-lg font-medium text-[rgb(var(--color-text-primary))]">
+                    Email Sent
+                  </h3>
+                  <p className="mt-2 text-sm text-[rgb(var(--color-text-secondary))]">
+                    If an account exists with this email, you'll receive a password reset link shortly.
+                  </p>
+                </div>
+              )}
             </div>
           </div>
         </div>
