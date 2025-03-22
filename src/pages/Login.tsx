@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
 import { useAuth } from '../lib/auth';
 import { GraduationCap, Mail, Eye, EyeOff } from 'lucide-react';
 import { checkInvalidEmail } from '../lib/validationUtils';
@@ -11,7 +11,10 @@ interface SignUpFormData {
 }
 
 export default function Login() {
-  const [isSignUp, setIsSignUp] = useState(false);
+  const location = useLocation();
+  const searchParams = new URLSearchParams(location.search);
+  const initialMode = searchParams.get('mode');
+  const [isSignUp, setIsSignUp] = useState(initialMode === 'signup');
   const [error, setError] = useState<string | null>(null); // State to hold error messages
   const [message, setMessage] = useState(''); // State to hold user messages
   const [loading, setLoading] = useState(false); // Loading state

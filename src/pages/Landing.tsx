@@ -25,7 +25,7 @@ export default function Landing() {
               <Link
                 to="/login"
                 className="inline-flex items-center px-4 py-2 rounded-lg text-sm font-medium transition-all
-                  bg-[rgb(var(--color-primary-400))] hover:bg-[rgb(var(--color-primary-500))] 
+                  bg-[rgb(var(--color-primary-400))] hover:bg-[rgb(var(--color-primary-500))]
                   text-white shadow-lg shadow-[rgb(var(--color-primary-900))] hover:shadow-[rgb(var(--color-primary-900))] hover:shadow-xl
                   hover:scale-105 active:scale-95"
               >
@@ -55,9 +55,9 @@ export default function Landing() {
               </p>
               <div className="mt-8 sm:max-w-lg sm:mx-auto sm:text-center lg:text-left">
                 <Link
-                  to="/login"
+                  to="/login?mode=signup"
                   className="inline-flex items-center px-6 py-3 rounded-lg text-base font-medium transition-all
-                    bg-[rgb(var(--color-primary-400))] hover:bg-[rgb(var(--color-primary-500))] 
+                    bg-[rgb(var(--color-primary-400))] hover:bg-[rgb(var(--color-primary-500))]
                     text-white shadow-lg shadow-[rgb(var(--color-primary-900))] hover:shadow-[rgb(var(--color-primary-900))] hover:shadow-xl
                     hover:scale-105 active:scale-95"
                 >
@@ -189,7 +189,7 @@ export default function Landing() {
                 <Link
                   to="/login"
                   className="mt-8 inline-flex items-center px-6 py-3 rounded-lg text-base font-medium transition-all
-                    bg-[rgb(var(--color-primary-400))] hover:bg-[rgb(var(--color-primary-500))] 
+                    bg-[rgb(var(--color-primary-400))] hover:bg-[rgb(var(--color-primary-500))]
                     text-white shadow-lg shadow-[rgb(var(--color-primary-900))] hover:shadow-[rgb(var(--color-primary-900))] hover:shadow-xl
                     hover:scale-105 active:scale-95"
                 >
